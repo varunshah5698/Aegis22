@@ -1,0 +1,57 @@
+# Render blueprint for Aegis.
+#
+# A blueprint only describes a service at creation time; editing this file does
+# not change a service that already exists. For the running service, set the
+# same variables under Render -> aegis22 -> Environment (see
+# docs/render-environment.md).
+#
+# Nothing secret belongs in this file. `sync: false` marks a variable Render
+# prompts for on first deploy and stores encrypted; the value never reaches git.
+
+services:
+  - type: web
+    name: aegis22
+    runtime: node
+    buildCommand: pnpm install --frozen-lockfile && pnpm run build
+    startCommand: pnpm run start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+
+      # Public origin. RENDER_EXTERNAL_URL is a fallback in code, but setting it
+      # explicitly keeps canonical links and OAuth redirects stable if the
+      # service is renamed.
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://aegis22.onrender.com
+
+      # Public Supabase settings: the publishable key is meant for browsers and
+      # row-level security enforces access. Baked-in fallbacks exist in
+      # src/lib/supabase/public-config.ts, so these are overrides.
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://wextsivilupiimgmleug.supabase.co
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        value: sb_publishable_8tSbCW8EQzEBd1cdzc45og_HCt9AOyJ
+
+      # AI analyst (server-only). Without it /api/assistant answers 503 and the
+      # analyst page shows "provider not configured".
+      - key: RIVER_API_KEY
+        sync: false
+      - key: RIVER_BASE_URL
+        value: https://api.river.ai/v1
+      - key: RIVER_MODEL
+        value: deepseek-ai/DeepSeek-V4.1-Flash
+
+      # Optional: privileged jobs, email, distributed rate limiting.
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RATE_LIMIT_REDIS_URL
+        sync: false
+
+      - key: SUPABASE_STORAGE_BUCKET_REPORTS
+        value: reports
+      - key: SCORING_MODEL_VERSION
+        value: v1
