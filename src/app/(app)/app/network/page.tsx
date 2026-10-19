@@ -106,10 +106,10 @@ export default async function NetworkPage({
                 <span className="num text-muted-foreground">{flag.country}</span>
                 <span className="min-w-0 flex-1 text-muted-foreground">{flag.reason}</span>
                 <Link
-                  href={`/app/transactions?q=${encodeURIComponent(flag.label)}`}
+                  href={`/app/network/${flag.nodeId}`}
                   className="text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  Inspect
+                  Full profile
                 </Link>
               </li>
             ))}
