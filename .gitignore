@@ -22,3 +22,4 @@ coverage
 .freebuff
 .specific
 specific.local
+.render-api-key
