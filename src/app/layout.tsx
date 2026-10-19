@@ -4,6 +4,11 @@ import localFont from "next/font/local";
 import { Providers } from "@/components/providers";
 import { themeInitScript } from "@/components/theme-provider";
 import { siteConfig } from "@/config/site";
+import {
+  readServerSupabaseConfig,
+  SUPABASE_ANON_KEY_META,
+  SUPABASE_URL_META,
+} from "@/lib/supabase/public-config";
 import "./globals.css";
 
 // Fonts are self-hosted through next/font/local so builds never depend on a
@@ -90,11 +95,17 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // Rendered per request for dynamic pages and from the public fallback for
+  // static ones, so browser auth does not depend on build-time env injection.
+  const publicSupabase = readServerSupabaseConfig();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Applies the stored theme before paint to avoid a flash of the wrong theme. */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <meta name={SUPABASE_URL_META} content={publicSupabase.url} />
+        <meta name={SUPABASE_ANON_KEY_META} content={publicSupabase.anonKey} />
       </head>
       <body className={`${sans.variable} ${display.variable} ${mono.variable}`}>
         <Providers>{children}</Providers>

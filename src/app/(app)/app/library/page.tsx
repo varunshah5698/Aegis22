@@ -16,6 +16,7 @@ import { MODEL_VERSION, SCORE_BANDS, supportedCurrencies } from "@/config/risk";
 import { requireOrganization } from "@/lib/auth";
 import { getFxProviderConfig } from "@/lib/fx/provider";
 import { getAiConfig } from "@/lib/ai/river";
+import { readServerSupabaseConfig } from "@/lib/supabase/public-config";
 import { cn, formatCompactNumber } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Data library" };
@@ -169,7 +170,9 @@ export default async function DataLibraryPage() {
 
   const fx = getFxProviderConfig();
   const ai = getAiConfig();
-  const supabaseHost = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace(/^https?:\/\//, "").split("/")[0];
+  const supabaseHost = readServerSupabaseConfig()
+    .url.replace(/^https?:\/\//, "")
+    .split("/")[0];
 
   const catalogue = [
     { table: "transactions", rows: transactions.count ?? 0, purpose: "Scored payments and their base value", href: "/app/transactions" },

@@ -1,6 +1,8 @@
 import "server-only";
 import { z } from "zod";
 
+import { readServerSupabaseConfig } from "@/lib/supabase/public-config";
+
 const optionalString = z
   .string()
   .trim()
@@ -27,9 +29,12 @@ function readEnv(): Env {
     // Render exposes the service URL at build and runtime; use it when an
     // explicit canonical URL has not been configured.
     NEXT_PUBLIC_SITE_URL:
-      process.env.NEXT_PUBLIC_SITE_URL || process.env.RENDER_EXTERNAL_URL || undefined,
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      process.env.SITE_URL ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      process.env.RENDER_EXTERNAL_URL ||
+      "http://localhost:3100",
+    NEXT_PUBLIC_SUPABASE_URL: readServerSupabaseConfig().url,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: readServerSupabaseConfig().anonKey,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     SUPABASE_JWT_SECRET: process.env.SUPABASE_JWT_SECRET,
     SUPABASE_STORAGE_BUCKET_REPORTS: process.env.SUPABASE_STORAGE_BUCKET_REPORTS,

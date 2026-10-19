@@ -5,6 +5,7 @@ import { fail, ok, validationError } from "@/lib/api/response";
 import { clientKey, rateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 import { loginSchema } from "@/lib/schemas/auth";
 import type { Database } from "@/lib/supabase/database.types";
+import { readServerSupabaseConfig } from "@/lib/supabase/public-config";
 
 export const runtime = "nodejs";
 
@@ -40,10 +41,11 @@ export async function POST(request: NextRequest) {
   }
 
   const response = NextResponse.next();
+  const { url, anonKey } = readServerSupabaseConfig();
 
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    url,
+    anonKey,
     {
       cookies: {
         getAll() {

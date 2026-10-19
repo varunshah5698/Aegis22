@@ -4,7 +4,10 @@ export const siteConfig = {
   tagline: "Catch illicit cross-border flows before they settle.",
   description:
     "Aegis scores cross-border payments in real time, explains every risk decision, and moves flagged activity through investigation to regulatory reporting.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3100",
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.RENDER_EXTERNAL_URL ||
+    "http://localhost:3100",
   locale: "en_US",
   contactEmail: "compliance@aegis.example",
   supportEmail: "support@aegis.example",

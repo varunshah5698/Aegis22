@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { readServerSupabaseConfig } from "@/lib/supabase/public-config";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -12,8 +14,7 @@ export const dynamic = "force-dynamic";
  * returned; no client IDs, secrets or project keys leave the server.
  */
 export async function GET() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const { url, anonKey: key } = readServerSupabaseConfig();
 
   if (!url || !key) {
     return NextResponse.json(

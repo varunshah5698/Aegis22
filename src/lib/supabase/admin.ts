@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 
 import { env } from "@/env";
 import type { Database } from "@/lib/supabase/database.types";
+import { readServerSupabaseConfig } from "@/lib/supabase/public-config";
 
 /**
  * Privileged client. Only use for operations that cannot be expressed with the
@@ -13,8 +14,9 @@ import type { Database } from "@/lib/supabase/database.types";
  */
 export function createAdminSupabaseClient() {
   if (!env.SUPABASE_SERVICE_ROLE_KEY) return null;
+  const { url } = readServerSupabaseConfig();
   return createClient<Database>(
-    env.NEXT_PUBLIC_SUPABASE_URL,
+    url,
     env.SUPABASE_SERVICE_ROLE_KEY,
     { auth: { persistSession: false, autoRefreshToken: false } },
   );

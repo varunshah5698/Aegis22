@@ -20,7 +20,7 @@ build "app" {
     NODE_ENV                      = "production"
     NEXT_PUBLIC_SITE_URL          = "https://${service.web.public_url}"
     NEXT_PUBLIC_SUPABASE_URL      = "https://wextsivilupiimgmleug.supabase.co"
-    NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndleHRzaXZpbHVwaWltZ21sZXVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzMjU3NDUsImV4cCI6MjEwNzkwMTc0NX0.JRPJIev_joctwf-eM4A5kymvQoBsS2l9qoAZ0qpmmCw"
+    NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_8tSbCW8EQzEBd1cdzc45og_HCt9AOyJ"
   }
 }
 

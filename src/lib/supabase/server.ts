@@ -3,15 +3,20 @@ import "server-only";
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
-import { env } from "@/env";
 import type { Database } from "@/lib/supabase/database.types";
+import { readServerSupabaseConfig } from "@/lib/supabase/public-config";
 
 export async function createServerSupabaseClient() {
   const cookieStore = await cookies();
+  const { url, anonKey } = readServerSupabaseConfig();
+
+  if (!url || !anonKey) {
+    throw new Error("Supabase is not configured for this deployment");
+  }
 
   return createServerClient<Database>(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    url,
+    anonKey,
     {
       cookies: {
         getAll() {
