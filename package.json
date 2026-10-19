@@ -1,0 +1,121 @@
+{
+  "name": "sentinelflow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-time AML monitoring and investigation workspace for cross-border payments.",
+  "packageManager": "pnpm@10.15.1",
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "scripts": {
+    "dev": "next dev -p 3100",
+    "build": "next build",
+    "start": "next start -p 3100",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:types": "supabase gen types typescript --project-id wextsivilupiimgmleug --schema public > src/lib/supabase/database.types.ts",
+    "db:test": "tsx scripts/db-test.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky || true"
+  },
+  "dependencies": {
+    "@fontsource/inter": "5.1.1",
+    "@fontsource/jetbrains-mono": "5.1.1",
+    "@fontsource/space-grotesk": "5.1.1",
+    "@hookform/resolvers": "3.10.0",
+    "@radix-ui/react-accordion": "1.2.2",
+    "@radix-ui/react-avatar": "1.1.2",
+    "@radix-ui/react-checkbox": "1.1.3",
+    "@radix-ui/react-dialog": "1.1.4",
+    "@radix-ui/react-dropdown-menu": "2.1.4",
+    "@radix-ui/react-label": "2.1.1",
+    "@radix-ui/react-popover": "1.1.4",
+    "@radix-ui/react-progress": "1.1.1",
+    "@radix-ui/react-scroll-area": "1.2.2",
+    "@radix-ui/react-select": "2.1.4",
+    "@radix-ui/react-separator": "1.1.1",
+    "@radix-ui/react-slot": "1.1.1",
+    "@radix-ui/react-switch": "1.1.2",
+    "@radix-ui/react-tabs": "1.1.2",
+    "@radix-ui/react-toggle-group": "1.1.1",
+    "@radix-ui/react-tooltip": "1.1.6",
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.118.0",
+    "@tanstack/react-query": "5.87.1",
+    "@tanstack/react-table": "8.21.3",
+    "@tanstack/react-virtual": "3.13.12",
+    "@xyflow/react": "12.3.6",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "cmdk": "1.0.4",
+    "cytoscape": "^3.34.4",
+    "d3-force": "3.0.0",
+    "date-fns": "3.6.0",
+    "framer-motion": "14.3.0",
+    "lucide-react": "0.468.0",
+    "next": "15.5.4",
+    "pdf-lib": "1.17.1",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "react-hook-form": "7.62.0",
+    "recharts": "2.15.4",
+    "sonner": "2.0.7",
+    "tailwind-merge": "2.5.4",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@eslint/eslintrc": "3.3.1",
+    "@playwright/test": "1.54.2",
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.1.0",
+    "@testing-library/user-event": "14.5.2",
+    "@types/cytoscape": "^3.31.0",
+    "@types/d3-force": "3.0.10",
+    "@types/node": "22.15.30",
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9",
+    "@vitejs/plugin-react": "4.3.4",
+    "autoprefixer": "10.4.20",
+    "dotenv": "16.4.7",
+    "eslint": "9.35.0",
+    "eslint-config-next": "15.5.4",
+    "husky": "9.1.7",
+    "jsdom": "26.1.0",
+    "lint-staged": "15.5.2",
+    "postcss": "8.5.6",
+    "prettier": "3.6.2",
+    "prettier-plugin-tailwindcss": "0.6.14",
+    "tailwindcss": "3.4.17",
+    "tailwindcss-animate": "1.0.7",
+    "tsx": "4.19.2",
+    "typescript": "5.9.2",
+    "vitest": "3.2.4"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
+  },
+  "pnpm": {
+    "overrides": {
+      "motion-dom": "14.3.0",
+      "motion-utils": "14.1.1"
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
+}

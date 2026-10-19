@@ -1,0 +1,104 @@
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
+
+import { Providers } from "@/components/providers";
+import { themeInitScript } from "@/components/theme-provider";
+import { siteConfig } from "@/config/site";
+import "./globals.css";
+
+// Fonts are self-hosted through next/font/local so builds never depend on a
+// font CDN and the browser makes no third-party requests.
+const sans = localFont({
+  display: "swap",
+  variable: "--font-sans",
+  src: [
+    { path: "../../node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../node_modules/@fontsource/inter/files/inter-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../../node_modules/@fontsource/inter/files/inter-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
+});
+
+const display = localFont({
+  display: "swap",
+  variable: "--font-display",
+  src: [
+    { path: "../../node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../../node_modules/@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
+});
+
+const mono = localFont({
+  display: "swap",
+  variable: "--font-mono",
+  src: [
+    { path: "../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-600-normal.woff2", weight: "600", style: "normal" },
+  ],
+});
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: `${siteConfig.name} — Cross-border AML monitoring`,
+    template: `%s · ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  applicationName: siteConfig.name,
+  keywords: [
+    "AML monitoring",
+    "cross-border payments",
+    "transaction monitoring",
+    "financial crime compliance",
+    "sanctions screening",
+    "SAR reporting",
+  ],
+  authors: [{ name: siteConfig.legalName }],
+  creator: siteConfig.legalName,
+  openGraph: {
+    type: "website",
+    locale: siteConfig.locale,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} — Cross-border AML monitoring`,
+    description: siteConfig.description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.name} — Cross-border AML monitoring`,
+    description: siteConfig.description,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F4F4EF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0E0F13" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Applies the stored theme before paint to avoid a flash of the wrong theme. */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className={`${sans.variable} ${display.variable} ${mono.variable}`}>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
