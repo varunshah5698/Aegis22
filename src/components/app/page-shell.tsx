@@ -1,6 +1,8 @@
+import * as React from "react";
 import Link from "next/link";
-import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, Minus, type LucideIcon } from "lucide-react";
 
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { cn } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
@@ -25,13 +27,17 @@ export function PageShell({
   className?: string;
 }) {
   return (
-    <div className={cn("mx-auto w-full max-w-[1560px] space-y-5", className)}>
+    <div className={cn("workspace-stack mx-auto w-full max-w-[1560px]", className)}>
       <header className="flex flex-col gap-4 pb-1 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
           {eyebrow ? <p className="label-xs">{eyebrow}</p> : null}
-          <h1 className="mt-1.5 font-display text-[27px] font-semibold leading-9 tracking-[-0.035em]">{title}</h1>
+          <h1 className="mt-1.5 font-display text-[27px] font-semibold leading-9 tracking-[-0.035em]">
+            {title}
+          </h1>
           {description ? (
-            <p className="mt-2 max-w-3xl text-[13px] leading-5 text-muted-foreground">{description}</p>
+            <p className="mt-2 max-w-3xl text-[13px] leading-5 text-muted-foreground">
+              {description}
+            </p>
           ) : null}
           {meta ? (
             <div className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] text-muted-foreground">
@@ -83,7 +89,9 @@ export function PageSection({
       </div>
       <div className={cn(!flush && "px-5 py-4", bodyClassName)}>{children}</div>
       {footnote ? (
-        <div className="border-t border-border/60 px-5 py-2.5 text-[11px] leading-4 text-muted-foreground">{footnote}</div>
+        <div className="border-t border-border/60 px-5 py-2.5 text-[11px] leading-4 text-muted-foreground">
+          {footnote}
+        </div>
       ) : null}
     </section>
   );
@@ -129,7 +137,12 @@ export function Sparkline({
   const area = `0,30 ${line} 100,30`;
 
   return (
-    <svg viewBox="0 0 100 30" className={cn("h-8 w-full", className)} aria-hidden="true" preserveAspectRatio="none">
+    <svg
+      viewBox="0 0 100 30"
+      className={cn("h-8 w-full", className)}
+      aria-hidden="true"
+      preserveAspectRatio="none"
+    >
       {fill ? <polygon points={area} fill="currentColor" opacity={0.14} /> : null}
       <polyline
         points={line}
@@ -174,29 +187,100 @@ export function TrendPill({
   const Icon = !rising && !falling ? Minus : rising ? ArrowUpRight : ArrowDownRight;
 
   return (
-    <span className={cn("inline-flex items-center gap-0.5 text-[11.5px] font-medium", tone, className)}>
+    <span
+      className={cn("inline-flex items-center gap-0.5 text-[11.5px] font-medium", tone, className)}
+    >
       <Icon className="size-3.5" aria-hidden="true" />
-      <span className="num">{Math.abs(change).toFixed(1)}{suffix}</span>
+      <span className="num">
+        {Math.abs(change).toFixed(1)}
+        {suffix}
+      </span>
     </span>
   );
 }
 
-/** The standard metric tile: label, big value, trend, optional sparkline. */
+/**
+ * One row for every metric band in the workspace.
+ *
+ * The column count follows the number of tiles, so a four-tile page and a
+ * five-tile page both fill their row instead of leaving one card orphaned on
+ * a second line.
+ */
+export function MetricRow({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const count = React.Children.count(children);
+  const columns =
+    count >= 6
+      ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+      : count === 5
+        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+        : count === 4
+          ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
+          : count === 3
+            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+            : "grid-cols-1 sm:grid-cols-2";
+
+  return <div className={cn("grid gap-4", columns, className)}>{children}</div>;
+}
+
+const toneText = (tone: string) =>
+  tone === "critical"
+    ? "text-risk-critical"
+    : tone === "warning"
+      ? "text-risk-medium"
+      : tone === "positive"
+        ? "text-risk-low"
+        : tone === "accent"
+          ? "text-accent"
+          : "text-foreground";
+
+const toneIcon = (tone: string) =>
+  tone === "critical"
+    ? "border-risk-critical/25 bg-risk-critical/10 text-risk-critical"
+    : tone === "warning"
+      ? "border-risk-medium/25 bg-risk-medium/10 text-risk-medium"
+      : tone === "positive"
+        ? "border-risk-low/25 bg-risk-low/10 text-risk-low"
+        : "border-accent/25 bg-accent/10 text-accent";
+
+const toneSpark = (tone: string) =>
+  tone === "critical"
+    ? "text-risk-critical/70"
+    : tone === "warning"
+      ? "text-risk-medium/70"
+      : tone === "positive"
+        ? "text-risk-low/70"
+        : "text-accent/70";
+
+/**
+ * The standard metric tile: icon, label, big value, trend and optional
+ * sparkline. Every page uses this so the summary band reads as one component.
+ */
 export function MetricTile({
   label,
   value,
   hint,
+  comparison,
   change,
   invert,
   neutralTrend,
   spark,
   tone = "default",
   href,
+  icon: Icon,
+  definition,
   className,
 }: {
   label: string;
   value: React.ReactNode;
   hint?: string | undefined;
+  /** Secondary line under the hint, e.g. "median 82 · p90 91". */
+  comparison?: string | undefined;
   change?: number | null | undefined;
   invert?: boolean | undefined;
   /** Volume metrics read as information, not good or bad news. */
@@ -204,51 +288,63 @@ export function MetricTile({
   spark?: number[] | undefined;
   tone?: "default" | "critical" | "warning" | "positive" | "accent" | undefined;
   href?: string | undefined;
+  icon?: LucideIcon | undefined;
+  /** Definition shown in a tooltip next to the label. */
+  definition?: string | undefined;
   className?: string | undefined;
 }) {
   const body = (
     <>
-      <div className="flex items-start justify-between gap-3">
-        <p className="label-xs">{label}</p>
-        {typeof change === "number" ? (
-          <TrendPill change={change} invert={invert} neutral={neutralTrend} />
+      <div className="flex items-start gap-2">
+        {Icon ? (
+          <span
+            className={cn(
+              "mt-px flex size-6 shrink-0 items-center justify-center rounded-[7px] border",
+              toneIcon(tone),
+            )}
+          >
+            <Icon className="size-3.5" aria-hidden="true" />
+          </span>
+        ) : null}
+        <p className="label-xs min-w-0 flex-1 leading-4">{label}</p>
+        {definition ? (
+          <InfoTooltip text={definition} className="pointer-events-auto relative z-10" />
         ) : null}
       </div>
-      <p
-        className={cn(
-          "mt-2.5 metric-value",
-          tone === "critical" && "text-risk-critical",
-          tone === "warning" && "text-risk-medium",
-          tone === "positive" && "text-risk-low",
-          tone === "accent" && "text-accent",
-        )}
-      >
-        {value}
-      </p>
-      {hint ? <p className="mt-1.5 text-[11.5px] leading-4 text-muted-foreground">{hint}</p> : null}
+      <div className="flex items-end justify-between gap-2 pt-2.5">
+        <p className={cn("metric-value min-w-0 truncate", toneText(tone))}>{value}</p>
+        {typeof change === "number" ? (
+          <span className="shrink-0 pb-1">
+            <TrendPill change={change} invert={invert} neutral={neutralTrend} />
+          </span>
+        ) : null}
+      </div>
+      {hint ? (
+        <p className="mt-1 truncate text-[11.5px] leading-4 text-muted-foreground">{hint}</p>
+      ) : null}
+      {comparison ? (
+        <p className="mt-0.5 truncate text-[10.5px] leading-4 text-muted-foreground/80">
+          {comparison}
+        </p>
+      ) : null}
       {spark && spark.length > 1 ? (
-        <div
-          className={cn(
-            "mt-3",
-            tone === "critical"
-              ? "text-risk-critical/70"
-              : tone === "warning"
-                ? "text-risk-medium/70"
-                : tone === "positive"
-                  ? "text-risk-low/70"
-                  : "text-accent/70",
-          )}
-        >
-          <Sparkline values={spark} />
+        <div className={cn("mt-auto pt-3", toneSpark(tone))}>
+          <Sparkline values={spark} className="h-8" />
         </div>
       ) : null}
     </>
   );
 
   return (
-    <div className={cn("panel min-w-0 px-4 py-3.5", className)}>
+    <div
+      className={cn(
+        "panel flex min-h-[112px] min-w-0 flex-col px-4 py-3.5",
+        href && "transition-colors hover:border-border-strong",
+        className,
+      )}
+    >
       {href ? (
-        <Link href={href} className="block rounded-tile transition-opacity hover:opacity-90">
+        <Link href={href} className="flex min-h-0 flex-1 flex-col rounded-tile">
           {body}
         </Link>
       ) : (
@@ -258,10 +354,27 @@ export function MetricTile({
   );
 }
 
-export function LegendChip({ label, color, className }: { label: string; color?: string; className?: string }) {
+export function LegendChip({
+  label,
+  color,
+  className,
+}: {
+  label: string;
+  color?: string;
+  className?: string;
+}) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5 text-[11px] text-muted-foreground", className)}>
-      <span className="size-2 rounded-sm" style={{ background: color ?? "rgb(var(--accent))" }} aria-hidden="true" />
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 text-[11px] text-muted-foreground",
+        className,
+      )}
+    >
+      <span
+        className="size-2 rounded-sm"
+        style={{ background: color ?? "rgb(var(--accent))" }}
+        aria-hidden="true"
+      />
       {label}
     </span>
   );
@@ -286,26 +399,18 @@ export function StatStrip({
   }>;
 }) {
   return (
-    <dl className="panel grid grid-cols-2 divide-y divide-border sm:grid-cols-4 sm:divide-y-0 sm:divide-x">
+    <MetricRow>
       {items.map((item) => (
-        <div key={item.label} className="min-w-0 px-4 py-3.5">
-          <dt className="label-xs">{item.label}</dt>
-          <dd
-            className={cn(
-              "mt-2 metric-value",
-              item.tone === "critical" && "text-risk-critical",
-              item.tone === "warning" && "text-risk-medium",
-              item.tone === "positive" && "text-risk-low",
-            )}
-          >
-            {item.value}
-          </dd>
-          <div className="mt-1.5 flex items-center gap-1.5 text-[11.5px] leading-4">
-            {typeof item.change === "number" ? <TrendPill change={item.change} invert={item.invert} /> : null}
-            {item.hint ? <span className="truncate text-muted-foreground">{item.hint}</span> : null}
-          </div>
-        </div>
+        <MetricTile
+          key={item.label}
+          label={item.label}
+          value={item.value}
+          hint={item.hint}
+          change={item.change}
+          invert={item.invert}
+          tone={item.tone}
+        />
       ))}
-    </dl>
+    </MetricRow>
   );
 }

@@ -249,9 +249,9 @@
     @apply font-mono;
   }
 
-  /* One rhythm for every workspace page: 24px between bands, 16px inside. */
+  /* One rhythm for every workspace page: 20px between bands, 16px inside. */
   .workspace-stack {
-    @apply space-y-6;
+    @apply space-y-5;
   }
 
   .toolbar {

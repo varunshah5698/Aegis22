@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { MetricTile, PageSection, PageShell } from "@/components/app/page-shell";
+import { MetricRow, MetricTile, PageSection, PageShell } from "@/components/app/page-shell";
 import { AlertsQueue } from "@/components/dashboard/alerts-queue";
 import { RISK_COLORS, type RiskLevel } from "@/config/risk";
 import { requireOrganization } from "@/lib/auth";
@@ -47,7 +47,7 @@ export default async function AlertsPage({
         </>
       }
     >
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <MetricRow>
         <MetricTile
           label="Alerts in view"
           value={rows.length.toLocaleString("en-US")}
@@ -71,7 +71,7 @@ export default async function AlertsPage({
           tone={breached > 0 ? "critical" : "positive"}
           hint="due time already passed"
         />
-      </div>
+      </MetricRow>
 
       <PageSection
         id="severity-mix-heading"

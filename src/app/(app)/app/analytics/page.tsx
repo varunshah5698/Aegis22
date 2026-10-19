@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Activity, Clock3, FolderOpen } from "lucide-react";
 
-import { MetricTile, PageSection, PageShell, SectionLink, Sparkline } from "@/components/app/page-shell";
+import { MetricRow, MetricTile, PageSection, PageShell, SectionLink, Sparkline } from "@/components/app/page-shell";
 import { RangeTabs } from "@/components/app/range-tabs";
 import { BarList } from "@/components/charts/bar-list";
 import { CorridorHeatGrid, HourBoard } from "@/components/charts/heatmaps";
@@ -71,7 +71,7 @@ export default async function AnalyticsPage({
         </>
       }
     >
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <MetricRow>
         <MetricTile
           label="Payments scored"
           value={totals.count.toLocaleString("en-US")}
@@ -103,7 +103,7 @@ export default async function AnalyticsPage({
           hint={`median / p90 · average ${totals.avgScore}`}
           spark={series.map((point) => point.avgScore)}
         />
-      </div>
+      </MetricRow>
 
       <AnalystPanel range={range} page="analytics" />
 

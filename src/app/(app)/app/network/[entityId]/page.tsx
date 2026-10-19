@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Network, ShieldAlert } from "lucide-react";
 
-import { MetricTile, PageSection } from "@/components/app/page-shell";
+import { MetricRow, MetricTile, PageSection } from "@/components/app/page-shell";
 import { EntityFlowChart } from "@/components/dashboard/entity-flow";
 import { RiskBadge } from "@/components/risk-badge";
 import { RISK_COLORS, scoreToLevel } from "@/config/risk";
@@ -116,7 +116,7 @@ export default async function EntityPage({
         </div>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <MetricRow>
         <MetricTile
           label="Received"
           value={`$${formatCompactNumber(totals.inValue)}`}
@@ -140,7 +140,7 @@ export default async function EntityPage({
           hint={`${(flaggedShare * 100).toFixed(1)}% of this entity's transfers`}
           tone={totals.flagged > 0 ? "critical" : "default"}
         />
-      </div>
+      </MetricRow>
 
       <div className="grid gap-4 xl:grid-cols-12">
         <PageSection

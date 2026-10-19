@@ -26,7 +26,7 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ cas
   const totalValue = alerts.reduce((total, alert) => total + alert.amountBase, 0);
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] space-y-5">
+    <div className="mx-auto w-full max-w-[1560px] workspace-stack">
       <div className="flex flex-col gap-2">
         <Link
           href="/app/cases"

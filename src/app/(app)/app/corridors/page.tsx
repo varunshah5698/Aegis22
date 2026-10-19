@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { MetricTile, PageSection, PageShell, Sparkline } from "@/components/app/page-shell";
+import { MetricRow, MetricTile, PageSection, PageShell, Sparkline } from "@/components/app/page-shell";
 import { RangeTabs } from "@/components/app/range-tabs";
 import { CorridorHeatGrid } from "@/components/charts/heatmaps";
 import { CorridorMatrix } from "@/components/charts/corridor-matrix";
@@ -57,7 +57,7 @@ export default async function CorridorsPage({
         </>
       }
     >
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <MetricRow>
         <MetricTile
           label="Corridors in window"
           value={corridors.length.toLocaleString("en-US")}
@@ -80,7 +80,7 @@ export default async function CorridorsPage({
           tone={flagged > 0 ? "warning" : "positive"}
           hint={`${analytics.totals.flaggedShare.toFixed(2)}% of all payments in window`}
         />
-      </div>
+      </MetricRow>
 
       <PageSection
         id="matrix-heading"

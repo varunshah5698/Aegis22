@@ -34,7 +34,7 @@ export default async function AlertDetailPage({ params }: { params: Promise<{ al
   const triggered = factors.filter((factor) => factor.triggered);
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] space-y-5">
+    <div className="mx-auto w-full max-w-[1560px] workspace-stack">
       <div className="flex flex-col gap-2">
         <Link
           href="/app/alerts"

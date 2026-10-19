@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AlertTriangle, Banknote, Info, TrendingUp } from "lucide-react";
 
-import { PageSection, PageShell, SectionLink, Sparkline } from "@/components/app/page-shell";
+import { MetricRow, PageSection, PageShell, SectionLink, Sparkline } from "@/components/app/page-shell";
 import { BarList } from "@/components/charts/bar-list";
 import { FxCorrelationGrid, FxExposureSensitivityPanel, FxVolatilityTable } from "@/components/charts/fx-analysis";
 import { FxComparisonChart } from "@/components/dashboard/fx-comparison-chart";
@@ -231,7 +231,7 @@ export default async function FxIntelligencePage({
         </>
       }
     >
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <MetricRow>
         <KpiCard
           label="Pairs tracked"
           value={rows.length}
@@ -264,7 +264,7 @@ export default async function FxIntelligencePage({
           comparison={uncovered.length > 0 ? uncovered.map((entry) => entry.currency).join(", ") : "every traded currency has a rate"}
           definition="Traded currencies that map to a published fixing. Anything missing is flagged here and on the exposure panel rather than silently converted."
         />
-      </div>
+      </MetricRow>
 
       <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection

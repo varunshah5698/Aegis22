@@ -10,7 +10,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-import { PageSection, PageShell, SectionLink } from "@/components/app/page-shell";
+import { MetricRow, PageSection, PageShell, SectionLink } from "@/components/app/page-shell";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { MODEL_VERSION, SCORE_BANDS, supportedCurrencies } from "@/config/risk";
 import { requireOrganization } from "@/lib/auth";
@@ -203,7 +203,7 @@ export default async function DataLibraryPage() {
         </>
       }
     >
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <MetricRow>
         <KpiCard
           label="Scored payments"
           value={(transactions.count ?? 0).toLocaleString("en-US")}
@@ -234,7 +234,7 @@ export default async function DataLibraryPage() {
           comparison={latest ? `latest row ${new Date(latest).toISOString().slice(0, 16).replace("T", " ")}Z` : "waiting for rows"}
           definition="Age of the newest transaction row. A stale value means ingestion has stopped, not that the book is quiet."
         />
-      </div>
+      </MetricRow>
 
       <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection

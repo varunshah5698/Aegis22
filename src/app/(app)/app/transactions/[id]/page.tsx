@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, CheckCircle2, CircleDot, Database, Gauge } from "lucide-react";
 
-import { MetricTile, PageSection } from "@/components/app/page-shell";
+import { MetricRow, MetricTile, PageSection } from "@/components/app/page-shell";
 import { AmountLadder, ScoreDial, ScoreSimulator } from "@/components/dashboard/score-workbench";
 import { RiskBadge } from "@/components/risk-badge";
 import { ALERT_CUTOFF, RISK_COLORS, REPORTING_THRESHOLD_USD, scoreToLevel } from "@/config/risk";
@@ -118,7 +118,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
         </div>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <MetricRow>
         <MetricTile
           label="Base value"
           value={`$${formatCompactNumber(detail.amountBase)}`}
@@ -137,7 +137,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
           value={detail.related.length.toLocaleString("en-US")}
           hint="same sender account, most recent first"
         />
-      </div>
+      </MetricRow>
 
       <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection

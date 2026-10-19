@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { MetricTile, PageSection, PageShell } from "@/components/app/page-shell";
+import { MetricRow, MetricTile, PageSection, PageShell } from "@/components/app/page-shell";
 import { TransactionFeed } from "@/components/dashboard/transaction-feed";
 import { RISK_COLORS, type RiskLevel } from "@/config/risk";
 import { requireOrganization } from "@/lib/auth";
@@ -60,7 +60,7 @@ export default async function TransactionsPage({
         </>
       }
     >
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <MetricRow>
         <MetricTile
           label="Payments in view"
           value={rows.length.toLocaleString("en-US")}
@@ -83,7 +83,7 @@ export default async function TransactionsPage({
           tone="accent"
           hint={`across ${rows.length.toLocaleString("en-US")} scored payments`}
         />
-      </div>
+      </MetricRow>
 
       <PageSection
         id="risk-mix-heading"

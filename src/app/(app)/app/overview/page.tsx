@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Activity, CircleDollarSign, Gauge, Inbox, Radio, ShieldAlert, TriangleAlert } from "lucide-react";
 
 import { RefreshButton } from "@/components/app/refresh-button";
-import { PageSection, SectionLink } from "@/components/app/page-shell";
+import { MetricRow, PageSection, PageShell, SectionLink } from "@/components/app/page-shell";
 import { RangeTabs } from "@/components/app/range-tabs";
 import { RiskMixDonut } from "@/components/charts/risk-mix-donut";
 import { ShareBars } from "@/components/charts/share-bars";
@@ -128,42 +128,39 @@ export default async function OverviewPage({
   }).format(new Date());
 
   return (
-    <div className="mx-auto w-full max-w-[1560px] space-y-3.5">
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[11px] text-muted-foreground">
+    <PageShell
+      eyebrow="Monitoring"
+      title="Overview"
+      description={`Live scoring health, exposure and queue pressure for ${organization!.name}. Every figure is derived from scored payments in UTC.`}
+      meta={
+        <>
           <span className="inline-flex items-center gap-1.5 rounded-pill border border-risk-low/25 bg-risk-low/[0.07] px-2 py-0.5 text-risk-low">
             <Radio className="size-3" aria-hidden="true" /> Scoring live
           </span>
-          <span>
+          <span className="chip">
             <span className="num text-foreground/85">{kpis.scannedToday.toLocaleString("en-US")}</span> scored ·{" "}
             <span className="num text-foreground/85">{kpis.flaggedToday.toLocaleString("en-US")}</span> flagged in 24h
           </span>
-          <span className="hidden text-border-strong sm:inline" aria-hidden="true">
-            |
+          <span className="chip">
+            window {rangeLabel} · latency p50 <span className="num">{totals.latencyP50} ms</span>
           </span>
-          <span>
-            window <span className="text-foreground/85">{rangeLabel}</span> · latency p50{" "}
-            <span className="num text-foreground/85">{totals.latencyP50} ms</span>
-          </span>
-          <span className="hidden text-border-strong md:inline" aria-hidden="true">
-            |
-          </span>
-          <span className="hidden md:inline">
+          <span className="chip hidden md:inline-flex">
             model {MODEL_VERSION} · cutoff <span className="num">{SCORE_BANDS.alert}</span> ·{" "}
             {profile.timezone.replace(/_/g, " ")}
           </span>
-        </div>
-
-        <div className="flex items-center gap-2">
+        </>
+      }
+      actions={
+        <>
           <span className="hidden items-center gap-1.5 text-[11px] text-muted-foreground sm:flex">
             Updated <span className="num">{refreshedAt}</span> UTC
             <RefreshButton />
           </span>
           <RangeTabs basePath="/app/overview" current={range} />
-        </div>
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+        </>
+      }
+    >
+      <MetricRow>
         <KpiCard
           label="Value screened"
           value={`$${formatCompactNumber(totals.value)}`}
@@ -215,9 +212,9 @@ export default async function OverviewPage({
           definition="Alerts in new, investigating or escalated status right now — not limited to the selected window. SLA pressure is measured against the configured 4–48h targets."
           href="/app/alerts"
         />
-      </div>
+      </MetricRow>
 
-      <div className="grid items-stretch gap-3.5 xl:grid-cols-12">
+      <div className="grid items-stretch gap-4 xl:grid-cols-12">
         <PageSection
           id="value-heading"
           className="xl:col-span-8"
@@ -254,7 +251,7 @@ export default async function OverviewPage({
         />
       </div>
 
-      <div className="grid items-start gap-3.5 xl:grid-cols-12">
+      <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection
           id="corridor-heading"
           className="xl:col-span-4"
@@ -388,7 +385,7 @@ export default async function OverviewPage({
         </PageSection>
       </div>
 
-      <div className="grid items-start gap-3.5 xl:grid-cols-12">
+      <div className="grid items-start gap-4 xl:grid-cols-12">
         <div className="min-w-0 xl:col-span-8">
           <MiniFeed initialRows={recent} organizationId={organizationId} />
         </div>
@@ -432,6 +429,6 @@ export default async function OverviewPage({
           )}
         </PageSection>
       </div>
-    </div>
+    </PageShell>
   );
 }
