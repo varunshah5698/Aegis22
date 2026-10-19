@@ -216,9 +216,9 @@ export function MetricRow({
   const count = React.Children.count(children);
   const columns =
     count >= 6
-      ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+      ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6"
       : count === 5
-        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+        ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5"
         : count === 4
           ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
           : count === 3
