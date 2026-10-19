@@ -109,6 +109,10 @@ export async function listTransactions(
 }
 
 export interface TransactionDetail extends TransactionListRow {
+  senderAccountId: string;
+  receiverAccountId: string;
+  senderEntityId: string | null;
+  receiverEntityId: string | null;
   scoreMs: number | null;
   modelVersion: string | null;
   scoredAt: string | null;
@@ -116,6 +120,8 @@ export interface TransactionDetail extends TransactionListRow {
     id: string;
     label: string;
     points: number;
+    /** Signal weight from the model configuration at scoring time. */
+    weight: number;
     raw: number;
     triggered: boolean;
     narrative: string;
@@ -140,7 +146,7 @@ export async function getTransactionDetail(
   if (error) throw new Error(error.message);
   if (!data) return null;
 
-  const [alerts, related] = await Promise.all([
+  const [alerts, related, accountLinks] = await Promise.all([
     supabase
       .from("alerts")
       .select("id, title, severity, status")
@@ -154,7 +160,14 @@ export async function getTransactionDetail(
       .neq("id", id)
       .order("created_at", { ascending: false })
       .limit(8),
+    supabase
+      .from("accounts")
+      .select("id, entity_id")
+      .eq("organization_id", organizationId)
+      .in("id", [data.sender_account_id, data.receiver_account_id]),
   ]);
+
+  const accountEntity = new Map((accountLinks.data ?? []).map((account) => [account.id, account.entity_id]));
 
   const factors = Array.isArray(data.risk_factors)
     ? (data.risk_factors as unknown as TransactionDetail["riskFactors"])
@@ -176,6 +189,10 @@ export async function getTransactionDetail(
     status: data.status,
     channel: data.channel,
     purposeCode: data.purpose_code,
+    senderAccountId: data.sender_account_id,
+    receiverAccountId: data.receiver_account_id,
+    senderEntityId: accountEntity.get(data.sender_account_id) ?? null,
+    receiverEntityId: accountEntity.get(data.receiver_account_id) ?? null,
     scoreMs: data.score_ms,
     modelVersion: data.model_version,
     scoredAt: data.scored_at,

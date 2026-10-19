@@ -31,10 +31,18 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createServerSupabaseClient();
 
+  // The destination survives a failed exchange so a reviewer who has to sign in
+  // once still lands on the workspace they were confirming, not on the overview.
+  const failure = (reason: string) =>
+    NextResponse.redirect(new URL(`/login?error=${reason}&next=${encodeURIComponent(next)}`, origin));
+
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (error) {
-      return NextResponse.redirect(new URL("/login?error=callback_failed", origin));
+      // A PKCE code is only redeemable in the browser that started the signup.
+      // Links opened elsewhere (mail app, second device) land here; the login
+      // page explains that instead of pretending the account is missing.
+      return failure("callback_failed");
     }
   } else if (tokenHash && type) {
     const { error } = await supabase.auth.verifyOtp({
@@ -42,10 +50,10 @@ export async function GET(request: NextRequest) {
       type: type as "signup" | "recovery" | "email" | "email_change" | "invite" | "magiclink",
     });
     if (error) {
-      return NextResponse.redirect(new URL("/login?error=link_expired", origin));
+      return failure("link_expired");
     }
   } else {
-    return NextResponse.redirect(new URL("/login?error=missing_code", origin));
+    return failure("missing_code");
   }
 
   const {

@@ -249,6 +249,11 @@
     @apply font-mono;
   }
 
+  /* One rhythm for every workspace page: 24px between bands, 16px inside. */
+  .workspace-stack {
+    @apply space-y-6;
+  }
+
   .toolbar {
     @apply flex flex-wrap items-center gap-2;
   }
@@ -263,6 +268,111 @@
 
   .focus-ring {
     @apply outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* Cinematic surfaces ------------------------------------------------------- */
+
+  /**
+   * The analyst stage. A single deep-ink field with two soft light sources and a
+   * hairline rim, so the conversation floats inside a room rather than sitting on
+   * a stack of identical cards. Kept dark in both themes: it is a stage, not a
+   * content surface.
+   */
+  .stage {
+    @apply relative overflow-hidden rounded-[22px] border text-[#E7ECF5];
+    border-color: rgb(255 255 255 / 0.08);
+    background:
+      radial-gradient(120% 80% at 50% -18%, rgb(126 168 255 / 0.2) 0%, transparent 62%),
+      radial-gradient(74% 62% at 6% 108%, rgb(240 178 80 / 0.13) 0%, transparent 62%),
+      linear-gradient(180deg, #0b111c 0%, #080c14 58%, #060910 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.07),
+      0 50px 120px -70px rgb(0 0 0 / 0.95);
+  }
+
+  .stage-rules {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+    background-size: 72px 72px;
+    mask-image: radial-gradient(80% 70% at 50% 40%, black 20%, transparent 78%);
+  }
+
+  /** Translucent card for use on the stage, or on any dark band. */
+  .glass {
+    @apply relative rounded-[18px] border;
+    border-color: rgb(255 255 255 / 0.1);
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.075), rgb(255 255 255 / 0.035));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
+    backdrop-filter: blur(16px) saturate(1.05);
+  }
+
+  .glass-quiet {
+    @apply rounded-[14px] border;
+    border-color: rgb(255 255 255 / 0.09);
+    background: rgb(255 255 255 / 0.045);
+  }
+
+  .stage-label {
+    @apply text-[10px] font-medium uppercase tracking-[0.18em] text-white/45;
+  }
+
+  .stage-text {
+    @apply text-white/68;
+  }
+
+  /** A thin arc used as structural geometry behind the console. */
+  .orbit {
+    position: absolute;
+    border-radius: 9999px;
+    border: 1px solid rgb(255 255 255 / 0.09);
+    pointer-events: none;
+  }
+
+  .glow-dot {
+    box-shadow: 0 0 0 4px rgb(240 178 80 / 0.12), 0 0 22px rgb(240 178 80 / 0.55);
+  }
+
+  .pulse-line {
+    position: relative;
+  }
+  .pulse-line::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.16), transparent);
+    transform: translateX(-100%);
+    animation: sheen 1.8s ease-in-out infinite;
+  }
+
+  @keyframes sheen {
+    0% {
+      transform: translateX(-100%);
+    }
+    60%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Workbench --------------------------------------------------------------- */
+
+  .workbench-grid {
+    @apply grid gap-4 xl:grid-cols-12;
+  }
+
+  .stat-tile {
+    @apply panel px-4 py-3.5;
+  }
+
+  .stat-tile dt {
+    @apply text-[10px] font-semibold uppercase leading-4 tracking-[0.12em] text-muted-foreground;
+  }
+
+  .stat-tile dd {
+    @apply mt-2 text-[22px] font-medium leading-7 tracking-[-0.03em];
+    font-variant-numeric: tabular-nums;
   }
 
   .prose-sf {

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowUpRight, FolderPlus, Send } from "lucide-react";
@@ -160,9 +161,9 @@ export function AlertActions({
       )}
 
       <Button variant="ghost" size="sm" asChild className="px-0">
-        <a href="/app/network">
+        <Link href="/app/network">
           Inspect the network <ArrowUpRight aria-hidden="true" />
-        </a>
+        </Link>
       </Button>
     </div>
   );

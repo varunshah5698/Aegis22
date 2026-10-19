@@ -10,8 +10,9 @@ export const metadata: Metadata = {
 };
 
 const errorMessages: Record<string, string> = {
-  callback_failed: "That sign-in link could not be verified. Request a new one and try again.",
-  link_expired: "That link has expired. Request a new one and try again.",
+  callback_failed:
+    "Your email is confirmed, but the link was opened somewhere other than the browser where you signed up, so it could not finish the handoff. Sign in once below and you will continue straight into setup — no second confirmation needed. If the link is stale, request a new one from the verification page.",
+  link_expired: "That confirmation link has expired. Request a new one from the verification page and open it in the same browser.",
   missing_code: "The sign-in link was incomplete. Start again from the login page.",
   session_expired: "Your session expired. Sign in again to continue.",
   oauth_failed: "Google sign-in could not be completed. Try again, or use your email and password.",

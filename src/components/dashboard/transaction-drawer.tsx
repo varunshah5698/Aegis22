@@ -191,12 +191,26 @@ export function TransactionDrawer({
               </ul>
             </section>
 
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link href={`/app/network?account=${detail.id}`}>
-                  <Network aria-hidden="true" /> Open in network
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" asChild>
+                <Link href={`/app/transactions/${detail.id}`}>
+                  <ExternalLink aria-hidden="true" /> Open workbench
                 </Link>
               </Button>
+              {detail.senderEntityId ? (
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/app/network/${detail.senderEntityId}`}>
+                    <Network aria-hidden="true" /> Sender profile
+                  </Link>
+                </Button>
+              ) : null}
+              {detail.receiverEntityId ? (
+                <Button variant="outline" size="sm" asChild>
+                  <Link href={`/app/network/${detail.receiverEntityId}`}>
+                    <Network aria-hidden="true" /> Receiver profile
+                  </Link>
+                </Button>
+              ) : null}
             </div>
           </div>
         ) : null}

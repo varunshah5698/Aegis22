@@ -10,6 +10,7 @@ import cytoscape, {
   type NodeSingular,
 } from "cytoscape";
 import {
+  ArrowUpRight,
   Crosshair,
   Eye,
   EyeOff,
@@ -628,6 +629,11 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
                 <Button asChild variant="outline" size="sm" className="h-8 gap-1.5 text-[11.5px]">
                   <Link href={`/app/transactions?q=${encodeURIComponent(selected.label)}`}>
                     <Crosshair className="size-3.5" aria-hidden="true" /> Transactions
+                  </Link>
+                </Button>
+                <Button asChild size="sm" className="h-8 gap-1.5 text-[11.5px]">
+                  <Link href={`/app/network/${selected.id}`}>
+                    Full profile <ArrowUpRight className="size-3.5" aria-hidden="true" />
                   </Link>
                 </Button>
               </div>
