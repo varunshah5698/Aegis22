@@ -22,9 +22,12 @@ const envSchema = z.object({
 
 export type Env = z.infer<typeof envSchema>;
 
-function loadEnv(): Env {
+function readEnv(): Env {
   const parsed = envSchema.safeParse({
-    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    // Render exposes the service URL at build and runtime; use it when an
+    // explicit canonical URL has not been configured.
+    NEXT_PUBLIC_SITE_URL:
+      process.env.NEXT_PUBLIC_SITE_URL || process.env.RENDER_EXTERNAL_URL || undefined,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -41,11 +44,43 @@ function loadEnv(): Env {
       .map((issue) => `  - ${issue.path.join(".") || "(root)"}: ${issue.message}`)
       .join("\n");
     throw new Error(
-      `Invalid environment configuration. Copy .env.example to .env.local and fill in the required values.\n${issues}`,
+      `Invalid environment configuration. Set these variables in the deployment environment.\n${issues}`,
     );
   }
 
   return parsed.data;
 }
 
-export const env = loadEnv();
+let cached: Env | undefined;
+
+/**
+ * Validation is deferred until a request actually needs configuration.
+ *
+ * Next.js imports every route while collecting page data, so validating at
+ * module load made a production build fail on hosts that inject secrets only
+ * at runtime. The server still refuses to serve with incomplete configuration,
+ * but the build itself no longer depends on production secrets.
+ */
+export function getEnv(): Env {
+  cached ??= readEnv();
+  return cached;
+}
+
+export const env = new Proxy({} as Env, {
+  get(_target, property) {
+    return getEnv()[property as keyof Env];
+  },
+  has(_target, property) {
+    return property in getEnv();
+  },
+  ownKeys() {
+    return Reflect.ownKeys(getEnv());
+  },
+  getOwnPropertyDescriptor(_target, property) {
+    return {
+      enumerable: true,
+      configurable: true,
+      value: getEnv()[property as keyof Env],
+    };
+  },
+});
