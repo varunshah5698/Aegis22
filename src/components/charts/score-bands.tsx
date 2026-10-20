@@ -117,3 +117,69 @@ export function ScoreBands({
     </div>
   );
 }
+
+/**
+ * One proportional strip for the whole distribution: every band is a segment
+ * sized by its share of volume, coloured by risk level, with the cutoff marked
+ * where the monitoring-only bands end. Compact enough to sit beside the full
+ * histogram instead of leaving a second empty column.
+ */
+export function BandStrip({
+  bins,
+  threshold,
+  className,
+}: {
+  bins: ScoreBand[];
+  threshold: number;
+  className?: string;
+}) {
+  const total = Math.max(
+    1,
+    bins.reduce((sum, bin) => sum + bin.count, 0),
+  );
+  const below = bins
+    .filter((bin) => bin.high < threshold)
+    .reduce((sum, bin) => sum + bin.count, 0);
+  // Clamp so the marker label never hangs off either end of the strip.
+  const cutoffLeft = Math.min(96, Math.max(4, (below / total) * 100));
+
+  return (
+    <div className={className}>
+      <div
+        className="flex h-9 w-full overflow-hidden rounded-[7px] border border-border/70 bg-muted/40"
+        role="img"
+        aria-label={`Score bands sized by share of ${total} payments; the alert cutoff sits at ${threshold}.`}
+      >
+        {bins.map((bin) =>
+          bin.count > 0 ? (
+            <span
+              key={bin.bin}
+              className="h-full border-r border-card/50 last:border-r-0"
+              style={{
+                width: `${(bin.count / total) * 100}%`,
+                background: `linear-gradient(180deg, ${RISK_COLORS[bin.level]} 0%, ${RISK_COLORS[bin.level]}77 100%)`,
+              }}
+              title={`${bin.low}–${bin.high}: ${bin.count.toLocaleString("en-US")} payments (${bin.share.toFixed(1)}%)`}
+            />
+          ) : null,
+        )}
+      </div>
+
+      <div className="relative mt-1 h-4" aria-hidden="true">
+        <span
+          className="absolute top-0 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-foreground"
+          style={{ left: `${cutoffLeft}%` }}
+        >
+          <span className="text-muted-foreground">▲</span> cutoff {threshold}
+        </span>
+      </div>
+
+      <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-[10.5px] text-muted-foreground">
+        <span>Each segment is one score band, sized by share.</span>
+        <span className="num">
+          {bins[0]?.low ?? 0}–{bins[bins.length - 1]?.high ?? 100}
+        </span>
+      </div>
+    </div>
+  );
+}

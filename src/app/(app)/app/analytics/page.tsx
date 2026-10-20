@@ -16,8 +16,8 @@ import { CorridorHeatGrid, HourBoard } from "@/components/charts/heatmaps";
 import { CorridorMatrix } from "@/components/charts/corridor-matrix";
 import { FlowChart } from "@/components/charts/flow-chart";
 import { RiskMixDonut } from "@/components/charts/risk-mix-donut";
-import { ScoreBands } from "@/components/charts/score-bands";
-import { SeverityLadder, StatusMix } from "@/components/charts/status-mix";
+import { BandStrip, ScoreBands } from "@/components/charts/score-bands";
+import { SeverityLadder, SlaStrip, StatusMix } from "@/components/charts/status-mix";;
 import { AnalystPanel } from "@/components/dashboard/analyst-panel";
 import { MODEL_VERSION, SCORE_BANDS } from "@/config/risk";
 import { requireOrganization } from "@/lib/auth";
@@ -50,6 +50,36 @@ export default async function AnalyticsPage({
     series[0],
   );
   const latencyShare = analytics.latency.reduce((sum, entry) => sum + entry.count, 0);
+
+  // Cadence summary: where the week's volume actually sits, derived from the
+  // same weekday × hour board the heatmap draws.
+  const weekdayTotals = analytics.board.counts.map((hours) =>
+    hours.reduce((sum, count) => sum + count, 0),
+  );
+  const weekdayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const busiestDay = weekdayTotals.length
+    ? weekdayTotals.reduce(
+        (best, total, index) => (total > (weekdayTotals[best] ?? -1) ? index : best),
+        0,
+      )
+    : -1;
+  const quietestDay = weekdayTotals.length
+    ? weekdayTotals.reduce(
+        (best, total, index) => (total < (weekdayTotals[best] ?? Number.MAX_SAFE_INTEGER) ? index : best),
+        0,
+      )
+    : -1;
+  const boardTotal = weekdayTotals.reduce((sum, total) => sum + total, 0);
+  const offHoursCount = analytics.board.counts.reduce(
+    (sum, hours) => sum + hours.slice(0, 6).reduce((part, count) => part + count, 0),
+    0,
+  );
+  const offHoursShare = boardTotal > 0 ? (offHoursCount / boardTotal) * 100 : 0;
+
+  // The band immediately under the line — the one most likely to cross it.
+  const nearCutoff = analytics.distribution.find(
+    (bin) => bin.low < SCORE_BANDS.alert && bin.high >= SCORE_BANDS.alert - 10,
+  );
 
   return (
     <PageShell
@@ -151,25 +181,62 @@ export default async function AnalyticsPage({
             total={totals.count}
             flagged={totals.flagged}
             flaggedShare={totals.flaggedShare}
-            height={168}
+            height={176}
           />
-          <dl className="mt-4 space-y-2.5 border-t border-border/60 pt-4 text-[11.5px]">
-            <div className="flex items-center justify-between">
-              <dt className="text-muted-foreground">Average score</dt>
-              <dd className="num font-medium">{totals.avgScore}</dd>
+
+          {/* Where the middle of the book sits against the line that routes work. */}
+          <div className="mt-4 border-t border-border/60 pt-4">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="label-xs">Score spread</p>
+              <p className="text-[11px] text-muted-foreground">
+                p90 <span className="num text-foreground">{totals.scoreP90}</span> of 100
+              </p>
             </div>
-            <div className="flex items-center justify-between">
-              <dt className="text-muted-foreground">Median score</dt>
-              <dd className="num font-medium">{totals.medianScore}</dd>
+            <div className="relative mt-2.5 h-2 overflow-hidden rounded-full bg-muted/70">
+              <div
+                className="absolute inset-y-0 left-0 rounded-full"
+                style={{
+                  width: `${Math.max(2, totals.scoreP90)}%`,
+                  background: "linear-gradient(90deg, rgb(var(--accent) / 0.35), rgb(var(--accent) / 0.85))",
+                }}
+                aria-hidden="true"
+              />
+              <span
+                className="absolute inset-y-0 w-px bg-foreground/55"
+                style={{ left: `${Math.min(100, SCORE_BANDS.alert)}%` }}
+                aria-hidden="true"
+              />
             </div>
-            <div className="flex items-center justify-between">
-              <dt className="text-muted-foreground">Median detection</dt>
-              <dd className="num font-medium">{totals.latencyP50} ms</dd>
+            <div className="mt-1.5 flex items-center justify-between text-[10.5px] text-muted-foreground">
+              <span>
+                median <span className="num text-foreground">{totals.medianScore}</span>
+              </span>
+              <span>
+                avg <span className="num text-foreground">{totals.avgScore}</span>
+              </span>
+              <span>
+                cutoff <span className="num text-foreground">{SCORE_BANDS.alert}</span>
+              </span>
             </div>
-            <div className="flex items-center justify-between">
-              <dt className="text-muted-foreground">P95 detection</dt>
-              <dd className="num font-medium">{totals.latencyP95} ms</dd>
-            </div>
+          </div>
+
+          <dl className="mt-4 grid grid-cols-2 gap-2.5 border-t border-border/60 pt-4">
+            {[
+              { label: "Median score", value: String(totals.medianScore) },
+              { label: "Average score", value: String(totals.avgScore) },
+              { label: "Median detection", value: `${totals.latencyP50} ms` },
+              { label: "P95 detection", value: `${totals.latencyP95} ms` },
+            ].map((entry) => (
+              <div
+                key={entry.label}
+                className="rounded-tile border border-border/70 bg-elevated/50 px-2.5 py-2"
+              >
+                <dt className="truncate text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                  {entry.label}
+                </dt>
+                <dd className="num mt-1 text-[17px] font-medium leading-5">{entry.value}</dd>
+              </div>
+            ))}
           </dl>
         </PageSection>
       </div>
@@ -207,13 +274,50 @@ export default async function AnalyticsPage({
           description="Payment count by UTC weekday and hour"
         >
           <HourBoard counts={analytics.board.counts} peak={analytics.board.peak} />
+          <dl className="mt-3.5 grid grid-cols-3 gap-2.5 border-t border-border/60 pt-3.5">
+            {[
+              {
+                label: "Busiest day",
+                value: (busiestDay >= 0 ? weekdayNames[busiestDay] : undefined) ?? "—",
+                hint:
+                  busiestDay >= 0
+                    ? `${(weekdayTotals[busiestDay] ?? 0).toLocaleString("en-US")} payments`
+                    : undefined,
+              },
+              {
+                label: "Quietest day",
+                value: (quietestDay >= 0 ? weekdayNames[quietestDay] : undefined) ?? "—",
+                hint:
+                  quietestDay >= 0
+                    ? `${(weekdayTotals[quietestDay] ?? 0).toLocaleString("en-US")} payments`
+                    : undefined,
+              },
+              {
+                label: "Before 06:00",
+                value: `${offHoursShare.toFixed(0)}%`,
+                hint: "of the window's volume",
+              },
+            ].map((entry) => (
+              <div key={entry.label}>
+                <dt className="truncate text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                  {entry.label}
+                </dt>
+                <dd className="num mt-1 text-[18px] font-medium leading-6">{entry.value}</dd>
+                {entry.hint ? (
+                  <dd className="truncate text-[10.5px] leading-4 text-muted-foreground">
+                    {entry.hint}
+                  </dd>
+                ) : null}
+              </div>
+            ))}
+          </dl>
         </PageSection>
       </div>
 
       <div className="workspace-row">
         <PageSection
           id="distribution-heading"
-          className="xl:col-span-12"
+          className="xl:col-span-8"
           title="Score distribution"
           description={`${totals.count.toLocaleString("en-US")} scored payments in ten bands, measured against the cutoff`}
         >
@@ -223,6 +327,53 @@ export default async function AnalyticsPage({
             the p90 sits at <span className="num">{totals.scoreP90}</span> with{" "}
             <span className="num">{totals.flagged}</span> payments in the flagged tail.
           </p>
+        </PageSection>
+
+        <PageSection
+          id="cutoff-readout-heading"
+          className="xl:col-span-4"
+          title="Cutoff readout"
+          description="How the scored book sits against the alert line"
+        >
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <p className="metric-xl text-risk-high">{totals.flagged}</p>
+              <p className="mt-1 text-[11.5px] leading-4 text-muted-foreground">
+                payments at or above <span className="num">{SCORE_BANDS.alert}</span>
+              </p>
+            </div>
+            <span className="chip border-risk-high/30 bg-risk-high/10 num text-risk-high">
+              {totals.flaggedShare.toFixed(2)}% of volume
+            </span>
+          </div>
+
+          <div className="mt-4">
+            <BandStrip bins={analytics.distribution} threshold={SCORE_BANDS.alert} />
+          </div>
+
+          <dl className="mt-4 grid grid-cols-2 gap-2.5 border-t border-border/60 pt-4">
+            {[
+              { label: "Median score", value: String(totals.medianScore) },
+              { label: "P90 score", value: String(totals.scoreP90) },
+              { label: "Average score", value: String(totals.avgScore) },
+              nearCutoff
+                ? {
+                    label: `Within 10 pts (${nearCutoff.low}–${nearCutoff.high})`,
+                    value: nearCutoff.count.toLocaleString("en-US"),
+                  }
+                : { label: "Within 10 pts of cutoff", value: "0" },
+            ].map((entry) => (
+              <div
+                key={entry.label}
+                className="rounded-tile border border-border/70 bg-elevated/50 px-2.5 py-2"
+              >
+                <dt className="truncate text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                  {entry.label}
+                </dt>
+                <dd className="num mt-1 text-[17px] font-medium leading-5">{entry.value}</dd>
+              </div>
+            ))}
+          </dl>
         </PageSection>
       </div>
 
@@ -353,6 +504,14 @@ export default async function AnalyticsPage({
             <p className="label-xs mb-3">Backlog by severity</p>
             <SeverityLadder data={alerts.bySeverity} />
           </div>
+          <div className="mt-4 border-t border-border/60 pt-4">
+            <p className="label-xs mb-2.5">SLA health</p>
+            <SlaStrip
+              breached={alerts.breached}
+              dueSoon={alerts.dueSoon}
+              open={alerts.open}
+            />
+          </div>
         </PageSection>
       </div>
 
@@ -391,36 +550,105 @@ export default async function AnalyticsPage({
         >
           <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "Open cases", value: cases.open, icon: FolderOpen, tone: "text-foreground" },
+              {
+                label: "Open cases",
+                value: cases.open,
+                icon: FolderOpen,
+                tone: "text-foreground",
+                hint: `${cases.total > 0 ? Math.round((cases.open / cases.total) * 100) : 0}% of ${cases.total} total`,
+              },
               {
                 label: "In review",
                 value: cases.inReview,
                 icon: Activity,
                 tone: "text-risk-medium",
+                hint: "with an analyst",
               },
-              { label: "Closed", value: cases.closed, icon: FolderOpen, tone: "text-risk-low" },
+              {
+                label: "Closed",
+                value: cases.closed,
+                icon: FolderOpen,
+                tone: "text-risk-low",
+                hint:
+                  cases.total > 0
+                    ? `${Math.round((cases.closed / cases.total) * 100)}% close rate`
+                    : "no closures yet",
+              },
               {
                 label: "Median close",
                 value:
                   alerts.medianResolutionHours !== null ? `${alerts.medianResolutionHours}h` : "—",
                 icon: Clock3,
                 tone: "text-foreground",
+                hint: "hours to resolution",
               },
             ].map((item) => (
               <div
                 key={item.label}
-                className="rounded-tile border border-border/70 bg-elevated/50 px-3 py-2.5"
+                className="rounded-tile border border-border/70 bg-elevated/50 px-3 py-3"
               >
                 <p className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
                   <item.icon className="size-3" aria-hidden="true" />
-                  {item.label}
+                  <span className="min-w-0 truncate">{item.label}</span>
                 </p>
                 <p className={cn("num mt-1.5 text-[20px] font-medium leading-6", item.tone)}>
                   {item.value}
                 </p>
+                <p className="mt-0.5 truncate text-[10.5px] leading-4 text-muted-foreground">
+                  {item.hint}
+                </p>
               </div>
             ))}
           </div>
+
+          {/* One bar for where the book sits right now, so the queue reads at a glance. */}
+          <div className="mt-4 border-t border-border/60 pt-4">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="label-xs">Case queue</p>
+              <p className="text-[11px] text-muted-foreground">
+                <span className="num text-foreground">{cases.openedInRange}</span> opened in window
+              </p>
+            </div>
+            <div
+              className="mt-2.5 flex h-2 w-full overflow-hidden rounded-full bg-muted"
+              role="img"
+              aria-label="Case queue split by state"
+            >
+              {[
+                { key: "open", value: cases.open, color: "rgb(var(--chart-3))" },
+                { key: "in review", value: cases.inReview, color: "rgb(var(--chart-2))" },
+                { key: "closed", value: cases.closed, color: "rgb(var(--chart-1))" },
+              ].map((segment) =>
+                segment.value > 0 && cases.total > 0 ? (
+                  <span
+                    key={segment.key}
+                    style={{
+                      width: `${(segment.value / cases.total) * 100}%`,
+                      background: segment.color,
+                    }}
+                  />
+                ) : null,
+              )}
+            </div>
+            <ul className="mt-2 flex flex-wrap items-center gap-x-3.5 gap-y-1 text-[11px] text-muted-foreground">
+              {[
+                { key: "open", label: "Open", value: cases.open, color: "rgb(var(--chart-3))" },
+                { key: "review", label: "In review", value: cases.inReview, color: "rgb(var(--chart-2))" },
+                { key: "closed", label: "Closed", value: cases.closed, color: "rgb(var(--chart-1))" },
+              ].map((entry) => (
+                <li key={entry.key} className="inline-flex items-center gap-1.5">
+                  <span
+                    className="size-2 shrink-0 rounded-sm"
+                    style={{ background: entry.color }}
+                    aria-hidden="true"
+                  />
+                  {entry.label}
+                  <span className="num text-foreground/90">{entry.value}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <ul className="mt-4 space-y-2 border-t border-border/60 pt-3.5 text-[11.5px]">
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Alerts unassigned</span>
@@ -431,6 +659,16 @@ export default async function AnalyticsPage({
               <span className={cn("num", alerts.breached > 0 && "text-risk-critical")}>
                 {alerts.breached}
               </span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">SLA due within 6h</span>
+              <span className={cn("num", alerts.dueSoon > 0 && "text-risk-medium")}>
+                {alerts.dueSoon}
+              </span>
+            </li>
+            <li className="flex items-center justify-between">
+              <span className="text-muted-foreground">Alerts open in queue</span>
+              <span className="num">{alerts.open}</span>
             </li>
             <li className="flex items-center justify-between">
               <span className="text-muted-foreground">Cases opened in window</span>

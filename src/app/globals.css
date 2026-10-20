@@ -293,10 +293,21 @@
   }
 
   /* Fill the slack left by the tallest card in the row instead of leaving a
-     blank block under the fewest-content panel. Written as plain CSS so it
+     blank block under the fewest-content panel. The body takes the extra room
+     and centres its content, so the remainder reads as breathing room above
+     and below rather than as a hole at the bottom. Written as plain CSS so it
      does not depend on utility-layer ordering. */
   .workspace-row > .panel > .panel-body {
     flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Children that draw their own scroll or own full-height chart keep their
+     natural block layout instead of shrinking to content. */
+  .workspace-row > .panel > .panel-body > * {
+    min-width: 0;
   }
 
   .toolbar {
