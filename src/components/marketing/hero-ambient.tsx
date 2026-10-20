@@ -10,8 +10,8 @@ import * as React from "react";
  * loop snapped, and decoding competed with the WebGL globe for the compositor,
  * so it visibly dropped frames. None of that motion needs a codec.
  *
- * This draws it instead. A still of the scene is painted once into an
- * offscreen plate, then a handful of coins drift over it. Every coin's X and
+ * This draws it instead. A dark field in the product palette is painted once
+ * into an offscreen plate, then a handful of coins drift over it. Every coin's X and
  * Y are periodic over the loop (`speed` and `bob` are whole excursions per
  * loop), so frame N flows into frame 0 with no cut, and the sprite bank is
  * pre-rendered offscreen for three focus levels, so a frame costs a plate blit
@@ -74,33 +74,251 @@ interface Coin {
  */
 const COINS: Coin[] = [
   // Near — large, soft, fast, and the most of their travel.
-  { face: "gold-front", aspect: 1, size: 0.3, speed: 0.58, offset: 0.04, y: 0.22, bob: 1, bobAmp: 0.075, phase: 0.0, spin: 1, flip: 0.1, roll: 8, tilt: -14, alpha: 0.95, depth: 2 },
-  { face: "silver-front", aspect: 1, size: 0.2, speed: 0.62, offset: 0.46, y: 0.58, bob: 2, bobAmp: 0.062, phase: 0.4, spin: -1, flip: 0.55, roll: -12, tilt: 24, alpha: 0.86, depth: 2 },
-  { face: "gold-left", aspect: 1, size: 0.15, speed: -0.54, offset: 0.7, y: 0.34, bob: 1, bobAmp: 0.07, phase: 0.7, spin: 2, flip: 0.3, roll: 14, tilt: 8, alpha: 0.8, depth: 2 },
-  { face: "bimetal-right", aspect: 1, size: 0.12, speed: -0.6, offset: 0.22, y: 0.76, bob: 2, bobAmp: 0.058, phase: 0.15, spin: -2, flip: 0.75, roll: -10, tilt: -20, alpha: 0.72, depth: 2 },
+  {
+    face: "gold-front",
+    aspect: 1,
+    size: 0.3,
+    speed: 0.58,
+    offset: 0.04,
+    y: 0.22,
+    bob: 1,
+    bobAmp: 0.075,
+    phase: 0.0,
+    spin: 1,
+    flip: 0.1,
+    roll: 8,
+    tilt: -14,
+    alpha: 0.95,
+    depth: 2,
+  },
+  {
+    face: "silver-front",
+    aspect: 1,
+    size: 0.2,
+    speed: 0.62,
+    offset: 0.46,
+    y: 0.58,
+    bob: 2,
+    bobAmp: 0.062,
+    phase: 0.4,
+    spin: -1,
+    flip: 0.55,
+    roll: -12,
+    tilt: 24,
+    alpha: 0.86,
+    depth: 2,
+  },
+  {
+    face: "gold-left",
+    aspect: 1,
+    size: 0.15,
+    speed: -0.54,
+    offset: 0.7,
+    y: 0.34,
+    bob: 1,
+    bobAmp: 0.07,
+    phase: 0.7,
+    spin: 2,
+    flip: 0.3,
+    roll: 14,
+    tilt: 8,
+    alpha: 0.8,
+    depth: 2,
+  },
+  {
+    face: "bimetal-right",
+    aspect: 1,
+    size: 0.12,
+    speed: -0.6,
+    offset: 0.22,
+    y: 0.76,
+    bob: 2,
+    bobAmp: 0.058,
+    phase: 0.15,
+    spin: -2,
+    flip: 0.75,
+    roll: -10,
+    tilt: -20,
+    alpha: 0.72,
+    depth: 2,
+  },
   // Middle — the readable detail of the field.
-  { face: "gold-right", aspect: 1, size: 0.19, speed: 0.3, offset: 0.1, y: 0.44, bob: 1, bobAmp: 0.05, phase: 0.3, spin: 1, flip: 0.42, roll: 6, tilt: 12, alpha: 0.9, depth: 1 },
-  { face: "silver-front", aspect: 1, size: 0.15, speed: 0.28, offset: 0.58, y: 0.14, bob: 2, bobAmp: 0.045, phase: 0.62, spin: -1, flip: 0.2, roll: -8, tilt: -10, alpha: 0.78, depth: 1 },
-  { face: "gold-front", aspect: 1, size: 0.13, speed: -0.32, offset: 0.36, y: 0.68, bob: 1, bobAmp: 0.048, phase: 0.85, spin: 2, flip: 0.6, roll: 10, tilt: 18, alpha: 0.74, depth: 1 },
-  { face: "bimetal-right", aspect: 1, size: 0.11, speed: -0.26, offset: 0.8, y: 0.5, bob: 2, bobAmp: 0.042, phase: 0.08, spin: -2, flip: 0.9, roll: -12, tilt: -6, alpha: 0.7, depth: 1 },
+  {
+    face: "gold-right",
+    aspect: 1,
+    size: 0.19,
+    speed: 0.3,
+    offset: 0.1,
+    y: 0.44,
+    bob: 1,
+    bobAmp: 0.05,
+    phase: 0.3,
+    spin: 1,
+    flip: 0.42,
+    roll: 6,
+    tilt: 12,
+    alpha: 0.9,
+    depth: 1,
+  },
+  {
+    face: "silver-front",
+    aspect: 1,
+    size: 0.15,
+    speed: 0.28,
+    offset: 0.58,
+    y: 0.14,
+    bob: 2,
+    bobAmp: 0.045,
+    phase: 0.62,
+    spin: -1,
+    flip: 0.2,
+    roll: -8,
+    tilt: -10,
+    alpha: 0.78,
+    depth: 1,
+  },
+  {
+    face: "gold-front",
+    aspect: 1,
+    size: 0.13,
+    speed: -0.32,
+    offset: 0.36,
+    y: 0.68,
+    bob: 1,
+    bobAmp: 0.048,
+    phase: 0.85,
+    spin: 2,
+    flip: 0.6,
+    roll: 10,
+    tilt: 18,
+    alpha: 0.74,
+    depth: 1,
+  },
+  {
+    face: "bimetal-right",
+    aspect: 1,
+    size: 0.11,
+    speed: -0.26,
+    offset: 0.8,
+    y: 0.5,
+    bob: 2,
+    bobAmp: 0.042,
+    phase: 0.08,
+    spin: -2,
+    flip: 0.9,
+    roll: -12,
+    tilt: -6,
+    alpha: 0.7,
+    depth: 1,
+  },
   // Far — small, crisp, slow drift, so the depth order never inverts.
-  { face: "gold-front", aspect: 1, size: 0.07, speed: 0.13, offset: 0.26, y: 0.86, bob: 1, bobAmp: 0.026, phase: 0.52, spin: 1, flip: 0.35, roll: 10, tilt: 6, alpha: 0.5, depth: 0 },
-  { face: "gold-right", aspect: 1, size: 0.055, speed: 0.14, offset: 0.66, y: 0.08, bob: 2, bobAmp: 0.022, phase: 0.18, spin: -1, flip: 0.7, roll: -14, tilt: -16, alpha: 0.44, depth: 0 },
-  { face: "silver-front", aspect: 1, size: 0.06, speed: -0.12, offset: 0.5, y: 0.3, bob: 1, bobAmp: 0.024, phase: 0.74, spin: 2, flip: 0.5, roll: 8, tilt: 20, alpha: 0.42, depth: 0 },
-  { face: "bimetal-right", aspect: 1, size: 0.05, speed: -0.13, offset: 0.9, y: 0.62, bob: 3, bobAmp: 0.02, phase: 0.92, spin: -1, flip: 0.12, roll: -6, tilt: -22, alpha: 0.38, depth: 0 },
+  {
+    face: "gold-front",
+    aspect: 1,
+    size: 0.07,
+    speed: 0.13,
+    offset: 0.26,
+    y: 0.86,
+    bob: 1,
+    bobAmp: 0.026,
+    phase: 0.52,
+    spin: 1,
+    flip: 0.35,
+    roll: 10,
+    tilt: 6,
+    alpha: 0.5,
+    depth: 0,
+  },
+  {
+    face: "gold-right",
+    aspect: 1,
+    size: 0.055,
+    speed: 0.14,
+    offset: 0.66,
+    y: 0.08,
+    bob: 2,
+    bobAmp: 0.022,
+    phase: 0.18,
+    spin: -1,
+    flip: 0.7,
+    roll: -14,
+    tilt: -16,
+    alpha: 0.44,
+    depth: 0,
+  },
+  {
+    face: "silver-front",
+    aspect: 1,
+    size: 0.06,
+    speed: -0.12,
+    offset: 0.5,
+    y: 0.3,
+    bob: 1,
+    bobAmp: 0.024,
+    phase: 0.74,
+    spin: 2,
+    flip: 0.5,
+    roll: 8,
+    tilt: 20,
+    alpha: 0.42,
+    depth: 0,
+  },
+  {
+    face: "bimetal-right",
+    aspect: 1,
+    size: 0.05,
+    speed: -0.13,
+    offset: 0.9,
+    y: 0.62,
+    bob: 3,
+    bobAmp: 0.02,
+    phase: 0.92,
+    spin: -1,
+    flip: 0.12,
+    roll: -6,
+    tilt: -22,
+    alpha: 0.38,
+    depth: 0,
+  },
 ];
 
-const BACKDROP_STILL = "/backdrop/hero-ambient-poster.jpg";
 /** Coin sprites live here, named `<metal>-<view>.png`; `front` faces gain a `back`. */
 const COIN_DIR = "/backdrop/coins";
+
+/**
+ * A coin face's sprite URL.
+ *
+ * The loaded sprite map is keyed by URL, never by face name. Keying lookups by
+ * the bare face (`gold-front`) silently missed every entry, so the bank stayed
+ * empty and the canvas painted nothing but the plate.
+ */
+const spriteUrl = (face: string) => `${COIN_DIR}/${face}.png`;
+
+/** A face and, for `front` faces, the matching `back` seen edge-on. */
+const spriteUrls = (face: string) =>
+  face.includes("front")
+    ? [spriteUrl(face), spriteUrl(face.replace("front", "back"))]
+    : [spriteUrl(face)];
+
+/** Bank key: a sprite URL plus the blur depth it was rendered at. */
+const bankKey = (url: string, depth: number) => `${url}#${depth}`;
+
 const LOOP_SECONDS = 34;
 const TAU = Math.PI * 2;
 
-/** Shared by every coin layer so the string is parsed once. */
-const COIN_FILTER = "brightness(1.5) saturate(1.14)";
+/**
+ * Shared by every coin layer so the string is parsed once.
+ *
+ * The brighter pass (`brightness(1.5)`) belonged to the pale photo plate: it
+ * lifted dull coins to something readable on lavender. On the dark field the
+ * same filter clips the highlights to flat white, so the coins are dimmed and
+ * tinted toward the product's gold instead, and the sprites read as metal
+ * rather than as lit paper.
+ */
+const COIN_FILTER = "brightness(0.72) saturate(1.35) sepia(0.35) hue-rotate(-8deg)";
 
 /** Blur radii (in units of the crisp sprite's pixels) per depth level. */
-const BLUR: Record<Coin["depth"], number> = { 0: 0, 1: 0.75, 2: 1.9 };
+const BLUR: Record<Coin["depth"], number> = { 0: 0, 1: 1.1, 2: 2.6 };
 
 /**
  * How far each depth travels per loop, as a multiple of the agreed speed. Near
@@ -111,36 +329,50 @@ const BLUR: Record<Coin["depth"], number> = { 0: 0, 1: 0.75, 2: 1.9 };
 const PARALLAX: Record<Coin["depth"], number> = { 0: 0.55, 1: 0.9, 2: 1.35 };
 
 /**
- * Draws `image` into a fresh canvas at `px` size. `blur` is expressed in
- * sprite pixels: the sprite is drawn three times, each pass halved in alpha,
- * offset by the radius — a cheap Gaussian that costs nothing per frame
- * because it happens once, here. Without tracking the scale, a retina screen
- * would silently turn "blur 0.6px" into a sharp coin, so the radius is scaled
- * with the sprite.
+ * Draws `image` into a fresh canvas that fills the square exactly.
+ *
+ * The sprite size is fixed here, not stretched at paint time: the preg `px`
+ * was only ever a hint to the blur radius, so the nearest lane previously
+ * upscaled a thumbnail-sized artefact over a fifth of the hero — the grey
+ * blobs that read as smudges rather than coins.
+ *
+ * `blur` is in sprite pixels and is sampled from the source's own resolution,
+ * so a near lane stays soft without turning into a smear at larger sizes. The
+ * nine taps cost nothing per frame because this runs once, on load and resize.
  */
-function spriteBank(image: HTMLImageElement, depth: Coin["depth"], maxPx: number) {
-  const px = Math.max(4, Math.round(maxPx));
-  const radius = BLUR[depth] * 2; // source sprites are authored at 2x
-  if (radius < 0.75) return image;
+function spriteBank(image: HTMLImageElement, depth: Coin["depth"], targetPx: number) {
+  const px = Math.max(8, Math.round(targetPx));
+  const drawn = Math.min(px, image.naturalWidth || px);
+  const scale = px / drawn;
+  const radius = BLUR[depth] * scale;
 
-  const size = Math.ceil(px + radius * 4);
+  const size = px + Math.ceil(radius * 4);
   const canvas = document.createElement("canvas");
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext("2d");
   if (!ctx) return image;
 
-  // Nine taps in a spiral read as a gaussian at these radii and keep the
-  // cost of loading imperceptible.
+  const inset = (size - px) / 2;
+  if (radius < 0.75) {
+    ctx.drawImage(image, inset, inset, px, px);
+    return canvas;
+  }
+
+  // Nine taps in a spiral read as a gaussian at these radii.
   const passes: Array<[number, number, number]> = [
     [0, 0, 0.2],
-    [-radius, 0, 0.14], [radius, 0, 0.14], [0, -radius, 0.14], [0, radius, 0.14],
-    [-radius * 0.7, -radius * 0.7, 0.06], [radius * 0.7, -radius * 0.7, 0.06],
-    [-radius * 0.7, radius * 0.7, 0.06], [radius * 0.7, radius * 0.7, 0.06],
+    [-radius, 0, 0.14],
+    [radius, 0, 0.14],
+    [0, -radius, 0.14],
+    [0, radius, 0.14],
+    [-radius * 0.7, -radius * 0.7, 0.06],
+    [radius * 0.7, -radius * 0.7, 0.06],
+    [-radius * 0.7, radius * 0.7, 0.06],
+    [radius * 0.7, radius * 0.7, 0.06],
   ];
-  const inset = radius * 2;
   for (const [dx, dy, alpha] of passes) {
-    ctx.globalAlpha = alpha * 5;
+    ctx.globalAlpha = Math.min(1, alpha * 5);
     ctx.drawImage(image, inset + dx, inset + dy, px, px);
   }
   return canvas;
@@ -159,7 +391,7 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
-      const context = canvas?.getContext("2d", { alpha: false });
+    const context = canvas?.getContext("2d", { alpha: false });
     if (!canvas || !context) return;
 
     let disposed = false;
@@ -187,37 +419,79 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
         image.src = src;
       });
 
-    /** Paints the still into an offscreen plate at the current DPR. */
-    const buildPlate = (still: HTMLImageElement | null) => {
+    /**
+     * Paints the dark field the coins drift over, into an offscreen plate at
+     * the current DPR.
+     *
+     * This used to blit a stock still of coins on lavender blooms. The photo's
+     * own pixels were the problem: a bright pastel plate cannot be darkened by
+     * the translucent tint and vignette layered above it, so the hero rendered
+     * as a pale wash and the copy lost its contrast. It also shipped a second
+     * set of coins (facing the wrong way) underneath the ones drawn here.
+     *
+     * The field is built from the product palette instead: near-black navy with
+     * the same cool lobe on the right and the warm floor the marketing sections
+     * use. Every value stays under ~40/255, so the coin sprites are the only
+     * bright thing in the layer. It is painted once per resize, never per frame.
+     */
+    const buildPlate = () => {
       plate = document.createElement("canvas");
       plate.width = width;
       plate.height = height;
       const ctx = plate.getContext("2d");
       if (!ctx) return;
-      if (!still) {
-        ctx.fillStyle = "#0a0f1c";
+
+      ctx.fillStyle = "#05080f";
+      ctx.fillRect(0, 0, width, height);
+
+      // Cool light behind the globe, a lift at the top for the nav, and a warm
+      // trace in the upper left where the amber wash sits.
+      const lobes: Array<[number, number, number, number, string, string]> = [
+        [0.78, 0.4, 0.62, 0.72, "rgba(34, 62, 108, 0.55)", "rgba(14, 26, 48, 0)"],
+        [0.5, 0.02, 1.0, 0.5, "rgba(18, 30, 52, 0.6)", "rgba(10, 16, 30, 0)"],
+        [0.08, 0.08, 0.5, 0.5, "rgba(120, 86, 36, 0.22)", "rgba(60, 44, 20, 0)"],
+        [0.9, 0.95, 0.5, 0.5, "rgba(24, 60, 62, 0.18)", "rgba(10, 24, 26, 0)"],
+      ];
+      for (const [fx, fy, rx, ry, inner, outer] of lobes) {
+        const gradient = ctx.createRadialGradient(
+          width * fx,
+          height * fy,
+          0,
+          width * fx,
+          height * fy,
+          Math.hypot(width * rx, height * ry),
+        );
+        gradient.addColorStop(0, inner);
+        gradient.addColorStop(1, outer);
+        ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, width, height);
-        return;
       }
-      // Cover-fit so the plate always fills the hero without stretching.
-      const scale = Math.max(width / still.naturalWidth, height / still.naturalHeight);
-      const w = still.naturalWidth * scale;
-      const h = still.naturalHeight * scale;
-      ctx.drawImage(still, (width - w) / 2, (height - h) / 2, w, h);
+
+      // Floor falloff: the field should sink, not lighten, at the bottom edge.
+      const floor = ctx.createLinearGradient(0, height * 0.55, 0, height);
+      floor.addColorStop(0, "rgba(2, 4, 8, 0)");
+      floor.addColorStop(1, "rgba(2, 4, 8, 0.85)");
+      ctx.fillStyle = floor;
+      ctx.fillRect(0, height * 0.55, width, height * 0.45);
     };
 
     /** Re-renders the blurred copies at the new hero size. */
     const buildBank = () => {
       bank.clear();
       unit = height;
+      if (!unit || sprites.size === 0) return;
       for (const coin of COINS) {
-        const image = sprites.get(coin.face);
-        if (!image) continue;
-        const px = coin.size * unit;
-        // Biggest the coin ever gets on screen is edge-on, at its full height,
-        // so the crisp sprite only needs room for that.
-        const key = `${coin.face}#${coin.depth}`;
-        if (!bank.has(key)) bank.set(key, spriteBank(image, coin.depth, px * 2));
+        // Every sprite is rendered at the size of its largest coin at this
+        // depth, so a shelf of pre-blurred copies covers all of the coins.
+        const px = Math.max(
+          ...COINS.filter((c) => c.depth === coin.depth).map((c) => c.size * unit),
+        );
+        for (const url of spriteUrls(coin.face)) {
+          const image = sprites.get(url);
+          if (!image) continue;
+          const key = bankKey(url, coin.depth);
+          if (!bank.has(key)) bank.set(key, spriteBank(image, coin.depth, px));
+        }
       }
     };
 
@@ -233,7 +507,7 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
       const sizeFrac = coin.size / Math.min(1, width / height);
       const span = 1 + sizeFrac + 0.1;
       const speed = coin.speed * PARALLAX[coin.depth];
-      const p = ((((t * speed + coin.offset) % 1) + 1) % 1);
+      const p = (((t * speed + coin.offset) % 1) + 1) % 1;
       const direction = Math.sign(coin.speed) || 1;
       const a = (p * span - sizeFrac * 0.5) * width;
       const x = direction > 0 ? a : width - a;
@@ -251,10 +525,9 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
       if (!unit) return;
 
       // One `filter` assignment for the whole pass rather than per coin: it is
-      // constant text, so the compositor resolves it once, and the coins keep
-      // the metal read that the tint layered above them would otherwise take
-      // away. (The sphere sprites they replaced lost about half their
-      // luminance under that tint and read as dust rather than money.)
+      // constant text, so the compositor resolves it once. The tint keeps the
+      // grey sprites reading as minted metal against the navy field instead of
+      // as pale discs.
       context.filter = COIN_FILTER;
 
       // Pass one: a soft contact shadow that travels with each near coin. It is
@@ -284,8 +557,11 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
         const back = coin.face.includes("front");
         const turn = (t * coin.spin + coin.flip) % 1;
         const facing = Math.abs(Math.cos(turn * TAU));
-        const src = back && Math.cos(turn * TAU) < 0 ? `${coin.face.replace("front", "back")}#${coin.depth}` : `${coin.face}#${coin.depth}`;
-        const sprite = bank.get(src);
+        const url =
+          back && Math.cos(turn * TAU) < 0
+            ? spriteUrl(coin.face.replace("front", "back"))
+            : spriteUrl(coin.face);
+        const sprite = bank.get(bankKey(url, coin.depth));
         if (!sprite) continue;
 
         const [x, y, size, angle] = place(coin, t);
@@ -294,10 +570,13 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
         // a vanished line, and let that sliver dim slightly as it turns.
         const squash = Math.max(0.06, facing);
         context.globalAlpha = coin.alpha * (0.72 + 0.28 * facing);
+        // The pre-blurred sprites carry a transparent margin; draw the whole
+        // artefact rather than re-centring its nominal size over the outline.
+        const box = sprite instanceof HTMLCanvasElement ? sprite.width : size;
         context.save();
         context.translate(x, y);
         context.rotate(angle);
-        context.drawImage(sprite, -size * squash * 0.5, -size * 0.5, size * squash, size);
+        context.drawImage(sprite, (-box * squash) / 2, -box / 2, box * squash, box);
         context.restore();
       }
       context.globalAlpha = 1;
@@ -306,7 +585,7 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
 
     const render = (now: number) => {
       frame = 0;
-      const t = (((now - started) / 1000 / LOOP_SECONDS) % 1 + 1) % 1;
+      const t = ((((now - started) / 1000 / LOOP_SECONDS) % 1) + 1) % 1;
       paint(t);
       frame = requestAnimationFrame(render);
     };
@@ -347,25 +626,16 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
     const onVisibility = () => start();
 
     resize();
+    buildPlate();
     paint(0);
 
-    const urls = Array.from(
-      new Set(
-        COINS.flatMap((coin) =>
-          coin.face.includes("front")
-            ? [coin.face, coin.face.replace("front", "back")]
-            : [coin.face],
-        ).map((face) => `${COIN_DIR}/${face}.png`),
-      ),
-    );
-    void Promise.all([load(BACKDROP_STILL), ...urls.map(load)]).then((loaded) => {
+    const urls = Array.from(new Set(COINS.flatMap((coin) => spriteUrls(coin.face))));
+    void Promise.all(urls.map(load)).then((coinImages) => {
       if (disposed) return;
-      const [still, ...coinImages] = loaded;
       urls.forEach((url, index) => {
         const image = coinImages[index];
         if (image) sprites.set(url, image);
       });
-      buildPlate(still);
       buildBank();
       paint(0);
       readyRef.current?.();
@@ -374,6 +644,7 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
 
     const observer = new ResizeObserver(() => {
       if (!resize()) return;
+      buildPlate();
       buildBank();
       if (!reduced) return;
       paint((performance.now() - started) / 1000 / LOOP_SECONDS);

@@ -60,7 +60,7 @@ export interface EntityProfile {
     inCount: number;
     outCount: number;
     flagged: number;
-    averageScore: number
+    averageScore: number;
     maxScore: number;
     firstAt: string | null;
     lastAt: string | null;
@@ -86,9 +86,23 @@ function bucketsFor(range: RangeKey, from: Date, to: Date) {
     ...(hourly ? { hour: "2-digit", hour12: false } : {}),
     timeZone: "UTC",
   });
+  // Labels must be unique: the chart keys its categories by label, so a window
+  // shorter than the bucket count (or several buckets inside one day) used to
+  // produce repeated labels — every bucket then folded into a single slot and
+  // the chart drew one enormous bar. Appending the index keeps them distinct.
+  const seen = new Map<string, number>();
   const buckets: EntityFlowBucket[] = Array.from({ length: count }, (_, index) => {
     const start = new Date(from.getTime() + index * width);
-    return { label: formatter.format(start), inValue: 0, outValue: 0, count: 0, flagged: 0 };
+    const base = formatter.format(start);
+    const repeat = seen.get(base) ?? 0;
+    seen.set(base, repeat + 1);
+    return {
+      label: repeat === 0 ? base : `${base} ·${repeat + 1}`,
+      inValue: 0,
+      outValue: 0,
+      count: 0,
+      flagged: 0,
+    };
   });
   return { buckets, width, count };
 }
@@ -121,7 +135,9 @@ export async function getEntityProfile(
 ): Promise<EntityProfile | null> {
   const { data: entity, error: entityError } = await supabase
     .from("entities")
-    .select("id, legal_name, kind, country, pep_flag, nominee_director_name, incorporated_on, created_at")
+    .select(
+      "id, legal_name, kind, country, pep_flag, nominee_director_name, incorporated_on, created_at",
+    )
     .eq("organization_id", organizationId)
     .eq("id", entityId)
     .maybeSingle();
@@ -154,7 +170,17 @@ export async function getEntityProfile(
         createdAt: entity.created_at,
       },
       accounts: [],
-      totals: { inValue: 0, outValue: 0, inCount: 0, outCount: 0, flagged: 0, averageScore: 0, maxScore: 0, firstAt: null, lastAt: null },
+      totals: {
+        inValue: 0,
+        outValue: 0,
+        inCount: 0,
+        outCount: 0,
+        flagged: 0,
+        averageScore: 0,
+        maxScore: 0,
+        firstAt: null,
+        lastAt: null,
+      },
       flow: bucketsFor(range, from, to).buckets,
       corridors: [],
       counterparties: [],
@@ -168,30 +194,46 @@ export async function getEntityProfile(
     .flatMap((id) => [`sender_account_id.eq.${id}`, `receiver_account_id.eq.${id}`])
     .join(",");
 
-  const [{ data: transactionRows, error: transactionError }, { data: allAccounts }, { data: allEntities }] =
-    await Promise.all([
-      supabase
-        .from("transactions")
-        .select("*")
-        .eq("organization_id", organizationId)
-        .or(filter)
-        .gte("created_at", from.toISOString())
-        .order("created_at", { ascending: false })
-        .limit(MAX_ROWS),
-      supabase.from("accounts").select("id, entity_id").eq("organization_id", organizationId).limit(5_000),
-      supabase.from("entities").select("id, legal_name, country").eq("organization_id", organizationId).limit(5_000),
-    ]);
+  const [
+    { data: transactionRows, error: transactionError },
+    { data: allAccounts },
+    { data: allEntities },
+  ] = await Promise.all([
+    supabase
+      .from("transactions")
+      .select("*")
+      .eq("organization_id", organizationId)
+      .or(filter)
+      .gte("created_at", from.toISOString())
+      .order("created_at", { ascending: false })
+      .limit(MAX_ROWS),
+    supabase
+      .from("accounts")
+      .select("id, entity_id")
+      .eq("organization_id", organizationId)
+      .limit(5_000),
+    supabase
+      .from("entities")
+      .select("id, legal_name, country")
+      .eq("organization_id", organizationId)
+      .limit(5_000),
+  ]);
 
   if (transactionError) throw new Error(transactionError.message);
 
   const rows = transactionRows ?? [];
   const ownAccounts = new Set(accountIds);
-  const accountEntity = new Map((allAccounts ?? []).map((account) => [account.id, account.entity_id]));
+  const accountEntity = new Map(
+    (allAccounts ?? []).map((account) => [account.id, account.entity_id]),
+  );
   const entityMeta = new Map((allEntities ?? []).map((item) => [item.id, item]));
 
   const { buckets, width, count } = bucketsFor(range, from, to);
   const counterparties = new Map<string, EntityCounterparty>();
-  const corridors = new Map<string, { corridor: string; value: number; count: number; flagged: number }>();
+  const corridors = new Map<
+    string,
+    { corridor: string; value: number; count: number; flagged: number }
+  >();
   let inValue = 0;
   let outValue = 0;
   let inCount = 0;
@@ -214,13 +256,21 @@ export async function getEntityProfile(
     if (!firstAt || row.created_at < firstAt) firstAt = row.created_at;
 
     const corridorKey = `${row.sender_country}-${row.receiver_country}`;
-    const corridor = corridors.get(corridorKey) ?? { corridor: corridorKey, value: 0, count: 0, flagged: 0 };
+    const corridor = corridors.get(corridorKey) ?? {
+      corridor: corridorKey,
+      value: 0,
+      count: 0,
+      flagged: 0,
+    };
     corridor.value += amount;
     corridor.count += 1;
     if (score >= 70) corridor.flagged += 1;
     corridors.set(corridorKey, corridor);
 
-    const index = Math.min(count - 1, Math.max(0, Math.floor((new Date(row.created_at).getTime() - from.getTime()) / width)));
+    const index = Math.min(
+      count - 1,
+      Math.max(0, Math.floor((new Date(row.created_at).getTime() - from.getTime()) / width)),
+    );
     const bucket = buckets[index];
     if (bucket) {
       bucket.count += 1;
@@ -235,17 +285,15 @@ export async function getEntityProfile(
       const otherId = accountEntity.get(row.receiver_account_id) ?? null;
       const other = otherId ? entityMeta.get(otherId) : null;
       const key = `out:${otherId ?? row.receiver_name}`;
-      const entry =
-        counterparties.get(key) ??
-        {
-          entityId: otherId,
-          name: other?.legal_name ?? row.receiver_name,
-          country: other?.country ?? row.receiver_country,
-          direction: "out" as const,
-          value: 0,
-          count: 0,
-          averageScore: 0,
-        };
+      const entry = counterparties.get(key) ?? {
+        entityId: otherId,
+        name: other?.legal_name ?? row.receiver_name,
+        country: other?.country ?? row.receiver_country,
+        direction: "out" as const,
+        value: 0,
+        count: 0,
+        averageScore: 0,
+      };
       entry.value += amount;
       entry.count += 1;
       entry.averageScore += score;
@@ -256,17 +304,15 @@ export async function getEntityProfile(
       const otherId = accountEntity.get(row.sender_account_id) ?? null;
       const other = otherId ? entityMeta.get(otherId) : null;
       const key = `in:${otherId ?? row.sender_name}`;
-      const entry =
-        counterparties.get(key) ??
-        {
-          entityId: otherId,
-          name: other?.legal_name ?? row.sender_name,
-          country: other?.country ?? row.sender_country,
-          direction: "in" as const,
-          value: 0,
-          count: 0,
-          averageScore: 0,
-        };
+      const entry = counterparties.get(key) ?? {
+        entityId: otherId,
+        name: other?.legal_name ?? row.sender_name,
+        country: other?.country ?? row.sender_country,
+        direction: "in" as const,
+        value: 0,
+        count: 0,
+        averageScore: 0,
+      };
       entry.value += amount;
       entry.count += 1;
       entry.averageScore += score;
@@ -282,7 +328,8 @@ export async function getEntityProfile(
       id: "pep",
       label: "Politically exposed person",
       severity: "critical",
-      detail: "The entity record carries a PEP flag. Enhanced due diligence applies to every flow below.",
+      detail:
+        "The entity record carries a PEP flag. Enhanced due diligence applies to every flow below.",
     });
   }
   if (entity.nominee_director_name) {
@@ -311,7 +358,9 @@ export async function getEntityProfile(
     });
   }
   if (entity.incorporated_on) {
-    const ageDays = Math.floor((Date.now() - new Date(entity.incorporated_on).getTime()) / 86_400_000);
+    const ageDays = Math.floor(
+      (Date.now() - new Date(entity.incorporated_on).getTime()) / 86_400_000,
+    );
     if (ageDays >= 0 && ageDays <= 180) {
       flags.push({
         id: "new-entity",
@@ -326,7 +375,8 @@ export async function getEntityProfile(
       id: "multi-account",
       label: `${accountIds.length} accounts`,
       severity: "watch",
-      detail: "Multiple settlement accounts linked to one entity. Check whether each has a documented purpose.",
+      detail:
+        "Multiple settlement accounts linked to one entity. Check whether each has a documented purpose.",
     });
   }
 
