@@ -22,12 +22,13 @@ function resolve(theme: Theme): ResolvedTheme {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = React.useState<Theme>("system");
+  const [theme, setThemeState] = React.useState<Theme>("light");
   const [resolvedTheme, setResolvedTheme] = React.useState<ResolvedTheme>("light");
 
   React.useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    const initial: Theme = stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
+    const initial: Theme =
+      stored === "light" || stored === "dark" || stored === "system" ? stored : "light";
     setThemeState(initial);
     const next = resolve(initial);
     setResolvedTheme(next);
@@ -72,7 +73,7 @@ export const themeInitScript = `
 (function(){
   try {
     var stored = localStorage.getItem('${STORAGE_KEY}');
-    var dark = stored === 'dark' || ((!stored || stored === 'system') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var dark = stored === 'dark' || (stored === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     if (dark) document.documentElement.classList.add('dark');
   } catch (e) {}
 })();

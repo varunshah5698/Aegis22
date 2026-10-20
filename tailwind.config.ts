@@ -65,10 +65,10 @@ const config: Config = {
         "display-md": ["clamp(1.875rem, 3.5vw, 2.75rem)", { lineHeight: "1.04", letterSpacing: "-0.035em" }],
       },
       borderRadius: {
-        card: "12px",
-        panel: "14px",
-        tile: "11px",
-        hero: "18px",
+        card: "16px",
+        panel: "20px",
+        tile: "14px",
+        hero: "24px",
         pill: "999px",
       },
       spacing: {
@@ -76,8 +76,8 @@ const config: Config = {
         "section-sm": "3rem",
       },
       boxShadow: {
-        card: "0 1px 2px rgb(20 21 26 / 0.04), 0 12px 32px -16px rgb(20 21 26 / 0.18)",
-        lift: "0 2px 4px rgb(20 21 26 / 0.05), 0 20px 40px -20px rgb(20 21 26 / 0.28)",
+        card: "0 1px 2px rgb(15 15 20 / 0.05), 0 16px 36px -24px rgb(15 15 20 / 0.2)",
+        lift: "0 4px 10px rgb(15 15 20 / 0.06), 0 28px 56px -28px rgb(15 15 20 / 0.3)",
         inset: "inset 0 0 0 1px rgb(var(--border) / 0.6)",
       },
       keyframes: {

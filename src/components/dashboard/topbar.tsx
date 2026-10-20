@@ -63,11 +63,11 @@ function PageSelector({ pathname }: { pathname: string }) {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex h-9 min-w-0 items-center gap-2 rounded-tile border border-border bg-elevated/50 px-3 text-[12.5px] font-medium transition-colors hover:border-border-strong hover:bg-elevated"
+          className="flex h-9 min-w-0 items-center gap-2 rounded-pill border border-foreground/90 bg-foreground px-3.5 text-[12.5px] font-medium text-background shadow-sm transition-colors hover:bg-foreground/85"
           aria-label={`Current page: ${label}. Switch page.`}
         >
           <span className="truncate">{label}</span>
-          <ChevronDown className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <ChevronDown className="size-3.5 shrink-0 text-background/70" aria-hidden="true" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-64">
@@ -121,7 +121,7 @@ function AccountMenu({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex h-9 items-center gap-2 rounded-tile border border-transparent px-1.5 text-left transition-colors hover:border-border hover:bg-muted/60"
+          className="flex h-9 items-center gap-2 rounded-pill border border-border/70 bg-card px-1.5 text-left shadow-sm transition-colors hover:bg-muted/60"
           aria-label={`Account menu for ${userName || email}`}
         >
           <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-[10.5px] font-semibold">
@@ -192,7 +192,7 @@ export function DashboardTopbar(props: {
       <button
         type="button"
         onClick={() => window.dispatchEvent(new Event("sf:open-command"))}
-        className="mx-auto hidden h-9 w-full max-w-[420px] items-center gap-2 rounded-tile border border-border bg-elevated/40 px-3 text-[12.5px] text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground md:flex"
+        className="mx-auto hidden h-9 w-full max-w-[420px] items-center gap-2 rounded-pill border border-border/80 bg-card px-3.5 text-[12.5px] text-muted-foreground shadow-sm transition-colors hover:border-border-strong hover:text-foreground md:flex"
         aria-label="Search transactions, entities, corridors and datasets"
       >
         <Search className="size-3.5 shrink-0" aria-hidden="true" />
@@ -203,8 +203,7 @@ export function DashboardTopbar(props: {
       <div className="ml-auto flex items-center gap-1 md:ml-0">
         <button
           type="button"
-          onClick={() => window.dispatchEvent(new Event("aegis:assistant"))}
-          className="flex size-9 items-center justify-center rounded-tile text-accent transition-colors hover:bg-accent/10"
+          onClick={() => window.dispatchEvent(new Event("aegis:assistant"))}            className="flex size-9 items-center justify-center rounded-pill border border-border/70 bg-card text-accent shadow-sm transition-colors hover:bg-accent/10"
           aria-label="Open the AI analyst"
           title="Ask the AI analyst (⌘J)"
         >
@@ -215,7 +214,7 @@ export function DashboardTopbar(props: {
 
         <Link
           href="/docs"
-          className="hidden size-9 items-center justify-center rounded-tile text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:flex"
+          className="hidden size-9 items-center justify-center rounded-pill border border-border/70 bg-card text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground lg:flex"
           aria-label="Documentation and help"
         >
           <CircleHelp className="size-4" aria-hidden="true" />

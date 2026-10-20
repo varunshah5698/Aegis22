@@ -58,21 +58,18 @@ function NavContent({
                     onClick={() => onNavigate?.()}
                     title={collapsed ? item.label : undefined}
                     className={cn(
-                      "group relative flex h-[34px] items-center gap-2.5 rounded-tile px-2.5 text-[12.5px] transition-colors",
+                      "group relative flex h-[34px] items-center gap-2.5 rounded-pill px-2.5 text-[12.5px] transition-colors",
                       active
-                        ? "bg-accent/[0.12] font-medium text-foreground"
-                        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                        ? "bg-foreground font-medium text-background shadow-sm"
+                        : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
                       collapsed && "justify-center px-0",
                     )}
                   >
-                    {active ? (
-                      <span
-                        className="absolute inset-y-[7px] left-0 w-[2px] rounded-full bg-accent"
-                        aria-hidden="true"
-                      />
-                    ) : null}
                     <Icon
-                      className={cn("size-4 shrink-0", active ? "text-accent" : "text-muted-foreground")}
+                      className={cn(
+                        "size-4 shrink-0",
+                        active ? "text-background" : "text-muted-foreground",
+                      )}
                       aria-hidden="true"
                     />
                     {!collapsed ? <span className="flex-1 truncate">{item.label}</span> : null}
@@ -176,7 +173,7 @@ export function Sidebar(props: SidebarProps) {
   return (
     <aside
       className={cn(
-        "sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-border/70 bg-card/40 transition-[width] duration-200 lg:flex",
+        "sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-border/70 bg-card transition-[width] duration-200 lg:flex",
         collapsed ? "w-[64px]" : "w-[236px]",
       )}
     >

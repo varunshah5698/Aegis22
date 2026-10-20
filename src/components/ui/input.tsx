@@ -8,7 +8,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
       type={type}
       ref={ref}
       className={cn(
-        "flex h-10 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-risk-critical",
+        "flex h-10 w-full rounded-xl border border-border bg-card px-3.5 py-2 text-sm text-foreground shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-risk-critical",
         className,
       )}
       {...props}
@@ -22,7 +22,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, React.ComponentProps<"tex
     <textarea
       ref={ref}
       className={cn(
-        "flex min-h-24 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground shadow-sm placeholder:text-muted-foreground focus-visible:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-risk-critical",
+        "flex min-h-24 w-full rounded-xl border border-border bg-card px-3.5 py-2 text-sm text-foreground shadow-sm placeholder:text-muted-foreground focus-visible:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-risk-critical",
         className,
       )}
       {...props}
