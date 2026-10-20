@@ -62,7 +62,7 @@ export function ScoreStack() {
 
       <div className="container-page relative grid items-center gap-12 py-16 md:py-20 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:gap-8 lg:py-24">
         <div className="min-w-0">
-          <p className="text-[10.5px] font-medium uppercase tracking-[0.18em] text-[#F0B250]/85">
+          <p className="text-[11.5px] font-medium text-[#F0B250]/85">
             Anatomy of an alert
           </p>
           <h2
@@ -79,13 +79,13 @@ export function ScoreStack() {
 
           <dl className="mt-8 grid max-w-[430px] grid-cols-2 gap-x-6 gap-y-5 border-t border-white/10 pt-6">
             <div>
-              <dt className="text-[9.5px] uppercase tracking-[0.14em] text-white/35">
+              <dt className="text-[11px] text-white/35">
                 Rule version
               </dt>
               <dd className="num mt-1 text-[13px] text-white/80">v1.0 · pinned</dd>
             </div>
             <div>
-              <dt className="text-[9.5px] uppercase tracking-[0.14em] text-white/35">
+              <dt className="text-[11px] text-white/35">
                 Time to evidence
               </dt>
               <dd className="num mt-1 text-[13px] text-white/80">One screen</dd>
@@ -139,7 +139,7 @@ export function ScoreStack() {
             <div className="score-stack__badge">
               <span className="score-stack__badge-score">87</span>
               <span>
-                <span className="block text-[9px] uppercase tracking-[0.14em] text-white/40">
+                <span className="block text-[11px] text-white/40">
                   Decision
                 </span>
                 <span className="block text-[10.5px] text-white/75">High risk · review in 4h</span>
@@ -156,7 +156,7 @@ export function ScoreStack() {
                   0{layers.length - index}
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-[9.5px] font-medium uppercase tracking-[0.12em] text-white/45">
+                  <span className="block text-[11px] font-medium text-white/45">
                     {layer.label}
                   </span>
                   <span className="mt-0.5 block truncate text-[10px] text-white/30">

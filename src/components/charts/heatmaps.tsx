@@ -54,7 +54,7 @@ export function CorridorHeatGrid({
               </span>
             ))}
           </div>
-          <span className="w-[86px] shrink-0 text-right text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+          <span className="w-[86px] shrink-0 text-right text-[11.5px] text-muted-foreground">
             Trend
           </span>
         </div>

@@ -327,7 +327,7 @@ export function ValueTrendChart({
           {callout && calloutPoint ? (
             <div className="pointer-events-none absolute right-2 top-1 hidden w-[236px] xl:block">
               <div className="pointer-events-auto rounded-tile border border-risk-medium/40 bg-[linear-gradient(180deg,rgb(var(--risk-medium)/0.12),rgb(var(--card)/0.97))] p-3 shadow-lift backdrop-blur">
-                <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-risk-medium">
+                <p className="flex items-center gap-1.5 text-[11.5px] font-semibold text-risk-medium">
                   <TriangleAlert className="size-3" aria-hidden="true" />
                   Anomaly detected
                 </p>
@@ -335,13 +335,13 @@ export function ValueTrendChart({
                 <p className="mt-1.5 text-[11.5px] leading-4 text-foreground/90">{callout.detail}</p>
                 <div className="mt-2.5 grid grid-cols-2 gap-2 border-t border-risk-medium/20 pt-2">
                   <div>
-                    <p className="text-[9px] uppercase tracking-[0.1em] text-muted-foreground">Observed</p>
+                    <p className="text-[11px] text-muted-foreground">Observed</p>
                     <p className="num mt-0.5 text-[12px] font-medium">
                       {callout.unit === "usd" ? `$${formatCompactNumber(callout.observed)}` : callout.observed.toLocaleString("en-US")}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[9px] uppercase tracking-[0.1em] text-muted-foreground">Baseline</p>
+                    <p className="text-[11px] text-muted-foreground">Baseline</p>
                     <p className="num mt-0.5 text-[12px] font-medium">
                       {callout.unit === "usd" ? `$${formatCompactNumber(callout.baseline)}` : callout.baseline.toLocaleString("en-US")}
                     </p>

@@ -52,7 +52,7 @@ export function NewsletterForm() {
 
   return (
     <form onSubmit={onSubmit} className="space-y-2" noValidate>
-      <Label htmlFor="newsletter-email" className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+      <Label htmlFor="newsletter-email" className="text-xs text-muted-foreground">
         Monthly compliance brief
       </Label>
       <div className="flex flex-col gap-2 sm:flex-row">

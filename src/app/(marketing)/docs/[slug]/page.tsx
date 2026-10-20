@@ -44,7 +44,7 @@ function Block({ block }: { block: DocBlock }) {
       ) : null}
       {block.code ? (
         <figure className="mt-4 overflow-hidden rounded-card border border-border bg-[#101218]">
-          <figcaption className="flex items-center justify-between border-b border-white/10 px-4 py-2 text-[11px] uppercase tracking-[0.12em] text-white/60">
+          <figcaption className="flex items-center justify-between border-b border-white/10 px-4 py-2 text-[12px] text-white/60">
             <span>{block.code.label}</span>
             <span className="font-mono lowercase">{block.code.language}</span>
           </figcaption>
@@ -90,7 +90,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
     <div className="container-page py-12 md:py-16">
       <div className="grid gap-12 lg:grid-cols-[220px_1fr_200px]">
         <nav aria-label="Documentation" className="hidden lg:block">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="mb-3 text-xs font-semibold text-muted-foreground">
             Guides
           </p>
           <ul className="space-y-1">
@@ -115,7 +115,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
         </nav>
 
         <article>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="text-xs font-semibold text-muted-foreground">
             Documentation
           </p>
           <h1 className="mt-2 text-display-md">{doc.title}</h1>
@@ -146,7 +146,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
         </article>
 
         <aside className="hidden lg:block">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="mb-3 text-xs font-semibold text-muted-foreground">
             On this page
           </p>
           <ul className="space-y-2 text-xs">

@@ -50,7 +50,7 @@ export function HeroPreview() {
             <span className="size-2 rounded-full bg-risk-low" />
           </span>
           <p className="font-display text-sm font-semibold tracking-tight">Live monitoring</p>
-          <span className="rounded-pill bg-muted px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">
+          <span className="rounded-pill bg-muted px-2 py-0.5 text-[10px] tracking-wider text-muted-foreground">
             Northwind Payments
           </span>
         </div>
@@ -92,7 +92,7 @@ export function HeroPreview() {
           </colgroup>
           <caption className="sr-only">Latest scored transactions from the demo organization</caption>
           <thead>
-            <tr className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+            <tr className="text-[11.5px] text-muted-foreground">
               <th scope="col" className="px-4 py-2 font-medium">Time</th>
               <th scope="col" className="px-2 py-2 font-medium">Corridor</th>
               <th scope="col" className="px-2 py-2 text-right font-medium">Amount</th>

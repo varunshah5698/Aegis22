@@ -14,7 +14,7 @@ export default function NotFound() {
         <span className="flex size-14 items-center justify-center rounded-full bg-muted">
           <SearchX className="size-6 text-muted-foreground" aria-hidden="true" />
         </span>
-        <p className="num mt-6 text-xs uppercase tracking-[0.2em] text-muted-foreground">Error 404</p>
+        <p className="num mt-6 text-xs text-muted-foreground">Error 404</p>
         <h1 className="mt-3 max-w-xl text-display-md">This page is not on the corridor.</h1>
         <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
           The link may be out of date, or the record you followed was removed. Start from the

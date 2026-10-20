@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Activity, Clock3, FolderOpen } from "lucide-react";
+import {
+  Activity,
+  Banknote,
+  CircleDollarSign,
+  Clock3,
+  FolderOpen,
+  Gauge,
+  TriangleAlert,
+} from "lucide-react";
 
 import {
   MetricRow,
@@ -120,6 +128,7 @@ export default async function AnalyticsPage({
     >
       <MetricRow>
         <MetricTile
+          icon={Banknote}
           label="Payments scored"
           value={totals.count.toLocaleString("en-US")}
           change={analytics.deltas.count}
@@ -128,6 +137,7 @@ export default async function AnalyticsPage({
           hint={`previous window ${analytics.previous.count.toLocaleString("en-US")}`}
         />
         <MetricTile
+          icon={CircleDollarSign}
           label="Value screened"
           value={`$${formatCompactNumber(totals.value)}`}
           change={analytics.deltas.value}
@@ -136,6 +146,7 @@ export default async function AnalyticsPage({
           hint={`${formatCurrency(totals.value / Math.max(1, totals.count), "USD", { maximumFractionDigits: 0 })} average ticket`}
         />
         <MetricTile
+          icon={TriangleAlert}
           label="Flagged for review"
           value={totals.flagged.toLocaleString("en-US")}
           change={analytics.deltas.flagged}
@@ -144,6 +155,7 @@ export default async function AnalyticsPage({
           hint={`${totals.flaggedShare.toFixed(2)}% of volume · ${formatCompactNumber(totals.flaggedValue)} USD exposed`}
         />
         <MetricTile
+          icon={Gauge}
           label="Score profile"
           value={`${totals.medianScore} / ${totals.scoreP90}`}
           tone="accent"
@@ -231,7 +243,7 @@ export default async function AnalyticsPage({
                 key={entry.label}
                 className="rounded-tile border border-border/70 bg-elevated/50 px-2.5 py-2"
               >
-                <dt className="truncate text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                <dt className="truncate text-[11.5px] text-muted-foreground">
                   {entry.label}
                 </dt>
                 <dd className="num mt-1 text-[17px] font-medium leading-5">{entry.value}</dd>
@@ -299,7 +311,7 @@ export default async function AnalyticsPage({
               },
             ].map((entry) => (
               <div key={entry.label}>
-                <dt className="truncate text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                <dt className="truncate text-[11.5px] text-muted-foreground">
                   {entry.label}
                 </dt>
                 <dd className="num mt-1 text-[18px] font-medium leading-6">{entry.value}</dd>
@@ -367,7 +379,7 @@ export default async function AnalyticsPage({
                 key={entry.label}
                 className="rounded-tile border border-border/70 bg-elevated/50 px-2.5 py-2"
               >
-                <dt className="truncate text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                <dt className="truncate text-[11.5px] text-muted-foreground">
                   {entry.label}
                 </dt>
                 <dd className="num mt-1 text-[17px] font-medium leading-5">{entry.value}</dd>
@@ -587,7 +599,7 @@ export default async function AnalyticsPage({
                 key={item.label}
                 className="rounded-tile border border-border/70 bg-elevated/50 px-3 py-3"
               >
-                <p className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                <p className="flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
                   <item.icon className="size-3" aria-hidden="true" />
                   <span className="min-w-0 truncate">{item.label}</span>
                 </p>

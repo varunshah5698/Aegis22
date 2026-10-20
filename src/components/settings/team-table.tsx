@@ -68,7 +68,7 @@ export function TeamTable({
       <div className="overflow-x-auto rounded-card border border-border bg-card">
         <table className="w-full min-w-[640px] text-left text-sm">
           <caption className="sr-only">People with access to this workspace.</caption>
-          <thead className="border-b border-border bg-muted/40 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          <thead className="border-b border-border bg-muted/40 text-[11.5px] text-muted-foreground">
             <tr>
               <th scope="col" className="px-4 py-2 font-medium">Member</th>
               <th scope="col" className="px-3 py-2 font-medium">Role</th>

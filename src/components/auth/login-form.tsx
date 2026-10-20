@@ -72,7 +72,7 @@ export function LoginForm({ next, initialError }: { next: string; initialError?:
 
   return (
     <div>
-      <p className="inline-flex items-center gap-2 rounded-pill border border-border bg-muted/50 py-1 pl-1 pr-3 text-[11px] font-medium tracking-[0.02em] text-muted-foreground">
+      <p className="inline-flex items-center gap-2 rounded-pill border border-border bg-muted/50 py-1 pl-1 pr-3 text-[12px] font-medium text-muted-foreground">
         <span className="flex size-5 items-center justify-center rounded-full bg-accent/15 text-accent">
           <ShieldCheck className="size-3" aria-hidden="true" />
         </span>
@@ -205,7 +205,7 @@ export function LoginForm({ next, initialError }: { next: string; initialError?:
         </Button>
       </form>
 
-      <div className="mt-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-muted-foreground/70">
+      <div className="mt-5 flex items-center gap-3 text-[12px] text-muted-foreground/70">
         <span className="h-px flex-1 bg-border" />
         or
         <span className="h-px flex-1 bg-border" />
@@ -227,7 +227,7 @@ export function LoginForm({ next, initialError }: { next: string; initialError?:
 
       <div className="mt-7 border-t border-dashed border-border pt-4">
         <div className="flex items-center justify-between gap-3">
-          <p className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground/80">
+          <p className="flex items-center gap-2 text-[12px] font-medium text-muted-foreground/80">
             <Terminal className="size-3.5" aria-hidden="true" />
             Review access
           </p>
@@ -243,14 +243,14 @@ export function LoginForm({ next, initialError }: { next: string; initialError?:
         <div className="mt-3 grid gap-px overflow-hidden rounded-lg border border-border bg-border text-[12px] sm:grid-cols-2">
           {DEMO_ACCOUNTS.map((account) => (
             <div key={account.email} className="bg-muted/30 px-3 py-2">
-              <p className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground/80">
+              <p className="text-[11.5px] text-muted-foreground/80">
                 {account.role}
               </p>
               <p className="num mt-0.5 truncate text-foreground/90">{account.email}</p>
             </div>
           ))}
           <div className="bg-muted/30 px-3 py-2 sm:col-span-2">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground/80">
+            <p className="text-[11.5px] text-muted-foreground/80">
               Password
             </p>
             <p className="num mt-0.5 text-foreground/90">{DEMO_PASSWORD}</p>

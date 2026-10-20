@@ -96,7 +96,7 @@ export function Logo({
           <span className="font-display text-[17px] font-semibold tracking-[-0.02em]">Aegis</span>
           <span
             className={cn(
-              "mt-1 text-[8.5px] font-medium uppercase tracking-[0.22em]",
+              "mt-1 text-[11px] font-medium",
               tone === "night" ? "text-white/45" : "text-muted-foreground",
             )}
           >

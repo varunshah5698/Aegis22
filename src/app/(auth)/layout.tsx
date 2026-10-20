@@ -76,7 +76,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             />
 
             <div className="relative flex flex-1 flex-col">
-              <p className="flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.18em] text-[#F4F4EF]/55">
+              <p className="flex items-center gap-2.5 text-[12px] font-medium text-[#F4F4EF]/55">
                 <span className="relative flex size-1.5">
                   <span className="absolute inset-0 animate-pulse-soft rounded-full bg-accent" />
                 </span>

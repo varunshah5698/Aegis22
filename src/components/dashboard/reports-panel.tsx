@@ -138,7 +138,7 @@ export function ReportsPanel({
                 <td className="num whitespace-nowrap text-muted-foreground">
                   {row.from} → {row.to}
                 </td>
-                <td className="text-[11px] uppercase">{row.format}</td>
+                <td className="text-[11px]">{row.format}</td>
                 <td className="num text-right">{row.rowCount?.toLocaleString("en-US") ?? "—"}</td>
                 <td className="text-[12px]">
                   <span className="block">{row.requesterName ?? "Former member"}</span>

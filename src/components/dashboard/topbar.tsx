@@ -73,7 +73,7 @@ function PageSelector({ pathname }: { pathname: string }) {
       <DropdownMenuContent align="start" className="w-64">
         {appNav.map((group) => (
           <div key={group.label} className="mb-1 last:mb-0">
-            <DropdownMenuLabel className="text-[9.5px] uppercase tracking-[0.14em] text-muted-foreground/70">
+            <DropdownMenuLabel className="text-[11px] text-muted-foreground/70">
               {group.label}
             </DropdownMenuLabel>
             {group.items.map((item) => {

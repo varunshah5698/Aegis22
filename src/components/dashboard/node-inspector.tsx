@@ -75,7 +75,7 @@ export function NodeInspector({
         <div className="rounded-tile border border-[#F0B250]/30 bg-[#F0B250]/[0.07] px-3 py-3">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="text-[10px] uppercase tracking-[0.12em] text-[#F0B250]/85">
+              <p className="text-[11.5px] text-[#F0B250]/85">
                 Connected to
               </p>
               <p className="num mt-1 text-[30px] font-semibold leading-8">
@@ -92,7 +92,7 @@ export function NodeInspector({
               <ArrowUpRight className="size-3" aria-hidden="true" />
               <span className="num">{model.outDegree}</span> paid
             </span>
-            <span className="inline-flex items-center gap-1 text-chart-4">
+            <span className="inline-flex items-center gap-1 text-risk-high">
               <ArrowDownLeft className="size-3" aria-hidden="true" />
               <span className="num">{model.inDegree}</span> received from
             </span>
@@ -152,7 +152,7 @@ export function NodeInspector({
               key={item.label}
               className="rounded-tile border border-border/70 bg-elevated/50 px-2.5 py-2"
             >
-              <dt className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+              <dt className="text-[11.5px] text-muted-foreground">
                 {item.label}
               </dt>
               <dd className="num mt-1 truncate text-[15px] font-medium leading-5">{item.value}</dd>
@@ -211,7 +211,7 @@ export function NodeInspector({
                         ) : null}
                         {row.out > 0 && row.in > 0 ? " · " : null}
                         {row.in > 0 ? (
-                          <span className="text-chart-4">in {formatCompactNumber(row.in)}</span>
+                          <span className="text-risk-high">in {formatCompactNumber(row.in)}</span>
                         ) : null}
                         {` · ${row.count} ${row.count === 1 ? "transfer" : "transfers"}`}
                       </span>

@@ -59,7 +59,7 @@ export default function SecurityPage() {
     <>
       <section className="border-b-2 border-foreground/10">
         <div className="container-page py-14 md:py-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="text-xs font-semibold text-muted-foreground">
             Security
           </p>
           <h1 className="mt-3 max-w-4xl text-display-xl">

@@ -31,7 +31,7 @@ export function PageShell({
       <header className="flex flex-col gap-4 pb-1 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
           {eyebrow ? (
-            <p className="flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+            <p className="flex items-center gap-2 font-mono text-[11.5px] font-medium text-muted-foreground">
               <span className="h-px w-5 bg-accent/80" aria-hidden="true" />
               {eyebrow}
             </p>
@@ -298,42 +298,68 @@ export function MetricTile({
   definition?: string | undefined;
   className?: string | undefined;
 }) {
+  const gradient = tone === "accent";
+
   const body = (
     <>
-      <div className="flex items-start gap-2">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <p className={cn("label-xs min-w-0 leading-4", gradient && "text-white/75")}>{label}</p>
+          {definition ? (
+            <InfoTooltip text={definition} className="pointer-events-auto relative z-10" />
+          ) : null}
+        </div>
         {Icon ? (
           <span
             className={cn(
-              "mt-px flex size-6 shrink-0 items-center justify-center rounded-[7px] border",
-              toneIcon(tone),
+              "flex size-7 shrink-0 items-center justify-center rounded-[9px] border",
+              gradient ? "border-white/30 bg-white/20 text-white" : toneIcon(tone),
             )}
           >
-            <Icon className="size-3.5" aria-hidden="true" />
+            <Icon className="size-4" aria-hidden="true" />
           </span>
         ) : null}
-        <p className="label-xs min-w-0 flex-1 leading-4">{label}</p>
-        {definition ? (
-          <InfoTooltip text={definition} className="pointer-events-auto relative z-10" />
-        ) : null}
       </div>
-      <div className="flex items-end justify-between gap-2 pt-2.5">
-        <p className={cn("metric-value min-w-0 truncate", toneText(tone))}>{value}</p>
+      <p
+        className={cn(
+          "metric-value mt-2.5 min-w-0 truncate",
+          gradient ? "text-white" : toneText(tone),
+        )}
+      >
+        {value}
+      </p>
+      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
         {typeof change === "number" ? (
-          <span className="shrink-0 pb-1">
-            <TrendPill change={change} invert={invert} neutral={neutralTrend} />
+          <TrendPill
+            change={change}
+            invert={invert}
+            neutral={neutralTrend}
+            className={gradient ? "text-white" : ""}
+          />
+        ) : null}
+        {hint ? (
+          <span
+            className={cn(
+              "min-w-0 truncate text-[11.5px] leading-4",
+              gradient ? "text-white/80" : "text-muted-foreground",
+            )}
+          >
+            {hint}
           </span>
         ) : null}
       </div>
-      {hint ? (
-        <p className="mt-1 truncate text-[11.5px] leading-4 text-muted-foreground">{hint}</p>
-      ) : null}
       {comparison ? (
-        <p className="mt-0.5 truncate text-[10.5px] leading-4 text-muted-foreground/80">
+        <p
+          className={cn(
+            "mt-0.5 truncate text-[10.5px] leading-4",
+            gradient ? "text-white/70" : "text-muted-foreground/80",
+          )}
+        >
           {comparison}
         </p>
       ) : null}
       {spark && spark.length > 1 ? (
-        <div className={cn("mt-auto pt-3", toneSpark(tone))}>
+        <div className={cn("mt-auto pt-3", gradient ? "text-white/75" : toneSpark(tone))}>
           <Sparkline values={spark} className="h-8" />
         </div>
       ) : null}
@@ -343,7 +369,9 @@ export function MetricTile({
   return (
     <div
       className={cn(
-        "panel flex min-h-[112px] min-w-0 flex-col px-4 py-3.5",
+        "panel flex min-h-[112px] min-w-0 flex-col px-5 py-4",
+        gradient &&
+          "border-0 bg-[linear-gradient(140deg,#FF9A5F_0%,#FB7A34_45%,#F06414_100%)] shadow-[0_16px_36px_-18px_rgb(249_115_22_0.55)]",
         href && "transition-colors hover:border-border-strong",
         className,
       )}

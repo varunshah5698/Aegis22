@@ -235,7 +235,7 @@ export default async function OverviewPage({
               { label: "Active corridors", value: totals.corridors.toLocaleString("en-US") },
             ].map((item) => (
               <div key={item.label} className="min-w-0">
-                <p className="text-[9.5px] uppercase tracking-[0.1em] text-muted-foreground">{item.label}</p>
+                <p className="text-[11px] text-muted-foreground">{item.label}</p>
                 <p className={cn("num mt-0.5 text-[13px] font-medium leading-5", item.tone)}>{item.value}</p>
               </div>
             ))}
@@ -377,7 +377,7 @@ export default async function OverviewPage({
               { label: "Open cases", value: cases.open + cases.inReview, tone: "text-foreground" },
             ].map((item) => (
               <div key={item.label} className="px-4 py-2.5">
-                <p className="text-[9px] uppercase tracking-[0.1em] text-muted-foreground">{item.label}</p>
+                <p className="text-[11px] text-muted-foreground">{item.label}</p>
                 <p className={cn("num mt-1 text-[15px] font-medium leading-5", item.tone)}>{item.value}</p>
               </div>
             ))}

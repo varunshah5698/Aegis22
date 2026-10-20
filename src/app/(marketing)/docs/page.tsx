@@ -14,7 +14,7 @@ export default function DocsIndexPage() {
   return (
     <div className="container-page section-pad">
       <div className="max-w-3xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+        <p className="text-xs font-semibold text-muted-foreground">
           Documentation
         </p>
         <h1 className="mt-3 text-display-lg">Build against the same model the analysts use.</h1>

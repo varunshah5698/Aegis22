@@ -63,7 +63,7 @@ function OverviewMock() {
           </div>
         </div>
         <div className="space-y-2">
-          <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Top corridors by risk</p>
+          <p className="text-[12px] text-muted-foreground">Top corridors by risk</p>
           {demoCorridors.slice(0, 4).map((corridor) => (
             <div key={`${corridor.sender}-${corridor.receiver}`} className="flex items-center justify-between rounded-lg border border-border/70 px-3 py-2">
               <div>

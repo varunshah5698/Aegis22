@@ -91,7 +91,7 @@ export default function HomePage() {
         <div className="container-page relative z-10 pb-10 pt-12 lg:pb-14 lg:pt-20">
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)] lg:gap-6">
             <div className="min-w-0">
-              <p className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-[#F0B250]/85">
+              <p className="inline-flex items-center gap-2 text-[12px] font-medium text-[#F0B250]/85">
                 <span className="relative flex size-1.5">
                   <span className="absolute inline-flex size-full animate-ping rounded-full bg-[#F0B250] opacity-60 motion-reduce:hidden" />
                   <span className="relative inline-flex size-1.5 rounded-full bg-[#F0B250]" />
@@ -122,21 +122,21 @@ export default function HomePage() {
                   </Link>
                 </Button>
               </div>
-              <p className="mt-3 text-[11px] tracking-[0.01em] text-[#EDF1F8]/35">
+              <p className="mt-3 text-[12px] text-[#EDF1F8]/35">
                 Free to explore. A scored reference dataset is already waiting inside.
               </p>
 
               <dl className="mt-10 grid max-w-[460px] grid-cols-3 gap-4 border-t border-white/10 pt-5">
                 <div>
-                  <dt className="text-[11px] uppercase tracking-[0.14em] text-white/40">Median score</dt>
+                  <dt className="text-[12px] text-white/40">Median score</dt>
                   <dd className="num mt-1 text-[19px] font-semibold tracking-[-0.02em] text-white">&lt;200 ms</dd>
                 </div>
                 <div className="border-l border-white/10 pl-4">
-                  <dt className="text-[11px] uppercase tracking-[0.14em] text-white/40">Signals</dt>
+                  <dt className="text-[12px] text-white/40">Signals</dt>
                   <dd className="num mt-1 text-[19px] font-semibold tracking-[-0.02em] text-white">10 → 1</dd>
                 </div>
                 <div className="border-l border-white/10 pl-4">
-                  <dt className="text-[11px] uppercase tracking-[0.14em] text-white/40">Explained</dt>
+                  <dt className="text-[12px] text-white/40">Explained</dt>
                   <dd className="num mt-1 text-[19px] font-semibold tracking-[-0.02em] text-white">100%</dd>
                 </div>
               </dl>

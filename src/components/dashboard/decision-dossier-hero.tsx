@@ -84,7 +84,7 @@ export function DecisionDossierHero({ data }: { data: DossierData }) {
             />
             <span className="absolute inset-y-[-3px] w-px bg-foreground/70" style={{ left: "60%" }} />
           </div>
-          <p className="mt-1.5 flex justify-between text-[9.5px] uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="mt-1.5 flex justify-between text-[11px] text-muted-foreground">
             <span>0</span>
             <span>alert at 60</span>
             <span>100</span>
@@ -117,7 +117,7 @@ export function DecisionDossierHero({ data }: { data: DossierData }) {
         <p className="mt-3 text-[11px] leading-4 text-muted-foreground">{data.corridorNote}</p>
         <div className="mt-auto pt-4">
           <Sprint />
-          <p className="mt-2 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{data.counterparties}</p>
+          <p className="mt-2 text-[11.5px] text-muted-foreground">{data.counterparties}</p>
         </div>
       </>
     ),
@@ -139,7 +139,7 @@ export function DecisionDossierHero({ data }: { data: DossierData }) {
             { label: "points", value: data.peakPoints },
           ].map((cell) => (
             <div key={cell.label} className="rounded-tile border border-border/70 bg-background/40 px-2 py-1.5">
-              <p className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">{cell.label}</p>
+              <p className="text-[11px] text-muted-foreground">{cell.label}</p>
               <p className="num mt-0.5 text-[13px]">{cell.value}</p>
             </div>
           ))}
@@ -154,11 +154,11 @@ export function DecisionDossierHero({ data }: { data: DossierData }) {
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <div>
-            <p className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">points</p>
+            <p className="text-[11px] text-muted-foreground">points</p>
             <p className="num mt-0.5 text-[22px] leading-none">{data.points}</p>
           </div>
           <div>
-            <p className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">contribution</p>
+            <p className="text-[11px] text-muted-foreground">contribution</p>
             <p className="num mt-0.5 text-[22px] leading-none">{data.contribution}</p>
           </div>
         </div>
@@ -230,7 +230,7 @@ export function DecisionDossierHero({ data }: { data: DossierData }) {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <CardEyebrow tone={scoreColor}>Decision dossier</CardEyebrow>
-                  <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/80">score · {data.modelVersion}</p>
+                  <p className="mt-1 text-[11.5px] text-muted-foreground/80">score · {data.modelVersion}</p>
                 </div>
                 <span className="flex size-8 items-center justify-center rounded-full border border-border/80 bg-background/50">
                   <Sparkles className="size-3.5" style={{ color: scoreColor }} aria-hidden="true" />
@@ -256,13 +256,13 @@ export function DecisionDossierHero({ data }: { data: DossierData }) {
                   { label: "alerts", value: data.alertsLabel },
                 ].map((cell) => (
                   <div key={cell.label} className="min-w-0">
-                    <p className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">{cell.label}</p>
+                    <p className="text-[11px] text-muted-foreground">{cell.label}</p>
                     <p className="num mt-1 truncate text-[13px]">{cell.value}</p>
                   </div>
                 ))}
               </div>
 
-              <p className="mt-auto flex items-center gap-1 pt-4 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground transition-colors group-hover/card:text-foreground">
+              <p className="mt-auto flex items-center gap-1 pt-4 text-[11.5px] font-medium text-muted-foreground transition-colors group-hover/card:text-foreground">
                 {expanded ? "Close the breakdown" : "Tap for the maths"}
                 <ArrowUpRight className={cn("size-3 transition-transform", expanded && "rotate-90")} aria-hidden="true" />
               </p>

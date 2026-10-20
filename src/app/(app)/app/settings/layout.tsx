@@ -11,7 +11,7 @@ export default async function SettingsLayout({ children }: { children: React.Rea
   return (
     <div className="mx-auto w-full max-w-[1100px] space-y-5">
       <div className="border-b border-border pb-4">
-        <p className="mb-1 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+        <p className="mb-1 text-[11.5px] font-medium text-muted-foreground">
           Workspace / Configuration
         </p>
         <h1 className="text-[21px] font-semibold leading-7 tracking-[-0.02em]">Settings</h1>

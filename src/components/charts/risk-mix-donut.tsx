@@ -68,7 +68,7 @@ export function RiskMixDonut({
             <span className="num text-[21px] font-medium leading-6 tracking-[-0.03em]">
               {formatCompactNumber(total)}
             </span>
-            <span className="text-[9px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">scored</span>
+            <span className="text-[11px] font-semibold text-muted-foreground">scored</span>
             <span className={cn("num mt-1 text-[10.5px] leading-4", flagged > 0 ? "text-risk-high" : "text-risk-low")}>
               {flagged} flagged
             </span>

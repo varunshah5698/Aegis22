@@ -71,7 +71,7 @@ export function CorridorMatrix({
           </caption>
           <thead>
             <tr>
-              <th scope="col" className="sticky left-0 bg-card px-2 py-1 text-left text-[10px] font-medium uppercase tracking-[0.1em] text-muted-foreground">
+              <th scope="col" className="sticky left-0 bg-card px-2 py-1 text-left text-[11.5px] font-medium text-muted-foreground">
                 From \ To
               </th>
               {receivers.map((receiver) => (

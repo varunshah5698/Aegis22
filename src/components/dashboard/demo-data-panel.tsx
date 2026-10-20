@@ -180,7 +180,7 @@ export function DemoDataPanel({
                     )}
                   >
                     {recommended ? (
-                      <span className="absolute right-2 top-2 rounded-pill bg-accent/15 px-1.5 py-0.5 text-[8.5px] font-semibold uppercase tracking-[0.08em] text-accent">
+                      <span className="absolute right-2 top-2 rounded-pill bg-accent/15 px-1.5 py-0.5 text-[11px] font-semibold text-accent">
                         Best start
                       </span>
                     ) : null}
@@ -290,7 +290,7 @@ export function DemoDataPanel({
                     { label: "Alerts", value: result.summary.alerts.toLocaleString("en-US") },
                   ].map((item) => (
                     <div key={item.label}>
-                      <dt className="text-[9.5px] uppercase tracking-[0.1em] text-muted-foreground">
+                      <dt className="text-[11px] text-muted-foreground">
                         {item.label}
                       </dt>
                       <dd className="num text-[15px] font-medium">{item.value}</dd>
@@ -314,7 +314,7 @@ export function DemoDataPanel({
 
           <div className="mt-4 overflow-hidden rounded-tile border border-border/60 bg-background/40">
             <div className="flex items-center justify-between border-b border-border/60 px-3 py-2">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              <p className="text-[11.5px] font-semibold text-muted-foreground">
                 What lands in the queue
               </p>
               <span className="text-[9.5px] text-muted-foreground/70">illustrative</span>

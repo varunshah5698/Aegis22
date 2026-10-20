@@ -160,7 +160,7 @@ export function DossierCard({
 export function CardEyebrow({ children, tone }: { children: React.ReactNode; tone?: string }) {
   return (
     <p
-      className="font-mono text-[9.5px] font-medium uppercase tracking-[0.24em]"
+      className="font-mono text-[11px] font-medium"
       style={{ color: tone ?? "rgb(var(--muted-foreground) / 0.85)" }}
     >
       {children}
@@ -192,7 +192,7 @@ export function CardValue({
         {value}
       </span>
       {unit ? (
-        <span className="label-xs translate-y-[-2px] max-w-[11ch] leading-3 tracking-[0.18em]">{unit}</span>
+        <span className="label-xs translate-y-[-2px] max-w-[11ch] leading-3">{unit}</span>
       ) : null}
     </p>
   );
@@ -239,7 +239,7 @@ export function ScoreSphere({ score, explode }: { score: number; explode: number
       </svg>
       <span className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="num text-[30px] font-medium leading-none tracking-[-0.04em]">{Math.round(score)}</span>
-        <span className="mt-1 text-[9px] uppercase tracking-[0.2em] text-muted-foreground">{level}</span>
+        <span className="mt-1 text-[11px] text-muted-foreground">{level}</span>
       </span>
     </div>
   );

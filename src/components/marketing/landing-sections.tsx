@@ -35,7 +35,7 @@ export function TrustStrip() {
           {companies.map((company) => (
             <span
               key={company}
-              className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-white/30"
+              className="text-[11.5px] font-medium text-white/30"
             >
               {company}
             </span>
@@ -288,7 +288,7 @@ export function FinalCta() {
         />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <p className="font-mono text-[10.5px] font-medium uppercase tracking-[0.2em] text-[#F0B250]/85">
+            <p className="font-mono text-[11.5px] font-medium text-[#F0B250]/85">
               Start with the reference set
             </p>
             <h2 id="final-cta-heading" className="display-section mt-4 max-w-[20ch] text-[#F4F7FC]">

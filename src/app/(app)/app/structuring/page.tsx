@@ -123,7 +123,7 @@ export default async function StructuringPage() {
                         <caption className="sr-only">
                           Transfers into {cluster.receiverName} that make up this structuring cluster.
                         </caption>
-                        <thead className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                        <thead className="text-[11.5px] text-muted-foreground">
                           <tr>
                             <th scope="col" className="py-1 font-medium">When</th>
                             <th scope="col" className="py-1 font-medium">Sender</th>

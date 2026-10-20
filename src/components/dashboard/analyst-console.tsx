@@ -542,7 +542,7 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
                 { label: "Avg score", value: String(evidence.avgScore) },
               ].map((item) => (
                 <div key={item.label} className="rounded-[10px] border border-white/8 bg-white/[0.03] px-2.5 py-2">
-                  <p className="text-[9.5px] uppercase tracking-[0.12em] text-white/40">{item.label}</p>
+                  <p className="text-[11px] text-white/40">{item.label}</p>
                   <p className="num mt-1 text-[15px] leading-5 text-white/85">{item.value}</p>
                 </div>
               ))}

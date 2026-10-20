@@ -104,7 +104,7 @@ export function NotificationBell({ userId }: { userId: string }) {
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 p-0">
         <div className="flex items-center justify-between border-b border-border px-3 py-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">Notifications</p>
+          <p className="text-xs font-semibold text-muted-foreground">Notifications</p>
           <Button variant="ghost" size="sm" onClick={markAllRead} disabled={unread.length === 0}>
             <CheckCheck aria-hidden="true" /> Mark all read
           </Button>
@@ -116,13 +116,13 @@ export function NotificationBell({ userId }: { userId: string }) {
             <>
               {today.length > 0 ? (
                 <div>
-                  <p className="px-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Today</p>
+                  <p className="px-2 pt-1 text-[11.5px] font-semibold text-muted-foreground">Today</p>
                   <ul className="mt-1">{today.map(renderRow)}</ul>
                 </div>
               ) : null}
               {earlier.length > 0 ? (
                 <div className="mt-2">
-                  <p className="px-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">Earlier</p>
+                  <p className="px-2 pt-1 text-[11.5px] font-semibold text-muted-foreground">Earlier</p>
                   <ul className="mt-1">{earlier.map(renderRow)}</ul>
                 </div>
               ) : null}

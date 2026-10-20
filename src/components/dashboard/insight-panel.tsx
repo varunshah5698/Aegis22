@@ -147,7 +147,7 @@ export function InsightPanel({
             {selected.metric ? (
               <dl className="mt-2.5 grid grid-cols-2 gap-2 rounded-tile border border-border/60 bg-background/40 px-3 py-2">
                 <div>
-                  <dt className="text-[9.5px] uppercase tracking-[0.1em] text-muted-foreground">Observed</dt>
+                  <dt className="text-[11px] text-muted-foreground">Observed</dt>
                   <dd className="num mt-0.5 text-[12.5px] font-medium">
                     {selected.metric.unit === "usd"
                       ? `$${formatCompactNumber(selected.metric.observed)}`
@@ -155,7 +155,7 @@ export function InsightPanel({
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-[9.5px] uppercase tracking-[0.1em] text-muted-foreground">Baseline</dt>
+                  <dt className="text-[11px] text-muted-foreground">Baseline</dt>
                   <dd className="num mt-0.5 text-[12.5px] font-medium">
                     {selected.metric.unit === "usd"
                       ? `$${formatCompactNumber(selected.metric.baseline)}`
@@ -197,7 +197,7 @@ export function InsightPanel({
 
             {explanation ? (
               <div className="mt-2.5 rounded-tile border border-border/60 bg-background/40 px-3 py-2.5">
-                <p className="mb-2 text-[9.5px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                <p className="mb-2 text-[11px] font-semibold text-muted-foreground">
                   Model explanation · figures above are computed
                 </p>
                 <AnswerBody text={explanation.answer} />

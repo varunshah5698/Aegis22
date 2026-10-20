@@ -150,7 +150,7 @@ export function SlaStrip({
       <dl className="grid grid-cols-3 gap-2">
         {items.map((item) => (
           <div key={item.label} className="rounded-tile border border-border/70 bg-elevated/60 px-2.5 py-2">
-            <dt className="text-[10.5px] uppercase tracking-[0.1em] text-muted-foreground">{item.label}</dt>
+            <dt className="text-[11.5px] text-muted-foreground">{item.label}</dt>
             <dd className={cn("num mt-1 text-[17px] font-medium leading-5", item.tone)}>{item.value}</dd>
           </div>
         ))}

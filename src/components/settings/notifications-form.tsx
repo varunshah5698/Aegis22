@@ -50,7 +50,7 @@ export function NotificationsForm({ initial }: { initial: Record<Channel, Record
         </h2>
         <table className="w-full min-w-[520px] text-left text-sm">
           <caption className="sr-only">Choose which events reach you in the app and by email.</caption>
-          <thead className="border-b border-border bg-muted/40 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          <thead className="border-b border-border bg-muted/40 text-[11.5px] text-muted-foreground">
             <tr>
               <th scope="col" className="px-4 py-2 font-medium">Event</th>
               <th scope="col" className="px-4 py-2 text-center font-medium">In app</th>

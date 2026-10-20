@@ -131,7 +131,7 @@ export function PricingSection({ compact = false }: { compact?: boolean }) {
                     <th
                       scope="rowgroup"
                       colSpan={4}
-                      className="border-t border-border bg-background px-4 pb-1 pt-4 text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground"
+                      className="border-t border-border bg-background px-4 pb-1 pt-4 text-left text-[12px] font-semibold text-muted-foreground"
                     >
                       {group.title}
                     </th>

@@ -61,7 +61,7 @@ export default async function AuditLogPage({
       <div className="overflow-x-auto rounded-card border border-border bg-card">
         <table className="w-full min-w-[720px] text-left text-sm">
           <caption className="sr-only">Audit events, newest first.</caption>
-          <thead className="border-b border-border bg-muted/40 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          <thead className="border-b border-border bg-muted/40 text-[11.5px] text-muted-foreground">
             <tr>
               <th scope="col" className="px-4 py-2 font-medium">When (UTC)</th>
               <th scope="col" className="px-3 py-2 font-medium">Actor</th>

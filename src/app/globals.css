@@ -24,12 +24,12 @@
     --risk-high: 194 65 12;
     --risk-critical: 185 28 28;
 
-    --chart-1: 13 148 136;
-    --chart-2: 37 99 235;
+    --chart-1: 249 115 22;
+    --chart-2: 12 12 14;
     --chart-3: 202 138 4;
-    --chart-4: 124 58 237;
-    --chart-5: 100 116 139;
-    --chart-grid: 15 21 32;
+    --chart-4: 255 122 61;
+    --chart-5: 148 163 184;
+    --chart-grid: 203 203 208;
     color-scheme: light;
   }
 
@@ -215,8 +215,8 @@
   .panel {
     @apply relative rounded-panel bg-card;
     box-shadow:
-      0 1px 2px rgb(15 15 20 / 0.05),
-      0 18px 40px -28px rgb(15 15 20 / 0.22);
+      0 1px 2px rgb(15 15 20 / 0.04),
+      0 14px 34px -16px rgb(15 15 20 / 0.14);
     transition:
       transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1),
       box-shadow 220ms ease;
@@ -227,8 +227,8 @@
   .panel:hover {
     transform: translateY(-3px);
     box-shadow:
-      0 4px 10px rgb(15 15 20 / 0.06),
-      0 30px 60px -30px rgb(15 15 20 / 0.32);
+      0 6px 16px rgb(15 15 20 / 0.07),
+      0 30px 60px -30px rgb(15 15 20 / 0.26);
   }
 
   .dark .panel {
@@ -244,7 +244,7 @@
   }
 
   .panel-head {
-    @apply flex flex-wrap items-start justify-between gap-3 border-b border-border/55 px-5 py-3.5;
+    @apply flex flex-wrap items-start justify-between gap-3 border-b border-border/55 px-6 py-4;
   }
 
   .panel-title {
@@ -255,8 +255,9 @@
     @apply text-[11.5px] leading-4 text-muted-foreground;
   }
 
+  /* Sentence-case, human labels — the reference never tracks out micro-caps. */
   .label-xs {
-    @apply text-[10px] font-semibold uppercase leading-4 tracking-[0.14em] text-muted-foreground;
+    @apply text-[12.5px] font-medium leading-4 tracking-[-0.005em] text-muted-foreground;
   }
 
   .table-base {
@@ -264,7 +265,7 @@
   }
 
   .table-base thead th {
-    @apply h-9 whitespace-nowrap border-b border-border bg-card px-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-muted-foreground;
+    @apply h-10 whitespace-nowrap border-b border-border bg-card px-3 text-[12px] font-medium text-muted-foreground;
   }
 
   .table-base tbody td,
