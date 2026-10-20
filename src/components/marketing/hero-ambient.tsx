@@ -91,6 +91,8 @@ const COINS: Coin[] = [
 ];
 
 const BACKDROP_STILL = "/backdrop/hero-ambient-poster.jpg";
+/** Coin sprites live here, named `<metal>-<view>.png`; `front` faces gain a `back`. */
+const COIN_DIR = "/backdrop/coins";
 const LOOP_SECONDS = 34;
 const TAU = Math.PI * 2;
 
@@ -178,7 +180,10 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
         const image = new Image();
         image.decoding = "async";
         image.onload = () => resolve(image);
-        image.onerror = () => resolve(null);
+        image.onerror = (event) => {
+          console.warn(`[hero-ambient] could not load ${src}`, event);
+          resolve(null);
+        };
         image.src = src;
       });
 
@@ -344,7 +349,15 @@ export function HeroAmbient({ className, onReady }: HeroAmbientProps) {
     resize();
     paint(0);
 
-    const urls = Array.from(new Set(COINS.flatMap((coin) => (coin.face.includes("front") ? [coin.face, coin.face.replace("front", "back")] : [coin.face]))));
+    const urls = Array.from(
+      new Set(
+        COINS.flatMap((coin) =>
+          coin.face.includes("front")
+            ? [coin.face, coin.face.replace("front", "back")]
+            : [coin.face],
+        ).map((face) => `${COIN_DIR}/${face}.png`),
+      ),
+    );
     void Promise.all([load(BACKDROP_STILL), ...urls.map(load)]).then((loaded) => {
       if (disposed) return;
       const [still, ...coinImages] = loaded;
