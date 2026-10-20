@@ -160,11 +160,36 @@
   }
 
   .card-positivus {
-    @apply rounded-card border-2 border-foreground/15 bg-card p-6 shadow-card transition-[transform,box-shadow] duration-200;
+    @apply rounded-[18px] border border-border bg-card p-6 shadow-card transition-[transform,border-color,box-shadow] duration-300;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.5),
+      0 1px 2px rgb(20 21 26 / 0.03),
+      0 24px 48px -36px rgb(20 21 26 / 0.3);
   }
 
   .card-positivus:hover {
-    @apply -translate-y-0.5 shadow-lift;
+    @apply -translate-y-0.5 border-border-strong shadow-lift;
+  }
+
+  .dark .card-positivus {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.04),
+      0 24px 48px -36px rgb(0 0 0 / 0.8);
+  }
+
+  /** A section label that reads as an editorial note, not a tracked-out tag. */
+  .section-kicker {
+    @apply flex items-center gap-2 font-sans text-[11px] font-medium uppercase leading-4 tracking-[0.16em] text-muted-foreground;
+  }
+
+  .section-kicker::before {
+    content: "";
+    display: block;
+    width: 18px;
+    height: 1px;
+    flex: none;
+    background: rgb(var(--accent) / 0.9);
+    transform: skewX(-24deg);
   }
 
   /*
@@ -237,16 +262,16 @@
     @apply transition-colors hover:bg-muted/40;
   }
 
+  /* Metrics use the display face: money and counts should look measured, not
+   * typed out in code. */
   .metric-value {
-    @apply text-[26px] font-medium leading-8 tracking-[-0.03em];
+    @apply font-display text-[26px] font-semibold leading-8 tracking-[-0.035em];
     font-variant-numeric: tabular-nums;
-    @apply font-mono;
   }
 
   .metric-xl {
-    @apply text-[34px] font-medium leading-9 tracking-[-0.035em];
+    @apply font-display text-[34px] font-semibold leading-9 tracking-[-0.04em];
     font-variant-numeric: tabular-nums;
-    @apply font-mono;
   }
 
   /* One rhythm for every workspace page: 20px between bands, 16px inside. */
@@ -375,6 +400,91 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /*
+   * Voice layer.
+   *
+   * Marketing and empty-state copy share one scale so the product never reads
+   * as two different voices: a kicker that names the section in mono caps, a
+   * display heading that carries the claim, and a lede that earns it in one or
+   * two sentences. `em` inside a heading is the emphasis style — the italic
+   * serif note against the grotesk line.
+   */
+  .type-kicker {
+    @apply font-sans text-[11px] font-medium uppercase leading-4 tracking-[0.16em] text-muted-foreground;
+  }
+
+  .type-lede {
+    @apply max-w-[62ch] text-[15.5px] leading-[1.65] text-muted-foreground md:text-[16.5px];
+    text-wrap: pretty;
+  }
+
+  /* In-app page headers: larger than body, tuned for a scanning analyst. */
+  .app-title {
+    @apply font-display text-[27px] font-semibold leading-[1.05] tracking-[-0.035em];
+    text-wrap: balance;
+  }
+
+  .app-subtitle {
+    @apply mt-2 max-w-[70ch] text-[13px] leading-[1.6] text-muted-foreground;
+    text-wrap: pretty;
+  }
+
+  .type-deck {
+    @apply text-[13.5px] leading-6 text-muted-foreground;
+  }
+
+  /*
+   * Emphasis in a heading is set upright in the display face and painted with
+   * warmth. Italic serif is a publishing convention; here the sentence has to
+   * feel spoken, so the stress comes from colour and size, not a typeface swap.
+   */
+  h1 em,
+  h2 em {
+    @apply not-italic text-accent;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .display-hero {
+    @apply font-display text-[clamp(2.6rem,5.2vw,4.75rem)] font-semibold leading-[0.94] tracking-[-0.048em];
+    font-variation-settings: "opsz" 96;
+  }
+
+  /* Hero lines rise in sequence on first paint; the copy is already in the DOM. */
+  .display-hero .line {
+    display: block;
+    animation: line-rise 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .display-hero .line:nth-child(2) {
+    animation-delay: 90ms;
+  }
+
+  .display-hero .line:nth-child(3) {
+    animation-delay: 180ms;
+  }
+
+  .display-section {
+    @apply font-display text-[clamp(1.95rem,3.6vw,3.1rem)] font-semibold leading-[1] tracking-[-0.04em];
+  }
+
+  @keyframes line-rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.22em);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .display-hero .line {
+      animation: none;
+    }
+  }
+
   .prose-sf {
     @apply max-w-none text-[15px] leading-7 text-muted-foreground;
   }
@@ -395,6 +505,874 @@
   }
   .prose-sf code {
     @apply rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground;
+  }
+}
+
+@layer components {
+  /* Landing hero backdrop --------------------------------------------------- */
+
+  .hero-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background-color: #05080f;
+  }
+
+  /* Ambient canvas. Sized to the hero at device resolution and faded in only
+     once the plate and sprites are painted, so a slow or failed load leaves
+     the static field below untouched instead of a flash of black.
+
+     No CSS filter or blend mode here on purpose: both would re-run a filter
+     pass over a full-hero layer on every frame. The cool palette is baked in
+     by the canvas itself and by the translucent gradients above it. */
+  .hero-backdrop__canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1200ms ease-out;
+    pointer-events: none;
+  }
+
+  .hero-backdrop[data-ready="on"] .hero-backdrop__canvas {
+    opacity: 0.92;
+  }
+
+  /* Re-colours the plate into the product palette without hiding it: a navy
+     wash over the whole hero, then teal and amber light on top. Translucent
+     (and no blend mode) so the motion behind it stays readable and costs the
+     compositor nothing per frame. */
+  .hero-backdrop__tint {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background:
+      radial-gradient(60% 64% at 78% 42%, rgb(58 104 176 / 0.42) 0%, rgb(26 44 78 / 0.5) 55%, transparent 82%),
+      linear-gradient(160deg, rgb(120 150 200 / 0.26) 0%, rgb(52 74 112 / 0.38) 48%, rgb(24 36 58 / 0.5) 100%);
+    transition: opacity 1200ms ease-out;
+    pointer-events: none;
+  }
+
+  .hero-backdrop[data-ready="on"] .hero-backdrop__tint {
+    opacity: 1;
+  }
+
+
+  /* Wide, soft light sources: cool blue-grey behind the Earth, a little teal
+     low on the right and a trace of amber in the upper left. */
+  .hero-backdrop__wash {
+    position: absolute;
+    inset: -18% -12%;
+    background:
+      radial-gradient(
+        52% 58% at 76% 36%,
+        rgb(38 70 122 / 0.55) 0%,
+        rgb(18 33 60 / 0.3) 46%,
+        transparent 72%
+      ),
+      radial-gradient(46% 40% at 84% 82%, rgb(24 48 74 / 0.4) 0%, transparent 70%),
+      radial-gradient(120% 78% at 50% 116%, rgb(15 27 46 / 0.65) 0%, transparent 64%),
+      linear-gradient(104deg, #05080f 0%, #060a13 38%, #070c17 66%, #050910 100%);
+    transition: opacity 900ms ease-out;
+  }
+
+  /* Once the canvas is up it carries the ambience; the static field drops out
+     almost entirely so the two never stack into a hazy, washed-out hero. */
+  .hero-backdrop[data-ready="on"] .hero-backdrop__wash {
+    opacity: 0.16;
+  }
+
+  .hero-backdrop__bloom {
+    position: absolute;
+    inset: -10%;
+    background:
+      radial-gradient(30% 32% at 82% 66%, rgb(45 212 191 / 0.11) 0%, transparent 68%),
+      radial-gradient(26% 30% at 10% 8%, rgb(240 178 80 / 0.075) 0%, transparent 70%),
+      radial-gradient(36% 30% at 60% 14%, rgb(93 135 196 / 0.1) 0%, transparent 72%);
+    /* The lobes are already blurred by their own gradients; a CSS blur pass
+       here would sit over a full-hero layer on every frame. */
+    transition: opacity 900ms ease-out;
+  }
+
+  .hero-backdrop[data-ready="on"] .hero-backdrop__bloom {
+    opacity: 0.45;
+  }
+
+  /* Left-weighted falloff keeps the headline column at full contrast while the
+     globe side stays atmospheric. */
+  .hero-backdrop__vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgb(4 7 12 / 0.86) 0%, rgb(4 7 12 / 0.5) 38%, transparent 66%),
+      linear-gradient(
+        180deg,
+        rgb(4 7 12 / 0.5) 0%,
+        transparent 20%,
+        transparent 78%,
+        rgb(3 5 9 / 0.62) 100%
+      );
+  }
+
+  /* Below the lg breakpoint the hero stacks, so the ambient light moves down
+     behind the globe and the copy sits on a near-black field instead of the
+     right-hand blue lobe. */
+  @media (max-width: 1023px) {
+    .hero-backdrop__wash {
+      background:
+        radial-gradient(120% 40% at 74% 86%, rgb(38 70 122 / 0.5) 0%, transparent 72%),
+        radial-gradient(90% 26% at 50% 104%, rgb(15 27 46 / 0.55) 0%, transparent 70%),
+        linear-gradient(180deg, #05080f 0%, #060a13 56%, #070c17 100%);
+    }
+
+    .hero-backdrop__bloom {
+      background:
+        radial-gradient(78% 22% at 78% 82%, rgb(45 212 191 / 0.1) 0%, transparent 70%),
+        radial-gradient(56% 20% at 12% 4%, rgb(240 178 80 / 0.07) 0%, transparent 72%);
+    }
+
+    .hero-backdrop__vignette {
+      background:
+        linear-gradient(
+          180deg,
+          rgb(4 7 12 / 0.35) 0%,
+          transparent 30%,
+          transparent 78%,
+          rgb(3 5 9 / 0.4) 100%
+        ),
+        radial-gradient(140% 100% at 50% 48%, transparent 55%, rgb(2 4 8 / 0.5) 100%);
+    }
+  }
+
+  /* Fine monochrome grain: kills gradient banding on large dark fields. Overlay
+     is a full-hero blend pass, which is why it lives on the static layer and
+     not over the moving canvas. */
+  .hero-backdrop {
+    --hero-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='grain'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23grain)'/></svg>");
+    /* Painted on the element itself so it sits under the canvas and needs no
+       separate blend layer. */
+    background-image: var(--hero-grain);
+    background-size: 160px 160px;
+    background-blend-mode: overlay;
+  }
+
+  /* Hero globe -------------------------------------------------------------- */
+
+  .globe-hero {
+    position: relative;
+    isolation: isolate;
+    min-width: 0;
+  }
+
+  .globe-hero::before {
+    content: "";
+    position: absolute;
+    inset: 2% -4% 8%;
+    z-index: -1;
+    background:
+      radial-gradient(42% 42% at 58% 40%, rgb(78 128 220 / 0.18), transparent 70%),
+      radial-gradient(34% 34% at 32% 66%, rgb(240 178 80 / 0.08), transparent 72%);
+    filter: blur(34px);
+    pointer-events: none;
+  }
+
+  /*
+   * The globe canvas is square, never a short band. The camera fits the sphere
+   * to the smaller axis, so a square box means the planet has the same margin
+   * above and below and the viewport edge never crosses its silhouette.
+   */
+  .globe-canvas {
+    position: relative;
+    width: 100%;
+    max-width: clamp(320px, 44vw, 570px);
+    margin-inline: auto;
+    aspect-ratio: 1;
+    min-width: 0;
+  }
+
+  .globe-cards {
+    display: flex;
+    gap: 10px;
+    margin: 2px -4px 0;
+    padding: 2px 4px 8px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .globe-cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .globe-card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    flex: 1 0 78%;
+    max-width: 268px;
+    scroll-snap-align: start;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 14px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: linear-gradient(158deg, rgb(23 33 50 / 0.9), rgb(8 12 20 / 0.94));
+    padding: 11px 12px 12px;
+    text-align: left;
+    color: #e7ecf5;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.07),
+      0 24px 52px -32px rgb(0 0 0 / 0.95);
+    backdrop-filter: blur(18px) saturate(1.05);
+    transition:
+      transform 200ms cubic-bezier(0.22, 0.61, 0.36, 1),
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+
+  .globe-card:hover {
+    border-color: rgb(255 255 255 / 0.18);
+    transform: translateY(-2px);
+  }
+
+  .globe-card:focus-visible {
+    outline: 2px solid rgb(255 255 255 / 0.55);
+    outline-offset: 2px;
+  }
+
+  .globe-card.is-active {
+    border-color: var(--card-accent);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.08),
+      inset 2px 0 0 var(--card-accent),
+      0 24px 52px -30px rgb(0 0 0 / 0.95);
+  }
+
+  .globe-card__head {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 7px;
+    padding-right: 16px;
+  }
+
+  .globe-card__icon {
+    display: inline-flex;
+    width: 24px;
+    height: 24px;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    border: 1px solid rgb(255 255 255 / 0.09);
+    background: rgb(240 178 80 / 0.1);
+    color: #f0b250;
+  }
+
+  .globe-card__score {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    place-items: center;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--card-accent);
+    background:
+      radial-gradient(closest-side, #0a0f18 76%, transparent 77% 100%),
+      conic-gradient(var(--card-accent) 92%, rgb(255 255 255 / 0.12) 0);
+  }
+
+  .globe-card__label {
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: rgb(231 236 245 / 0.46);
+  }
+
+  .globe-card__badge {
+    flex: none;
+    margin-left: auto;
+    border-radius: 999px;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    padding: 2px 6px;
+    font-size: 8.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--card-accent);
+  }
+
+  .globe-card__title {
+    margin-top: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: rgb(243 246 251 / 0.95);
+  }
+
+  .globe-card__meta {
+    margin-top: 2px;
+    font-size: 10px;
+    line-height: 1.45;
+    color: rgb(231 236 245 / 0.45);
+  }
+
+  .globe-card__open {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 13px;
+    height: 13px;
+    color: rgb(255 255 255 / 0.32);
+    transition: color 160ms ease, transform 160ms ease;
+  }
+
+  .globe-card:hover .globe-card__open {
+    color: rgb(255 255 255 / 0.7);
+    transform: translate(1px, -1px);
+  }
+
+  .globe-card__meter {
+    display: block;
+    width: calc(100% - 26px);
+    height: 2px;
+    margin-top: 9px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  .globe-card__meter span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #f0b250, #f97316);
+  }
+
+  .globe-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    margin-top: 12px;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+    padding-top: 10px;
+    font-size: 10px;
+    color: rgb(237 241 248 / 0.45);
+  }
+
+  .globe-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .globe-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .globe-legend__line,
+  .globe-legend__dash {
+    display: inline-block;
+    width: 15px;
+    flex: none;
+  }
+
+  .globe-legend__line {
+    height: 2px;
+    border-radius: 999px;
+  }
+
+  .globe-legend__dash {
+    height: 0;
+    border-top: 2px dashed;
+  }
+
+  .globe-demo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: rgb(255 255 255 / 0.03);
+    padding: 3px 9px;
+    font-size: 9.5px;
+    letter-spacing: 0.02em;
+    color: rgb(237 241 248 / 0.55);
+    white-space: nowrap;
+  }
+
+  .globe-hint {
+    margin-top: 6px;
+    font-size: 9.5px;
+    letter-spacing: 0.02em;
+    color: rgb(237 241 248 / 0.28);
+  }
+
+  .globe-detail {
+    position: relative;
+    z-index: 4;
+    width: 100%;
+    margin-top: 10px;
+    border-radius: 14px;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    background: linear-gradient(160deg, rgb(19 27 42 / 0.96), rgb(7 11 18 / 0.97));
+    padding: 12px 13px 11px;
+    color: #e7ecf5;
+    box-shadow:
+      inset 2px 0 0 var(--detail-accent),
+      inset 0 1px 0 rgb(255 255 255 / 0.06),
+      0 28px 60px -34px rgb(0 0 0 / 0.98);
+    backdrop-filter: blur(18px) saturate(1.05);
+    animation: globe-detail-in 220ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .globe-detail__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .globe-detail__kind {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--detail-accent);
+  }
+
+  .globe-detail__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--detail-accent);
+    box-shadow: 0 0 8px var(--detail-accent);
+  }
+
+  .globe-detail__ref {
+    margin-left: auto;
+    font-size: 9px;
+    color: rgb(231 236 245 / 0.4);
+  }
+
+  .globe-detail__close {
+    display: grid;
+    width: 20px;
+    height: 20px;
+    flex: none;
+    place-items: center;
+    border-radius: 6px;
+    color: rgb(231 236 245 / 0.5);
+    transition: background-color 160ms ease, color 160ms ease;
+  }
+
+  .globe-detail__close:hover {
+    background: rgb(255 255 255 / 0.08);
+    color: rgb(243 246 251 / 0.95);
+  }
+
+  .globe-detail__route {
+    margin-top: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: rgb(244 247 252 / 0.96);
+  }
+
+  .globe-detail__arrow {
+    margin: 0 6px;
+    color: var(--detail-accent);
+  }
+
+  .globe-detail__corridor {
+    margin-top: 2px;
+    font-size: 9.5px;
+    color: rgb(231 236 245 / 0.42);
+  }
+
+  .globe-detail__numbers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+    border-top: 1px solid rgb(255 255 255 / 0.08);
+    border-bottom: 1px solid rgb(255 255 255 / 0.08);
+    padding: 8px 0;
+  }
+
+  .globe-detail__key {
+    display: block;
+    font-size: 8.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(231 236 245 / 0.38);
+  }
+
+  .globe-detail__value {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgb(244 247 252 / 0.94);
+    text-transform: capitalize;
+  }
+
+  .globe-detail__classification {
+    margin-top: 9px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: rgb(243 246 251 / 0.9);
+  }
+
+  .globe-detail__note {
+    margin-top: 3px;
+    font-size: 10px;
+    line-height: 1.5;
+    color: rgb(231 236 245 / 0.44);
+  }
+
+  .globe-detail__footnote {
+    margin-top: 8px;
+    font-size: 8.5px;
+    letter-spacing: 0.02em;
+    color: rgb(231 236 245 / 0.3);
+  }
+
+  @keyframes globe-detail-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .globe-canvas {
+      max-width: clamp(360px, 44vw, 580px);
+    }
+
+    .globe-cards {
+      position: absolute;
+      inset: 0 0 auto;
+      display: block;
+      aspect-ratio: 1;
+      max-height: clamp(360px, 44vw, 580px);
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .globe-card {
+      position: absolute;
+      width: 206px;
+      max-width: none;
+      pointer-events: auto;
+    }
+
+    .globe-card--a {
+      left: 0;
+      top: 4%;
+    }
+
+    .globe-card--b {
+      right: 0;
+      top: 2%;
+      width: 218px;
+    }
+
+    .globe-card--c {
+      left: 0;
+      bottom: 9%;
+    }
+
+    .globe-detail {
+      width: 320px;
+      margin-top: 12px;
+      margin-left: auto;
+    }
+
+    .globe-detail__note {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .globe-card {
+      width: 212px;
+    }
+
+    .globe-card--b {
+      width: 224px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    .globe-legend {
+      gap: 5px 10px;
+    }
+
+    .globe-hint {
+      display: none;
+    }
+  }
+
+  /* Score stack ------------------------------------------------------------- */
+
+  .score-stack {
+    position: relative;
+    min-width: 0;
+    padding-top: 10px;
+  }
+
+  .score-stack__scene {
+    position: relative;
+    height: 470px;
+    perspective: 1400px;
+  }
+
+  .score-stack__planes {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateX(54deg) rotateZ(-30deg);
+    animation: score-sway 18s ease-in-out infinite;
+  }
+
+  /*
+   * Each plane carries a whole unit of lift per index and a separate float, so
+   * the exploded view keeps its shape while every sheet drifts on its own
+   * clock — the stack reads as suspended rather than pinned.
+   */
+  .score-stack__plane {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 380px;
+    height: 236px;
+    margin-left: -190px;
+    margin-top: -118px;
+    transform: translate3d(calc(var(--i) * 18px), calc(var(--i) * -108px), 0);
+    transition: transform 500ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .score-stack__plane-float {
+    height: 100%;
+    transform: translateZ(calc(var(--i) * 6px));
+    animation: score-plane-float 9s ease-in-out infinite;
+    animation-delay: calc(var(--i) * -2.25s);
+  }
+
+  .score-stack__plane:hover {
+    transform: translate3d(calc(var(--i) * 18px), calc(var(--i) * -108px - 12px), 0);
+  }
+
+  .score-stack__plane:hover .score-stack__plane-float {
+    animation-play-state: paused;
+  }
+
+  .score-stack__plane-face {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid rgb(255 255 255 / 0.13);
+    background:
+      linear-gradient(155deg, rgb(27 39 58 / 0.92), rgb(8 12 20 / 0.97) 72%),
+      #080c14;
+    padding: 18px 20px;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.09),
+      0 26px 50px -24px rgb(0 0 0 / 0.9);
+  }
+
+  .score-stack__plane:nth-child(2) .score-stack__plane-face {
+    background:
+      linear-gradient(155deg, rgb(31 39 50 / 0.92), rgb(9 12 17 / 0.97) 72%),
+      #080c14;
+  }
+
+  .score-stack__plane:nth-child(3) .score-stack__plane-face {
+    border-color: rgb(240 178 80 / 0.22);
+  }
+
+  .score-stack__plane:nth-child(4) .score-stack__plane-face {
+    border-color: rgb(45 212 191 / 0.22);
+  }
+
+  .score-stack__plane-label {
+    font-size: 8.5px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.4);
+  }
+
+  .score-stack__plane-index {
+    font-size: 8.5px;
+    color: rgb(255 255 255 / 0.2);
+  }
+
+  .score-stack__value {
+    font-size: 46px;
+    font-weight: 500;
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    color: rgb(244 247 252 / 0.94);
+  }
+
+  .score-stack__unit {
+    padding-bottom: 5px;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 0.35);
+  }
+
+  .score-stack__badge {
+    position: absolute;
+    right: 3%;
+    top: 5%;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 14px;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: rgb(8 12 20 / 0.78);
+    padding: 9px 13px;
+    box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.9);
+    backdrop-filter: blur(16px);
+    animation: score-card-float 11s ease-in-out infinite;
+  }
+
+  .score-stack__badge-score {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid rgb(240 178 80 / 0.3);
+    background: rgb(240 178 80 / 0.08);
+    font-size: 18px;
+    font-weight: 600;
+    color: #f0b250;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .score-stack__beam {
+    position: absolute;
+    left: 46%;
+    top: -4%;
+    bottom: -2%;
+    width: 160px;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, transparent, rgb(240 178 80 / 0.09) 45%, transparent);
+    filter: blur(24px);
+    pointer-events: none;
+  }
+
+  .score-stack__legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 22px;
+    border-bottom: 1px solid rgb(255 255 255 / 0.1);
+    padding-bottom: 4px;
+  }
+
+  @keyframes score-sway {
+    0%,
+    100% {
+      transform: rotateX(54deg) rotateZ(-30deg) translateY(0);
+    }
+    50% {
+      transform: rotateX(54deg) rotateZ(-30deg) translateY(-9px);
+    }
+  }
+
+  @keyframes score-plane-float {
+    0%,
+    100% {
+      transform: translateZ(calc(var(--i) * 6px));
+    }
+    50% {
+      transform: translateZ(calc(var(--i) * 6px + 7px));
+    }
+  }
+
+  @keyframes score-card-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .score-stack__scene {
+      height: 430px;
+    }
+
+    .score-stack__planes {
+      transform: rotateX(52deg) rotateZ(-28deg) scale(0.92);
+    }
+  }
+
+  @media (max-width: 639px) {
+    .score-stack__scene {
+      height: 350px;
+    }
+
+    .score-stack__plane {
+      width: 290px;
+      height: 190px;
+      margin-left: -145px;
+      margin-top: -95px;
+    }
+
+    .score-stack__planes {
+      transform: rotateX(54deg) rotateZ(-26deg) scale(0.76);
+    }
+
+    .score-stack__value {
+      font-size: 36px;
+    }
+
+    .score-stack__legend {
+      grid-template-columns: 1fr;
+    }
+
+    .score-stack__badge {
+      right: 0;
+      top: 2%;
+    }
   }
 }
 
@@ -458,5 +1436,72 @@
 @media (forced-colors: active) {
   :focus-visible {
     outline: 3px solid Highlight;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Decision dossier (transaction workbench hero)                              */
+/* -------------------------------------------------------------------------- */
+
+.dossier-card {
+  border: 1px solid rgb(var(--border) / 0.9);
+  background:
+    linear-gradient(160deg, rgb(255 255 255 / 0.045), transparent 38%),
+    linear-gradient(180deg, rgb(var(--elevated) / 0.96), rgb(var(--card) / 0.98));
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.05) inset,
+    0 30px 60px -30px rgb(0 0 0 / 0.7),
+    0 2px 6px rgb(0 0 0 / 0.25);
+  transition:
+    border-color 400ms ease,
+    box-shadow 500ms ease,
+    filter 500ms ease;
+}
+
+.dossier-card:hover {
+  border-color: rgb(var(--foreground) / 0.22);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.08) inset,
+    0 40px 80px -34px rgb(0 0 0 / 0.8),
+    0 0 0 1px color-mix(in srgb, var(--card-tone) 30%, transparent),
+    0 0 42px -8px color-mix(in srgb, var(--card-tone) 45%, transparent);
+}
+
+.dossier-sheen {
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgb(255 255 255 / 0.07) 45%,
+    transparent 58%
+  );
+  background-size: 260% 260%;
+  background-position: 140% 0;
+  opacity: 0.9;
+  transition: background-position 900ms ease;
+  mix-blend-mode: screen;
+}
+
+.dossier-card:hover .dossier-sheen {
+  background-position: -40% 0;
+}
+
+.dossier-grid {
+  background-image:
+    linear-gradient(to right, rgb(var(--border) / 0.55) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--border) / 0.55) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(75% 80% at 50% 45%, black 10%, transparent 85%);
+  -webkit-mask-image: radial-gradient(75% 80% at 50% 45%, black 10%, transparent 85%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dossier-card {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .dossier-grid {
+    background-size: 30px 30px;
   }
 }

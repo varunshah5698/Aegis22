@@ -17,7 +17,7 @@ export default async function VerifyEmailPage() {
 
   const { user, profile } = context;
   if (user.email_confirmed_at) {
-    redirect(profile.organization_id ? "/app/overview" : "/onboarding");
+    redirect(profile.organization_id ? "/app/library" : "/onboarding");
   }
 
   return (

@@ -68,6 +68,13 @@ export default async function AnalyticsPage({
               <span className="num">{peakSeriesPoint.count}</span> payments
             </span>
           ) : null}
+          {analytics.history.baseline.windows > 0 ? (
+            <span className="chip">
+              trailing median <span className="num">{analytics.history.baseline.count.toLocaleString("en-US")}</span>{" "}
+              payments · <span className="num">{analytics.history.baseline.flagged}</span> flagged across{" "}
+              <span className="num">{analytics.history.baseline.windows}</span> windows
+            </span>
+          ) : null}
         </>
       }
     >

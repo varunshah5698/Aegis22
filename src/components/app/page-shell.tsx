@@ -30,12 +30,17 @@ export function PageShell({
     <div className={cn("workspace-stack mx-auto w-full max-w-[1560px]", className)}>
       <header className="flex flex-col gap-4 pb-1 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
-          {eyebrow ? <p className="label-xs">{eyebrow}</p> : null}
-          <h1 className="mt-1.5 font-display text-[27px] font-semibold leading-9 tracking-[-0.035em]">
+          {eyebrow ? (
+            <p className="flex items-center gap-2 font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
+              <span className="h-px w-5 bg-accent/80" aria-hidden="true" />
+              {eyebrow}
+            </p>
+          ) : null}
+          <h1 className="app-title mt-2.5">
             {title}
           </h1>
           {description ? (
-            <p className="mt-2 max-w-3xl text-[13px] leading-5 text-muted-foreground">
+            <p className="app-subtitle">
               {description}
             </p>
           ) : null}

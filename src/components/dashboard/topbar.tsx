@@ -121,7 +121,7 @@ function AccountMenu({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex h-9 items-center gap-2 rounded-tile px-1.5 text-left transition-colors hover:bg-muted/60"
+          className="flex h-9 items-center gap-2 rounded-tile border border-transparent px-1.5 text-left transition-colors hover:border-border hover:bg-muted/60"
           aria-label={`Account menu for ${userName || email}`}
         >
           <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-[10.5px] font-semibold">
@@ -215,7 +215,7 @@ export function DashboardTopbar(props: {
 
         <Link
           href="/docs"
-          className="hidden size-9 items-center justify-center rounded-tile text-muted-foreground transition-colors hover:bg-muted hover:text-foreground sm:flex"
+          className="hidden size-9 items-center justify-center rounded-tile text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:flex"
           aria-label="Documentation and help"
         >
           <CircleHelp className="size-4" aria-hidden="true" />

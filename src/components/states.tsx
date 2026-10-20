@@ -29,9 +29,11 @@ export function EmptyState({
       <div className="flex size-11 items-center justify-center rounded-full bg-muted text-muted-foreground">
         {icon ?? <Inbox className="size-5" aria-hidden="true" />}
       </div>
-      <div className="space-y-1">
-        <h3 className="font-display text-base font-semibold">{title}</h3>
-        <p className="mx-auto max-w-md text-sm text-muted-foreground">{description}</p>
+      <div className="space-y-1.5">
+        <h3 className="mx-auto max-w-[34ch] font-display text-[17px] font-semibold leading-[1.15] tracking-[-0.03em]">
+          {title}
+        </h3>
+        <p className="mx-auto max-w-[46ch] text-[12.5px] leading-[1.6] text-muted-foreground">{description}</p>
       </div>
       {action ? <div className="pt-1">{action}</div> : null}
     </div>
@@ -58,9 +60,11 @@ export function ErrorState({
       )}
     >
       <AlertCircle className="size-6 text-risk-critical" aria-hidden="true" />
-      <div className="space-y-1">
-        <h2 className="font-display text-base font-semibold">{title}</h2>
-        <p className="mx-auto max-w-md text-sm text-muted-foreground">{description}</p>
+      <div className="space-y-1.5">
+        <h2 className="mx-auto max-w-[34ch] font-display text-[17px] font-semibold leading-[1.15] tracking-[-0.03em]">
+          {title}
+        </h2>
+        <p className="mx-auto max-w-[46ch] text-[12.5px] leading-[1.6] text-muted-foreground">{description}</p>
       </div>
       <div className="flex gap-2">
         {onRetry ? (

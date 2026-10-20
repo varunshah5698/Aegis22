@@ -23,26 +23,32 @@ export function TrustStrip() {
   const companies = ["Northwind Payments", "Meridian Trust", "Halcyon Financial", "Ardent Bank", "Solstice Capital"];
 
   return (
-    <section aria-labelledby="trust-heading" className="border-y-2 border-foreground/10 bg-card">
-      <div className="container-page py-12">
+    <section
+      aria-labelledby="trust-heading"
+      className="border-b border-white/[0.06] bg-[#05080F] text-[#EDF1F8]"
+    >
+      <div className="container-page py-10 md:py-12">
         <h2 id="trust-heading" className="sr-only">
           Trusted by compliance teams and measured performance
         </h2>
-        <div className="flex flex-wrap items-center justify-between gap-6 opacity-70">
+        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3">
           {companies.map((company) => (
-            <span key={company} className="font-display text-sm font-semibold tracking-[0.02em] text-muted-foreground">
-              {company.toUpperCase()}
+            <span
+              key={company}
+              className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-white/30"
+            >
+              {company}
             </span>
           ))}
         </div>
-        <dl className="mt-10 grid gap-8 border-t border-border pt-8 md:grid-cols-3">
+        <dl className="mt-8 grid gap-8 border-t border-white/10 pt-8 md:grid-cols-3">
           {trustMetrics.map((metric) => (
             <div key={metric.label}>
-              <dd className="font-display text-4xl font-semibold tracking-[-0.03em] md:text-5xl">
+              <dd className="num font-display text-4xl font-medium tracking-[-0.04em] text-white/95 md:text-[44px]">
                 <CountUp value={metric.value} prefix={"prefix" in metric ? metric.prefix : ""} suffix={metric.suffix} />
               </dd>
-              <dt className="mt-2 text-sm font-medium">{metric.label}</dt>
-              <p className="mt-1 text-xs text-muted-foreground">{metric.detail}</p>
+              <dt className="mt-2 text-[12px] font-medium text-white/80">{metric.label}</dt>
+              <p className="mt-1 text-[11px] leading-4 text-white/35">{metric.detail}</p>
             </div>
           ))}
         </dl>
@@ -106,12 +112,16 @@ export function ProblemGrid() {
     <section id="product" aria-labelledby="problem-heading" className="section-pad scroll-mt-24">
       <div className="container-page">
         <Reveal>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="section-kicker mb-4">
             The gap
           </p>
-          <h2 id="problem-heading" className="max-w-3xl text-display-lg">
-            Four patterns move illicit money across borders. Most systems catch one.
+          <h2 id="problem-heading" className="display-section max-w-[26ch]">
+            Four patterns move dirty money across borders. Most systems <em>catch one</em>.
           </h2>
+          <p className="type-lede mt-5">
+            Each one is invisible to a rule that inspects a single payment in isolation. Aegis
+            looks at the payment, the accounts around it, and the days that came before.
+          </p>
         </Reveal>
         <div className="mt-10 grid gap-5 md:grid-cols-2">
           {problems.map((problem, index) => (
@@ -144,11 +154,11 @@ export function HowItWorks() {
     <section id="how-it-works" aria-labelledby="how-heading" className="section-pad scroll-mt-24 border-y-2 border-foreground/10 bg-card">
       <div className="container-page">
         <Reveal>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="section-kicker mb-4">
             How it works
           </p>
-          <h2 id="how-heading" className="max-w-3xl text-display-lg">
-            From payment message to defensible decision, in four steps.
+          <h2 id="how-heading" className="display-section max-w-[24ch]">
+            A payment message becomes a <em>defensible decision</em> in four steps.
           </h2>
         </Reveal>
 
@@ -192,11 +202,11 @@ export function FeatureGrid() {
     <section id="features" aria-labelledby="features-heading" className="section-pad scroll-mt-24">
       <div className="container-page">
         <Reveal>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="section-kicker mb-4">
             Platform
           </p>
-          <h2 id="features-heading" className="max-w-3xl text-display-lg">
-            Everything an analyst needs after the alert fires.
+          <h2 id="features-heading" className="display-section max-w-[24ch]">
+            Everything an analyst needs <em>after</em> the alert fires.
           </h2>
         </Reveal>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -232,8 +242,8 @@ export function Testimonials() {
     <section aria-labelledby="quotes-heading" className="section-pad border-y-2 border-foreground/10 bg-card">
       <div className="container-page">
         <Reveal>
-          <h2 id="quotes-heading" className="max-w-3xl text-display-lg">
-            Compliance teams judge a system by what it can defend.
+          <h2 id="quotes-heading" className="display-section max-w-[22ch]">
+            Compliance teams judge a system by what it can <em>defend</em>.
           </h2>
         </Reveal>
         <div className="mt-10 grid gap-5 lg:grid-cols-3">
@@ -267,22 +277,38 @@ export function Testimonials() {
 export function FinalCta() {
   return (
     <section aria-labelledby="final-cta-heading" className="container-page section-pad">
-      <div className="rounded-hero bg-accent p-8 text-accent-foreground md:p-12">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <div className="relative isolate overflow-hidden rounded-[28px] bg-[#05080F] p-8 text-[#EDF1F8] md:p-12 lg:p-16">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(90%_100%_at_80%_0%,black,transparent)]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-20 -top-24 size-[380px] rounded-full bg-[#F0B250]/[0.12] blur-[100px]"
+        />
+        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <h2 id="final-cta-heading" className="text-display-md">
-              See your first flagged corridor in under an hour.
+            <p className="font-mono text-[10.5px] font-medium uppercase tracking-[0.2em] text-[#F0B250]/85">
+              Start with the reference set
+            </p>
+            <h2 id="final-cta-heading" className="display-section mt-4 max-w-[20ch] text-[#F4F7FC]">
+              Your first flagged corridor, in <em>under an hour</em>.
             </h2>
-            <p className="mt-3 max-w-xl text-sm leading-6 text-accent-foreground/80">
-              Load the reference dataset, score 10,000 historical payments, and compare the
-              alerts against documented typologies. No integration required to start.
+            <p className="mt-5 max-w-xl text-[14px] leading-[1.65] text-[#EDF1F8]/50">
+              Open the reference dataset, follow one payment from signal to alert, then compare the
+              finding against the typology that caught it. Nothing to integrate, nothing to import.
             </p>
           </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Button asChild size="lg" className="bg-accent-foreground text-accent hover:bg-accent-foreground/90">
-              <Link href="/signup">Start free trial</Link>
+          <div className="flex flex-col gap-2 sm:flex-row lg:shrink-0">
+            <Button asChild size="lg" className="bg-[#F0B250] text-[#0B0F17] hover:bg-[#FFC46B]">
+              <Link href="/signup">Start free</Link>
             </Button>
-            <Button asChild size="lg" variant="outline" className="border-accent-foreground/30 text-accent-foreground hover:bg-accent-foreground/10">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white/15 text-white/80 hover:bg-white/[0.07] hover:text-white"
+            >
               <Link href="/contact?intent=demo">Book a demo</Link>
             </Button>
           </div>

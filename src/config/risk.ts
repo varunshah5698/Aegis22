@@ -231,6 +231,22 @@ export const RISK_COLORS: Record<RiskLevel, string> = {
   critical: "#F45E5E",
 };
 
+/**
+ * RGB triples for the same four levels, so a glow can be painted as
+ * `rgba(r, g, b, a)` on canvas without re-parsing hex strings.
+ */
+export const RISK_RGB: Record<RiskLevel, [number, number, number]> = {
+  low: [45, 212, 191],
+  medium: [240, 178, 80],
+  high: [251, 146, 60],
+  critical: [244, 94, 94],
+};
+
+export function riskGlow(level: RiskLevel, alpha: number): string {
+  const [r, g, b] = RISK_RGB[level];
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 /** Shared chart accents so every page speaks the same colour language. */
 export const CHART_COLORS = {
   teal: "#2DD4BF",

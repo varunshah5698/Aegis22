@@ -19,7 +19,14 @@ export interface NetworkNode {
   outCount: number;
   inCount: number;
   averageScore: number;
+  maxScore: number;
   flagged: number;
+  /** Counterparties on either side, i.e. degree in the graph. */
+  degree: number;
+  firstAt: string | null;
+  lastAt: string | null;
+  /** Share of inbound value forwarded again, 0-1. Null when nothing came in. */
+  passThrough: number | null;
 }
 
 export interface NetworkEdge {
@@ -28,6 +35,8 @@ export interface NetworkEdge {
   value: number;
   count: number;
   averageScore: number;
+  /** Flagged transfers carried by this relationship. */
+  flagged: number;
 }
 
 export interface NetworkGraph {
@@ -54,7 +63,7 @@ export async function getNetworkGraph(
 
   const { data: transactions, error } = await supabase
     .from("transactions")
-    .select("sender_account_id, receiver_account_id, amount_base, risk_score")
+    .select("sender_account_id, receiver_account_id, amount_base, risk_score, created_at")
     .eq("organization_id", organizationId)
     .gte("created_at", from.toISOString())
     .limit(20_000);
@@ -100,7 +109,12 @@ export async function getNetworkGraph(
       outCount: 0,
       inCount: 0,
       averageScore: 0,
+      maxScore: 0,
       flagged: 0,
+      degree: 0,
+      firstAt: null,
+      lastAt: null,
+      passThrough: null,
     };
     nodes.set(entityId, node);
     return node;
@@ -131,17 +145,28 @@ export async function getNetworkGraph(
       senderNode.flagged += 1;
       receiverNode.flagged += 1;
     }
+    senderNode.maxScore = Math.max(senderNode.maxScore, score);
+    receiverNode.maxScore = Math.max(receiverNode.maxScore, score);
+    for (const node of [senderNode, receiverNode]) {
+      if (!node.firstAt || row.created_at < node.firstAt) node.firstAt = row.created_at;
+      if (!node.lastAt || row.created_at > node.lastAt) node.lastAt = row.created_at;
+    }
 
     const key = `${sender}->${receiver}`;
-    const edge = edgeMap.get(key) ?? { source: sender, target: receiver, value: 0, count: 0, averageScore: 0 };
+    const edge = edgeMap.get(key) ?? { source: sender, target: receiver, value: 0, count: 0, averageScore: 0, flagged: 0 };
     edge.value += amount;
     edge.count += 1;
     edge.averageScore += score;
+    if (score >= 70) edge.flagged += 1;
     edgeMap.set(key, edge);
   }
 
+  const accountCounts = new Map<string, number>();
+  for (const account of accounts ?? []) {
+    accountCounts.set(account.entity_id, (accountCounts.get(account.entity_id) ?? 0) + 1);
+  }
   for (const node of nodes.values()) {
-    node.accountCount = Math.max(1, (accounts ?? []).filter((account) => account.entity_id === node.id).length);
+    node.accountCount = Math.max(1, accountCounts.get(node.id) ?? 0);
   }
 
   const scoreTotals = new Map<string, { sum: number; count: number }>();
@@ -165,6 +190,19 @@ export async function getNetworkGraph(
   for (const [id, entry] of scoreTotals) {
     const node = nodes.get(id);
     if (node) node.averageScore = entry.count ? Math.round(entry.sum / entry.count) : 0;
+  }
+  const neighbours = new Map<string, Set<string>>();
+  for (const edge of edgeMap.values()) {
+    const source = neighbours.get(edge.source) ?? new Set<string>();
+    source.add(edge.target);
+    neighbours.set(edge.source, source);
+    const target = neighbours.get(edge.target) ?? new Set<string>();
+    target.add(edge.source);
+    neighbours.set(edge.target, target);
+  }
+  for (const node of nodes.values()) {
+    node.degree = neighbours.get(node.id)?.size ?? 0;
+    node.passThrough = node.inValue > 0 ? node.outValue / node.inValue : null;
   }
 
   const ranked = [...nodes.values()].sort((a, b) => b.inValue + b.outValue - (a.inValue + a.outValue));

@@ -142,12 +142,12 @@ export default async function EntityPage({
         />
       </MetricRow>
 
-      <div className="grid gap-4 xl:grid-cols-12">
+      <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection
           id="entity-flow"
           title="Directional flow"
           description={`Value in and out of this entity over the last ${rangeLabel}`}
-          className="xl:col-span-8"
+          className="xl:col-span-9"
           action={<span className="num text-[10.5px] text-muted-foreground">{flow.length} buckets</span>}
         >
           <EntityFlowChart flow={flow} />
@@ -157,7 +157,7 @@ export default async function EntityPage({
           id="entity-flags"
           title="Why this entity is interesting"
           description="Derived from the entity record and the window's flows"
-          className="xl:col-span-4"
+          className="xl:col-span-3"
           flush
         >
           {flags.length === 0 ? (
@@ -211,7 +211,7 @@ export default async function EntityPage({
           id="entity-counterparties"
           title="Counterparties"
           description="Largest relationships in this window, with this entity's direction"
-          className="xl:col-span-7"
+          className="xl:col-span-8"
           flush
         >
           {counterparties.length === 0 ? (
@@ -269,7 +269,7 @@ export default async function EntityPage({
           id="entity-accounts"
           title="Accounts on record"
           description="Each account is a settlement endpoint, not a separate customer"
-          className="xl:col-span-5"
+          className="xl:col-span-4"
           flush
         >
           {accounts.length === 0 ? (

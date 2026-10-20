@@ -118,7 +118,6 @@ export function FxConverter({ currencies }: { currencies: string[] }) {
             type="button"
             variant="outline"
             size="icon"
-            className="size-9"
             aria-label="Swap currencies"
             onClick={() => {
               setBase(quote);

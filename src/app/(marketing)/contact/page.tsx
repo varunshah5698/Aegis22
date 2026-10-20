@@ -24,13 +24,16 @@ export default async function ContactPage({
     <div className="container-page section-pad">
       <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="type-kicker">
             Contact
           </p>
-          <h1 className="mt-3 text-display-lg">Bring a corridor. We will walk it through.</h1>
-          <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground">
-            Demos use your own payment patterns where possible. Tell us the corridors, volumes and
-            current tooling, and we will show the alert and case flow against realistic data.
+          <h1 className="display-hero mt-4 max-w-[15ch]">
+            Bring a corridor. <em>We&rsquo;ll</em> walk it through.
+          </h1>
+          <p className="type-lede mt-5">
+            Demos run on your own payment patterns wherever we can. Tell us the corridors, the
+            volumes and the tooling you already have, and we will show the alert and case flow
+            against data that looks like yours.
           </p>
 
           <dl className="mt-8 space-y-5 text-sm">

@@ -85,16 +85,21 @@ export function NotificationBell({ userId }: { userId: string }) {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
+      {/* The badge is positioned against the icon box, not the glyph, so the
+          number never collides with the bell outline at small sizes. */}
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={unread.length ? `${unread.length} unread notifications` : "Notifications"}>
-          <span className="relative">
-            <Bell aria-hidden="true" />
-            {unread.length > 0 ? (
-              <span className="num absolute -right-2 -top-2 flex min-w-4 items-center justify-center rounded-full bg-risk-critical px-1 text-[9px] font-semibold leading-4 text-white">
-                {unread.length > 99 ? "99+" : unread.length}
-              </span>
-            ) : null}
-          </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative overflow-visible [&_svg]:size-4"
+          aria-label={unread.length ? `${unread.length} unread notifications` : "Notifications"}
+        >
+          <Bell aria-hidden="true" />
+          {unread.length > 0 ? (
+            <span className="num absolute -right-0.5 -top-0.5 flex min-w-[15px] items-center justify-center rounded-full bg-risk-critical px-1 text-[9px] font-semibold leading-[15px] text-white ring-2 ring-background">
+              {unread.length > 99 ? "99+" : unread.length}
+            </span>
+          ) : null}
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-80 p-0">

@@ -269,7 +269,7 @@ export default async function FxIntelligencePage({
       <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection
           id="history-heading"
-          className="xl:col-span-8"
+          className="xl:col-span-9"
           title="Reference rate history"
           description="Daily fixings from the provider, with a 30 or 90-day window and an index mode for comparing shape across pairs"
           action={<SectionLink href={`/app/analytics?range=90d`}>Exposure in analytics</SectionLink>}
@@ -286,7 +286,7 @@ export default async function FxIntelligencePage({
 
         <PageSection
           id="movers-heading"
-          className="xl:col-span-4"
+          className="xl:col-span-3"
           title="Movers since the last fixing"
           description="Largest absolute moves; select a pair to load it in the chart"
           action={<SectionLink href="/app/transactions">Payments</SectionLink>}
@@ -336,7 +336,7 @@ export default async function FxIntelligencePage({
       <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection
           id="comparison-heading"
-          className="xl:col-span-7"
+          className="xl:col-span-8"
           title="Cross-pair performance"
           description="Indexed to 100 at the first fixing in the window, so shape and relative move are comparable across pairs"
           action={<SectionLink href="/app/corridors">Corridor flows</SectionLink>}
@@ -347,7 +347,7 @@ export default async function FxIntelligencePage({
 
         <PageSection
           id="volatility-heading"
-          className="xl:col-span-5"
+          className="xl:col-span-4"
           title="Volatility and range"
           description={
             deepestDrawdown
@@ -363,7 +363,7 @@ export default async function FxIntelligencePage({
       <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection
           id="converter-heading"
-          className="xl:col-span-4"
+          className="xl:col-span-5"
           title="Currency converter"
           description={`Convert at the ${latest.rateDate} published fixing`}
         >
@@ -380,7 +380,7 @@ export default async function FxIntelligencePage({
 
         <PageSection
           id="pairs-heading"
-          className="xl:col-span-8"
+          className="xl:col-span-7"
           title="Reference rates"
           description={`Latest fixing, inverse, ${TREND_DAYS}-day range and the move against the previous published day`}
           flush
@@ -447,7 +447,7 @@ export default async function FxIntelligencePage({
       <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection
           id="exposure-heading"
-          className="xl:col-span-7"
+          className="xl:col-span-8"
           title="Currency exposure from payments"
           description={`Screened value by settlement currency over the last ${TREND_DAYS} days, converted to USD`}
         >
@@ -482,7 +482,7 @@ export default async function FxIntelligencePage({
 
         <PageSection
           id="coverage-heading"
-          className="xl:col-span-5"
+          className="xl:col-span-4"
           title="Rate coverage"
           description="Which traded currencies have a published reference rate"
         >
@@ -520,7 +520,7 @@ export default async function FxIntelligencePage({
       <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection
           id="co-movement-heading"
-          className="xl:col-span-7"
+          className="xl:col-span-8"
           title="Rate co-movement"
           description={`Pairwise correlation of daily fixings across ${correlationGrid.codes.length} pairs over the ${TREND_DAYS}-day window`}
           flush
@@ -532,7 +532,7 @@ export default async function FxIntelligencePage({
 
         <PageSection
           id="sensitivity-heading"
-          className="xl:col-span-5"
+          className="xl:col-span-4"
           title="Exposure sensitivity"
           description="Screened USD value by currency, weighted by each currency's measured volatility"
           bodyClassName="px-5 py-4"

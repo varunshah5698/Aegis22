@@ -61,7 +61,7 @@ export function ResetPasswordForm() {
       await supabase.auth.signOut({ scope: "others" });
       setDone(true);
       window.setTimeout(() => {
-        router.replace("/app/overview");
+        router.replace("/app/library");
         router.refresh();
       }, 1200);
     } catch {
@@ -93,7 +93,7 @@ export function ResetPasswordForm() {
           Other sessions were signed out. Taking you to the workspace…
         </p>
         <Button asChild variant="outline" className="w-full">
-          <Link href="/app/overview">Continue now</Link>
+          <Link href="/app/library">Continue now</Link>
         </Button>
       </div>
     );

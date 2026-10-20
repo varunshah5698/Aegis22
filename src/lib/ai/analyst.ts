@@ -19,6 +19,7 @@ export interface EvidenceSnapshot {
   totals: WorkspaceAnalytics["totals"];
   deltas: WorkspaceAnalytics["deltas"];
   previous: WorkspaceAnalytics["previous"];
+  history: WorkspaceAnalytics["history"];
   flow: Array<{ period: string; payments: number; valueUsd: number; flagged: number; avgScore: number }>;
   corridors: Array<{ corridor: string; payments: number; valueUsd: number; sharePercent: number; flagged: number; flaggedValueUsd: number; avgScore: number }>;
   scoreBands: Array<{ band: string; payments: number; sharePercent: number }>;
@@ -56,6 +57,7 @@ export function buildEvidence(analytics: WorkspaceAnalytics): EvidenceSnapshot {
     totals: analytics.totals,
     deltas: analytics.deltas,
     previous: analytics.previous,
+    history: analytics.history,
     flow,
     corridors: analytics.corridors.slice(0, 8).map((corridor) => ({
       corridor: corridor.corridor,
@@ -93,6 +95,7 @@ export function buildEvidence(analytics: WorkspaceAnalytics): EvidenceSnapshot {
       flaggedShare: "Percentage of payments that were flagged.",
       deltas: "Percent change against the immediately preceding window of equal length; null means no basis for comparison.",
       previous: "Absolute totals for the preceding window.",
+      history: "The four windows before the selected one, oldest last, and their median as 'baseline'. Use it to describe trajectory: 'above the four-window median' is a historical statement, not a forecast.",
       flow: "Per-bucket payment counts, USD value, flagged counts and average score, oldest to newest.",
       corridors: "Top corridors by screened value. 'sharePercent' is the corridor's share of window value.",
       scoreBands: "Payments per 0-100 score band.",
@@ -117,6 +120,7 @@ Rules you must follow:
 7. Be concise and concrete. Prefer short paragraphs or tight bullets over long essays. Aim for under 200 words unless the question asks for depth.
 8. When you refer to a corridor or payer, use the exact identifier from the evidence so the UI can link to it.
 9. Speak in plain analyst language: say "flagged payments" or "average score", never raw evidence keys such as flaggedValueUsd or avgScore.
+10. Treat history as significant. When the evidence carries prior windows and a baseline, say whether the current window is above, below or in line with that baseline and how many windows it covers. Never present the current window as the only evidence, and never call a historical comparison a prediction.
 
 Answer as an analyst speaking to a colleague: direct, evidence-first, no filler.`;
 

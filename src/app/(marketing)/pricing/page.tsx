@@ -16,14 +16,16 @@ export default function PricingPage() {
     <>
       <section className="border-b-2 border-foreground/10">
         <div className="container-page py-14 md:py-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <p className="type-kicker">
             Pricing
           </p>
-          <h1 className="mt-3 max-w-3xl text-display-xl">Priced per programme, not per alert.</h1>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">
-            Every plan includes the full signal set, explainable scores and the alert queue. You pay
-            for volume, investigation depth and deployment control — not for the number of times the
-            model is right.
+          <h1 className="display-hero mt-4 max-w-[17ch]">
+            Priced per programme, <em>never</em> per alert.
+          </h1>
+          <p className="type-lede mt-6">
+            Every plan runs the full signal set, explainable scores and the alert queue. You pay for
+            volume, investigation depth and deployment control — never for how often the model
+            happens to be right.
           </p>
           <p className="mt-4 text-sm text-muted-foreground">
             Need a pilot with your own data?{" "}
@@ -42,7 +44,7 @@ export default function PricingPage() {
       <section className="border-t-2 border-foreground/10 bg-card">
         <div className="container-page section-pad grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
-            <h2 className="text-display-md">Billing and procurement</h2>
+            <h2 className="display-section">Billing and procurement</h2>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">
               Annual plans are invoiced up front and can start on a purchase order. Monthly plans
               renew automatically and can be cancelled before the next cycle.

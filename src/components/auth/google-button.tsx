@@ -34,7 +34,7 @@ type Availability = "checking" | "ready" | "disabled" | "unknown";
  * the server before redirecting. When Google is not enabled the user gets a
  * readable inline message instead of a raw "provider is not enabled" page.
  */
-export function GoogleButton({ label, next = "/app/overview" }: { label: string; next?: string }) {
+export function GoogleButton({ label, next = "/app/library" }: { label: string; next?: string }) {
   const [error, setError] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [availability, setAvailability] = React.useState<Availability>("checking");

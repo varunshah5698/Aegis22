@@ -65,6 +65,12 @@ function NavContent({
                       collapsed && "justify-center px-0",
                     )}
                   >
+                    {active ? (
+                      <span
+                        className="absolute inset-y-[7px] left-0 w-[2px] rounded-full bg-accent"
+                        aria-hidden="true"
+                      />
+                    ) : null}
                     <Icon
                       className={cn("size-4 shrink-0", active ? "text-accent" : "text-muted-foreground")}
                       aria-hidden="true"
@@ -184,7 +190,7 @@ export function MobileSidebar(props: SidebarProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation">
+        <Button variant="outline" size="icon" className="lg:hidden" aria-label="Open navigation">
           <PanelLeft aria-hidden="true" />
         </Button>
       </SheetTrigger>

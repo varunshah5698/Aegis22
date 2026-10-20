@@ -55,12 +55,13 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "var(--font-sans)", "sans-serif"],
+        serif: ["var(--font-serif)", "Georgia", "serif"],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       fontSize: {
-        "display-xl": ["clamp(3.25rem, 7vw, 6rem)", { lineHeight: "0.98", letterSpacing: "-0.035em" }],
-        "display-lg": ["clamp(2.5rem, 5vw, 4rem)", { lineHeight: "1.02", letterSpacing: "-0.03em" }],
-        "display-md": ["clamp(1.875rem, 3.5vw, 2.75rem)", { lineHeight: "1.08", letterSpacing: "-0.025em" }],
+        "display-xl": ["clamp(3.25rem, 7vw, 6rem)", { lineHeight: "0.94", letterSpacing: "-0.05em" }],
+        "display-lg": ["clamp(2.5rem, 5vw, 4rem)", { lineHeight: "0.98", letterSpacing: "-0.045em" }],
+        "display-md": ["clamp(1.875rem, 3.5vw, 2.75rem)", { lineHeight: "1.04", letterSpacing: "-0.035em" }],
       },
       borderRadius: {
         card: "12px",

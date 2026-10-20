@@ -47,7 +47,7 @@ export const getAuthContext = cache(async (): Promise<AuthContext | null> => {
   return { supabase, user, profile, organization };
 });
 
-export async function requireUser(nextPath = "/app/overview"): Promise<AuthContext> {
+export async function requireUser(nextPath = "/app/library"): Promise<AuthContext> {
   const context = await getAuthContext();
   if (!context) {
     redirect(`/login?next=${encodeURIComponent(nextPath)}`);
@@ -55,7 +55,7 @@ export async function requireUser(nextPath = "/app/overview"): Promise<AuthConte
   return context;
 }
 
-export async function requireOrganization(nextPath = "/app/overview"): Promise<AuthContext> {
+export async function requireOrganization(nextPath = "/app/library"): Promise<AuthContext> {
   const context = await requireUser(nextPath);
   if (!context.organization || !context.profile.organization_id) {
     redirect("/onboarding");

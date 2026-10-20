@@ -63,7 +63,7 @@ export default async function NetworkPage({
       <PageSection
         id="graph-heading"
         title="Relationship explorer"
-        description="Every node is an entity and every line a real transfer. Node size tracks screened value, colour tracks risk; switch between concentric, grid and force layouts without losing your filters."
+        description="Every bead is an entity and every curve a real transfer. Bead size tracks screened value, the halo tracks risk; hover to light up a counterparty's flows and switch layouts without losing your filters."
         flush={false}
         bodyClassName="px-4 py-4"
       >

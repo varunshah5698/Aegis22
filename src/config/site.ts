@@ -1,9 +1,9 @@
 export const siteConfig = {
   name: "Aegis",
   legalName: "Aegis Intelligence Ltd.",
-  tagline: "Catch illicit cross-border flows before they settle.",
+  tagline: "Catch dirty money before it crosses the border.",
   description:
-    "Aegis scores cross-border payments in real time, explains every risk decision, and moves flagged activity through investigation to regulatory reporting.",
+    "Aegis scores cross-border payments the moment they land, opens up every risk decision, and carries the finding from alert to filed report.",
   url:
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.RENDER_EXTERNAL_URL ||
@@ -11,7 +11,6 @@ export const siteConfig = {
   locale: "en_US",
   contactEmail: "compliance@aegis.example",
   supportEmail: "support@aegis.example",
-  demoVideoUrl: "",
   socials: {
     github: "https://github.com/aegis-example",
     linkedin: "https://www.linkedin.com/company/aegis-example",

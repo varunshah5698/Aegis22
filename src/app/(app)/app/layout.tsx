@@ -43,7 +43,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <Sidebar {...sidebar} />
       <div className="flex min-w-0 flex-1 flex-col">
         <DashboardTopbar userId={user.id} sidebar={sidebar} />
-        <main id="main-content" className="flex-1 px-4 py-5 md:px-6 md:py-6">
+        <main id="main-content" className="app-canvas flex-1 px-4 py-5 md:px-6 md:py-6">
           {children}
         </main>
       </div>

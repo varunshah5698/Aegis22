@@ -118,7 +118,9 @@ export async function middleware(request: NextRequest) {
   }
 
   if (user && isAuthEntry) {
-    return redirectTo("/app/overview");
+    // Signing in is the start of a working session, not a tour. The data library
+    // is where a workspace gets its first dataset, so it is the landing page.
+    return redirectTo("/app/library");
   }
 
   // An unverified address cannot open the workspace or complete onboarding.
@@ -137,7 +139,7 @@ export async function middleware(request: NextRequest) {
       return redirectTo("/onboarding");
     }
     if (profile?.organization_id && isOnboarding) {
-      return redirectTo("/app/overview");
+      return redirectTo("/app/library");
     }
   }
 

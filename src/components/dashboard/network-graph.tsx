@@ -6,7 +6,6 @@ import cytoscape, {
   type Core,
   type EdgeSingular,
   type ElementDefinition,
-  type LayoutOptions,
   type NodeSingular,
 } from "cytoscape";
 import {
@@ -25,7 +24,7 @@ import {
   X,
 } from "lucide-react";
 
-import { RISK_COLORS, scoreToLevel, type RiskLevel } from "@/config/risk";
+import { RISK_COLORS, riskGlow, scoreToLevel, type RiskLevel } from "@/config/risk";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { NetworkEdge, NetworkNode } from "@/lib/data/network";
@@ -65,6 +64,75 @@ function total(node: NetworkNode): number {
 
 function shortName(label: string, max = 22): string {
   return label.length > max ? `${label.slice(0, max - 1)}…` : label;
+}
+
+/**
+ * Deterministic point cloud inside a unit square. A sunflower spiral spreads
+ * points evenly, so the relaxation below resolves overlaps in a predictable
+ * number of passes regardless of the entity count.
+ */
+function seedPositions(count: number): Array<{ x: number; y: number }> {
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  return Array.from({ length: count }, (_, index) => {
+    const radius = Math.sqrt((index + 0.5) / Math.max(1, count)) * 0.46;
+    const angle = index * golden;
+    return { x: 0.5 + Math.cos(angle) * radius, y: 0.5 + Math.sin(angle) * radius };
+  });
+}
+
+/**
+ * Circle packing by iterative separation. Cytoscape ships no collision
+ * extension out of the box, so labels collide and nodes hide behind one
+ * another at fit zoom; a few pairwise passes on unit space fixes both without
+ * a new dependency or a runtime that reshuffles the graph on every pan.
+ */
+function packPositions(
+  offsets: Array<{ x: number; y: number }>,
+  radii: number[],
+): Array<{ x: number; y: number }> {
+  const points = offsets.map((point) => ({ ...point }));
+  const n = points.length;
+  const spread = 0.62 / Math.max(0.02, Math.max(...radii));
+
+  for (let pass = 0; pass < 160; pass += 1) {
+    let moved = 0;
+    for (let i = 0; i < n; i += 1) {
+      for (let j = i + 1; j < n; j += 1) {
+        const a = points[i]!;
+        const b = points[j]!;
+        let dx = (b.x - a.x) * spread;
+        let dy = (b.y - a.y) * spread;
+        let distance = Math.hypot(dx, dy);
+        if (distance === 0) {
+          dx = 0.0001 * (i + 1);
+          dy = 0.0001 * (j + 1);
+          distance = Math.hypot(dx, dy);
+        }
+        const minimum = radii[i]! + radii[j]! + 0.012;
+        if (distance >= minimum) continue;
+        const push = ((minimum - distance) / distance) * 0.5;
+        a.x -= (dx / spread) * push;
+        a.y -= (dy / spread) * push;
+        b.x += (dx / spread) * push;
+        b.y += (dy / spread) * push;
+        moved = Math.max(moved, minimum - distance);
+      }
+    }
+    // Gentle pull toward the middle keeps the field a disc instead of letting
+    // the outer ring drift away from the canvas centre.
+    for (const point of points) {
+      point.x += (0.5 - point.x) * 0.012;
+      point.y += (0.5 - point.y) * 0.012;
+    }
+    if (moved < 0.0008) break;
+  }
+
+  return points;
+}
+
+/** Node radius in layout units: the same formula the renderer uses. */
+function nodeRadius(value: number, maxValue: number): number {
+  return 9 + Math.sqrt(Math.min(1, value / maxValue)) * 22;
 }
 
 /**
@@ -168,52 +236,87 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
         {
           selector: "node",
           style: {
-            "background-color": (ele: NodeSingular) => RISK_COLORS[scoreToLevel(Number(ele.data("risk"))) as RiskLevel],
-            width: (ele: NodeSingular) => 14 + Math.sqrt(Number(ele.data("value")) / maxValue) * 38,
-            height: (ele: NodeSingular) => 14 + Math.sqrt(Number(ele.data("value")) / maxValue) * 38,
+            // A bead: dark body, coloured core, lighter rim and a soft halo, so
+            // each entity reads as a solid object on the near-black canvas
+            // instead of a flat pastel circle.
+            "background-color": "#0D1422",
+            "background-opacity": 1,
+            "border-color": (ele: NodeSingular) => riskGlow(scoreToLevel(Number(ele.data("risk"))), 0.92),
+            "border-width": 1.6,
+            width: (ele: NodeSingular) => nodeRadius(Number(ele.data("value")), maxValue) * 2,
+            height: (ele: NodeSingular) => nodeRadius(Number(ele.data("value")), maxValue) * 2,
+            "background-image": "linear-gradient(150deg, rgba(255,255,255,0.20), rgba(255,255,255,0.02) 46%, rgba(0,0,0,0.42))",
+            "underlay-color": (ele: NodeSingular) => riskGlow(scoreToLevel(Number(ele.data("risk"))), 0.16),
+            "underlay-padding": (ele: NodeSingular) => Math.max(7, nodeRadius(Number(ele.data("value")), maxValue) * 0.45),
+            "underlay-opacity": 1,
+            "underlay-shape": "ellipse",
             label: "data(label)",
             // Cytoscape parses colours on the canvas and only accepts comma
             // separated rgb(), rgba() or hex — space separated CSS colours fall
             // back to black, which would hide labels on a dark graph.
-            color: "#e7ecf3",
-            "font-size": 11,
-            "font-family": "ui-monospace, SFMono-Regular, monospace",
+            color: "#DCE4F0",
+            "font-size": 10.5,
+            "font-family": "var(--font-sans), ui-sans-serif, system-ui, sans-serif",
             "text-valign": "bottom",
-            "text-margin-y": 6,
-            "text-outline-width": 2.5,
-            "text-outline-color": "#07090d",
-            "border-width": 0,
+            "text-halign": "center",
+            "text-margin-y": 5,
+            "text-wrap": "ellipsis",
+            "text-max-width": "108px",
+            "text-outline-width": 3,
+            "text-outline-color": "#05080f",
+            "text-outline-opacity": 0.9,
+            "transition-property": "border-width, border-color, underlay-opacity, underlay-padding",
+            "transition-duration": 140,
+          },
+        },
+        {
+          selector: "node.hovered",
+          style: {
+            "border-width": 2.6,
+            "underlay-opacity": 0.85,
+            "underlay-color": (ele: NodeSingular) => riskGlow(scoreToLevel(Number(ele.data("risk"))), 0.32),
           },
         },
         {
           selector: "node[?pep]",
-          style: { "border-width": 3, "border-color": "#F87171", "border-style": "solid" },
+          style: { "border-width": 2.4, "border-style": "double", "border-color": "#F87171" },
         },
         {
           selector: "node[?nominee]",
-          style: { "border-width": 3, "border-color": "#A78BFA", "border-style": "solid" },
+          style: { "border-style": "dashed", "border-color": "#A78BFA" },
         },
         {
           selector: "node[dim]",
-          style: { opacity: 0.22 },
+          style: { opacity: 0.16, "underlay-opacity": 0 },
         },
         {
           selector: "node:selected",
-          style: { "border-width": 4, "border-color": "#bef264", "overlay-opacity": 0.08 },
+          style: {
+            "border-width": 3,
+            "border-color": "#E8EEF9",
+            "underlay-color": "rgba(232, 238, 249, 0.22)",
+            "underlay-opacity": 1,
+            "overlay-opacity": 0,
+          },
         },
         {
           selector: "edge",
           style: {
-            width: (ele: EdgeSingular) => 0.6 + Math.min(4, Math.log2(1 + Number(ele.data("value")) / 50_000)),
-            "line-color": (ele: EdgeSingular) => RISK_COLORS[scoreToLevel(Number(ele.data("score"))) as RiskLevel],
-            "target-arrow-color": (ele: EdgeSingular) => RISK_COLORS[scoreToLevel(Number(ele.data("score"))) as RiskLevel],
+            width: (ele: EdgeSingular) => 0.8 + Math.min(3.2, Math.log2(1 + Number(ele.data("value")) / 50_000)),
+            "line-color": (ele: EdgeSingular) => riskGlow(scoreToLevel(Number(ele.data("score"))), 0.5),
+            "target-arrow-color": (ele: EdgeSingular) => riskGlow(scoreToLevel(Number(ele.data("score"))), 0.7),
             "target-arrow-shape": "triangle",
-            "arrow-scale": 0.6,
+            "arrow-scale": 0.55,
             "curve-style": "bezier",
-            opacity: 0.5,
+            "control-point-step-size": 34,
+            opacity: 0.55,
           },
         },
-        { selector: "edge[dim]", style: { opacity: 0.12 } },
+        {
+          selector: "edge.hot",
+          style: { opacity: 0.95, width: (ele: EdgeSingular) => 1.6 + Math.min(3.4, Math.log2(1 + Number(ele.data("value")) / 50_000)) },
+        },
+        { selector: "edge[dim]", style: { opacity: 0.08 } },
         { selector: ".no-label", style: { label: "" } },
       ],
       layout: { name: "preset" },
@@ -229,11 +332,15 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
     cy.on("mouseover", "node", (event) => {
       const node = nodeById.get(event.target.id() as string);
       if (!node) return;
+      event.target.addClass("hovered");
+      event.target.connectedEdges().addClass("hot");
       const position = event.renderedPosition ?? { x: 0, y: 0 };
       setHover({ x: position.x, y: position.y, node });
       containerRef.current?.style.setProperty("cursor", "pointer");
     });
-    cy.on("mouseout", "node", () => {
+    cy.on("mouseout", "node", (event) => {
+      event.target.removeClass("hovered");
+      event.target.connectedEdges().removeClass("hot");
       setHover(null);
       containerRef.current?.style.setProperty("cursor", "grab");
     });
@@ -285,53 +392,122 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
     const cy = cyRef.current;
     if (!cy || cy.nodes().length === 0) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const animate = !reduced;
 
-    const options: LayoutOptions =
-      layout === "concentric"
-        ? {
-            name: "concentric",
-            animate: !reduced,
-            animationDuration: 420,
-            padding: 46,
-            minNodeSpacing: 26,
-            // Values are normalised to 0-100 so the ring count stays readable and
-            // the highest-exposure entity sits firmly in the middle.
-            concentric: (node) => (Number(node.data("value")) / maxValue) * 100,
-            levelWidth: () => 14,
-            startAngle: -Math.PI / 2,
-          }
-        : layout === "grid"
-          ? { name: "grid", animate: !reduced, animationDuration: 420, padding: 34, avoidOverlap: true, condense: false }
-          : {
-              name: "cose",
-              animate: !reduced,
-              animationDuration: 520,
-              padding: 34,
-              nodeRepulsion: () => 2600,
-              idealEdgeLength: () => 58,
-              edgeElasticity: () => 60,
-              gravity: 1.6,
-              componentSpacing: 60,
-              nodeOverlap: 6,
-              numIter: 500,
-              randomize: false,
-              // Keep the simulation inside the visible canvas so the force layout
-              // never drifts into a region the user has to hunt for.
-              boundingBox: {
-                x1: 16,
-                y1: 16,
-                x2: Math.max(360, cy.width() - 16),
-                y2: Math.max(280, cy.height() - 16),
-              },
-            };
+    if (layout === "grid") {
+      const instance = cy.layout({ name: "grid", animate, animationDuration: 420, padding: 34, avoidOverlap: true });
+      instance.one("layoutstop", () => cy.fit(undefined, 40));
+      instance.run();
+      return;
+    }
 
-    const instance = cy.layout(options);
-    instance.one("layoutstop", () => {
-      cy.resize();
-      cy.fit(undefined, 44);
+    if (layout === "concentric") {
+      const instance = cy.layout({
+        name: "concentric",
+        animate,
+        animationDuration: 420,
+        padding: 46,
+        minNodeSpacing: 28,
+        // Values are normalised to 0-100 so the ring count stays readable and
+        // the highest-exposure entity sits firmly in the middle.
+        concentric: (node) => (Number(node.data("value")) / maxValue) * 100,
+        levelWidth: () => 14,
+        startAngle: -Math.PI / 2,
+      });
+      instance.one("layoutstop", () => {
+        cy.resize();
+        cy.fit(undefined, 44);
+      });
+      instance.run();
+      return;
+    }
+
+    /*
+     * Force layout.
+     *
+     * `cose` runs inside cytoscape's engine, which has no collision handling,
+     * so beads overlap and labels stack on top of each other. Instead: a
+     * deterministic repulsion/attraction pass pulled toward counterparties,
+     * then a packing pass that guarantees a minimum gap between every pair.
+     * The centroid then dictates radius and angle, which gives the concentric
+     * look of connected entities without the overlap.
+     */
+    const visibleNodes = visible.nodes;
+    const indices = new Map(visibleNodes.map((node, index) => [node.id, index]));
+    const radii = visibleNodes.map((node) => nodeRadius(total(node), maxValue));
+    const points = seedPositions(visibleNodes.length);
+    const adjacency = visibleNodes.map(() => [] as number[]);
+    for (const edge of visible.edges) {
+      const from = indices.get(edge.source);
+      const to = indices.get(edge.target);
+      if (from === undefined || to === undefined || from === to) continue;
+      adjacency[from]!.push(to);
+      adjacency[to]!.push(from);
+    }
+
+    const pull = 0.06;
+    const repel = 0.05;
+    for (let iteration = 0; iteration < 220; iteration += 1) {
+      for (let i = 0; i < points.length; i += 1) {
+        const a = points[i]!;
+        for (let j = i + 1; j < points.length; j += 1) {
+          const b = points[j]!;
+          let dx = b.x - a.x;
+          let dy = b.y - a.y;
+          const distance = Math.hypot(dx, dy) || 0.0001;
+          dx /= distance;
+          dy /= distance;
+          const force = (repel * 0.004) / (distance * distance);
+          a.x -= dx * force;
+          a.y -= dy * force;
+          b.x += dx * force;
+          b.y += dy * force;
+        }
+      }
+      for (let i = 0; i < points.length; i += 1) {
+        const a = points[i]!;
+        for (const j of adjacency[i]!) {
+          if (j <= i) continue;
+          const b = points[j]!;
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const distance = Math.hypot(dx, dy) || 0.0001;
+          const force = (distance - 0.14) * pull * 0.02;
+          a.x += (dx / distance) * force;
+          a.y += (dy / distance) * force;
+          b.x -= (dx / distance) * force;
+          b.y -= (dy / distance) * force;
+        }
+      }
+    }
+
+    const packed = packPositions(points, radii);
+    let sumX = 0;
+    let sumY = 0;
+    for (const point of packed) {
+      sumX += point.x;
+      sumY += point.y;
+    }
+    const centroid = { x: sumX / packed.length, y: sumY / packed.length };
+
+    const width = Math.max(420, cy.width());
+    const height = Math.max(320, cy.height());
+    const scale = Math.min(width, height) * 0.86;
+    cy.batch(() => {
+      visibleNodes.forEach((node, index) => {
+        const point = packed[index]!;
+        const ele = cy.getElementById(node.id);
+        if (ele.empty()) return;
+        // Spread outward from the centroid so connected groups fan out instead
+        // of collapsing into the middle of the canvas.
+        const x = (point.x - centroid.x) * scale * 1.1 + width / 2;
+        const y = (point.y - centroid.y) * scale * 1.1 + height / 2;
+        ele.position({ x, y });
+      });
     });
-    instance.run();
-  }, [layout, elements.length, maxValue]);
+    cy.resize();
+    cy.fit(undefined, 48);
+  }, [layout, elements.length, maxValue, visible]);
 
   /* -------------------------------------------------------------- selection */
 
@@ -463,16 +639,31 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
         </div>
 
         {/* Canvas --------------------------------------------------------- */}
-        <div className="relative overflow-hidden rounded-panel border border-border bg-[rgb(var(--background))]">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/70 px-3 py-2">
+        <div className="relative overflow-hidden rounded-panel border border-border bg-[#05080f]">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(60% 55% at 50% 45%, rgba(96,165,250,0.10) 0%, transparent 70%), radial-gradient(40% 40% at 12% 100%, rgba(240,178,80,0.06) 0%, transparent 70%)",
+            }}
+          />
+          <div className="relative flex flex-wrap items-center justify-between gap-2 border-b border-white/[0.07] px-3 py-2">
             <div className="flex flex-wrap items-center gap-3">
               {legendLevels.map((level) => (
-                <span key={level} className="inline-flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
-                  <span className="size-2.5 rounded-full" style={{ background: RISK_COLORS[level] }} aria-hidden="true" />
+                <span key={level} className="inline-flex items-center gap-1.5 text-[10.5px] text-white/55">
+                  <span
+                    className="size-2.5 rounded-full"
+                    style={{
+                      background: RISK_COLORS[level],
+                      boxShadow: `0 0 0 3px ${riskGlow(level, 0.16)}`,
+                    }}
+                    aria-hidden="true"
+                  />
                   {level}
                 </span>
               ))}
-              <span className="text-[10.5px] text-muted-foreground">size = value · line = transfer direction</span>
+              <span className="text-[10.5px] text-white/40">bead size = screened value · halo = risk level</span>
             </div>
             <div className="flex items-center gap-1">
               <Button
@@ -485,14 +676,14 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
                 {showLabels ? <EyeOff className="size-3.5" aria-hidden="true" /> : <Eye className="size-3.5" aria-hidden="true" />}
                 {showLabels ? "Hide labels" : "Show labels"}
               </Button>
-              <Button type="button" variant="ghost" size="icon" className="size-7" aria-label="Zoom out" onClick={() => cyRef.current?.zoom(cyRef.current.zoom() / 1.25)}>
+              <Button type="button" variant="ghost" size="icon-sm" aria-label="Zoom out" onClick={() => cyRef.current?.zoom(cyRef.current.zoom() / 1.25)}>
                 <Minus className="size-3.5" aria-hidden="true" />
               </Button>
               <span className="num w-10 text-center text-[11px] text-muted-foreground">{Math.round(zoom * 100)}%</span>
-              <Button type="button" variant="ghost" size="icon" className="size-7" aria-label="Zoom in" onClick={() => cyRef.current?.zoom(cyRef.current.zoom() * 1.25)}>
+              <Button type="button" variant="ghost" size="icon-sm" aria-label="Zoom in" onClick={() => cyRef.current?.zoom(cyRef.current.zoom() * 1.25)}>
                 <Plus className="size-3.5" aria-hidden="true" />
               </Button>
-              <Button type="button" variant="ghost" size="icon" className="size-7" aria-label="Fit graph" onClick={() => cyRef.current?.fit(undefined, 40)}>
+              <Button type="button" variant="ghost" size="icon-sm" aria-label="Fit graph" onClick={() => cyRef.current?.fit(undefined, 40)}>
                 <Maximize2 className="size-3.5" aria-hidden="true" />
               </Button>
             </div>
@@ -529,7 +720,7 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
             </div>
           ) : null}
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border/70 px-3 py-2 text-[11px] text-muted-foreground">
+          <div className="relative mt-px flex flex-wrap items-center justify-between gap-2 border-t border-white/[0.07] px-3 py-2 text-[11px] text-white/45">
             <span className="num">
               {visible.nodes.length} entities · {visible.edges.length} relationships
             </span>
@@ -538,7 +729,7 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
                 ? "Rings by screened value, highest in the middle"
                 : layout === "grid"
                   ? "Ordered grid, easiest for scanning many entities"
-                  : "Force layout, connected entities pull together"}
+                  : "Connected entities cluster, every bead keeps its own space"}
             </span>
           </div>
         </div>
@@ -558,8 +749,7 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
               <Button
                 type="button"
                 variant="ghost"
-                size="icon"
-                className="size-7"
+                size="icon-sm"
                 aria-label="Clear selection"
                 onClick={() => setSelectedId(null)}
               >

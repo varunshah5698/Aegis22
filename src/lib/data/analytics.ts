@@ -105,6 +105,14 @@ export interface WorkspaceAnalytics {
     value: number;
     flagged: number;
   };
+  /**
+   * The four windows before the selected one, plus their median. This is what
+   * lets the analyst talk about trajectory instead of one isolated snapshot.
+   */
+  history: {
+    windows: Array<{ label: string; from: string; to: string; count: number; value: number; flagged: number }>;
+    baseline: { count: number; value: number; flagged: number; windows: number };
+  };
   deltas: {
     count: number | null;
     value: number | null;
@@ -173,24 +181,37 @@ export async function getWorkspaceAnalytics(
   const bucket = range === "24h" ? "hour" : "day";
   const { stepMs, startMs, total } = bucketLayout(from, to, bucket);
 
-  const previousFrom = new Date(from.getTime() - days * 86_400_000);
+  // One query per preceding window. A single range capped by the host's row
+  // limit would silently drop the older windows, which is exactly the history
+  // the analyst needs.
+  const windowBounds = Array.from({ length: 4 }, (_, index) => {
+    const end = new Date(from.getTime() - index * days * 86_400_000);
+    return { start: new Date(end.getTime() - days * 86_400_000), end };
+  });
 
-  const [txResult, previousResult, factorResult, alertResult, caseResult] = await Promise.all([
-    supabase
-      .from("transactions")
-      .select("created_at, amount_base, currency, risk_score, risk_level, sender_country, receiver_country, sender_name, score_ms")
-      .eq("organization_id", organizationId)
-      .gte("created_at", from.toISOString())
-      .order("created_at", { ascending: true })
-      .limit(TX_CAP),
+  const historyQuery = ({ start, end }: { start: Date; end: Date }) =>
     supabase
       .from("transactions")
       .select("created_at, amount_base, risk_score")
       .eq("organization_id", organizationId)
-      .gte("created_at", previousFrom.toISOString())
-      .lt("created_at", from.toISOString())
-      .limit(TX_CAP),
-    supabase
+      .gte("created_at", start.toISOString())
+      .lt("created_at", end.toISOString())
+      .limit(TX_CAP);
+
+  const [txResult, history0, history1, history2, history3, factorResult, alertResult, caseResult] =
+    await Promise.all([
+      supabase
+        .from("transactions")
+        .select("created_at, amount_base, currency, risk_score, risk_level, sender_country, receiver_country, sender_name, score_ms")
+        .eq("organization_id", organizationId)
+        .gte("created_at", from.toISOString())
+        .order("created_at", { ascending: true })
+        .limit(TX_CAP),
+      historyQuery(windowBounds[0]!),
+      historyQuery(windowBounds[1]!),
+      historyQuery(windowBounds[2]!),
+      historyQuery(windowBounds[3]!),
+      supabase
       .from("transactions")
       .select("risk_factors")
       .eq("organization_id", organizationId)
@@ -210,12 +231,12 @@ export async function getWorkspaceAnalytics(
       .limit(CASE_CAP),
   ]);
 
-  for (const result of [txResult, previousResult, factorResult, alertResult, caseResult]) {
+  const historyResults = [history0, history1, history2, history3];
+  for (const result of [txResult, ...historyResults, factorResult, alertResult, caseResult]) {
     if (result.error) throw new Error(result.error.message);
   }
 
   const rows = txResult.data ?? [];
-  const previousRows = previousResult.data ?? [];
 
   /* ---------------------------------------------------------------- series */
 
@@ -518,14 +539,36 @@ export async function getWorkspaceAnalytics(
     openedInRange: caseRows.filter((row) => new Date(row.created_at).getTime() >= from.getTime()).length,
   };
 
-  /* ---------------------------------------------------------------- previous */
+  /* ---------------------------------------------------- previous and history */
 
-  let previousValue = 0;
-  let previousFlagged = 0;
-  for (const row of previousRows) {
-    previousValue += Number(row.amount_base ?? 0);
-    if ((row.risk_score ?? 0) >= SCORE_BANDS.alert) previousFlagged += 1;
-  }
+  const historyWindows = historyResults.map((result, index) => {
+    const bounds = windowBounds[index]!;
+    let value = 0;
+    let flagged = 0;
+    for (const row of result.data ?? []) {
+      value += Number(row.amount_base ?? 0);
+      if ((row.risk_score ?? 0) >= SCORE_BANDS.alert) flagged += 1;
+    }
+    return {
+      label: `${bounds.start.toISOString().slice(0, 10)} → ${bounds.end.toISOString().slice(0, 10)}`,
+      from: bounds.start.toISOString(),
+      to: bounds.end.toISOString(),
+      count: (result.data ?? []).length,
+      value: Math.round(value),
+      flagged,
+    };
+  });
+
+  const windowsWithData = historyWindows.filter((window) => window.count > 0);
+  const previousValue = historyWindows[0]?.value ?? 0;
+  const previousFlagged = historyWindows[0]?.flagged ?? 0;
+  const previousCount = historyWindows[0]?.count ?? 0;
+  const historyBaseline = {
+    count: windowsWithData.length ? median(windowsWithData.map((window) => window.count)) : 0,
+    value: windowsWithData.length ? median(windowsWithData.map((window) => window.value)) : 0,
+    flagged: windowsWithData.length ? median(windowsWithData.map((window) => window.flagged)) : 0,
+    windows: windowsWithData.length,
+  };
 
   const change = (current: number, previous: number): number | null =>
     previous > 0 ? ((current - previous) / previous) * 100 : null;
@@ -554,12 +597,16 @@ export async function getWorkspaceAnalytics(
       counterparties: peerMap.size,
     },
     previous: {
-      count: previousRows.length,
+      count: previousCount,
       value: Math.round(previousValue),
       flagged: previousFlagged,
     },
+    history: {
+      windows: historyWindows,
+      baseline: historyBaseline,
+    },
     deltas: {
-      count: change(rows.length, previousRows.length),
+      count: change(rows.length, previousCount),
       value: change(totalValue, previousValue),
       flagged: change(flagged, previousFlagged),
     },

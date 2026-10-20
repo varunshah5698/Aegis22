@@ -14,7 +14,7 @@ export default async function OnboardingPage() {
   const context = await getAuthContext();
   if (!context) redirect("/login?next=/onboarding");
   if (!context.user.email_confirmed_at) redirect("/verify-email");
-  if (context.profile.organization_id) redirect("/app/overview");
+  if (context.profile.organization_id) redirect("/app/library");
 
   const metadata = context.user.user_metadata ?? {};
   const organizationName = typeof metadata.organization_name === "string" ? metadata.organization_name : "";

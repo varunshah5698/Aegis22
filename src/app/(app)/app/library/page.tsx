@@ -2,16 +2,22 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
   AlertTriangle,
+  ArrowDownRight,
   ArrowDownToLine,
+  ArrowUpRight,
   CheckCircle2,
   ClipboardList,
   Database,
   FileSpreadsheet,
+  Minus,
   RefreshCw,
+  Sparkles,
 } from "lucide-react";
 
 import { MetricRow, PageSection, PageShell, SectionLink } from "@/components/app/page-shell";
+import { DemoDataPanel } from "@/components/dashboard/demo-data-panel";
 import { KpiCard } from "@/components/dashboard/kpi-card";
+import { Button } from "@/components/ui/button";
 import { MODEL_VERSION, SCORE_BANDS, supportedCurrencies } from "@/config/risk";
 import { requireOrganization } from "@/lib/auth";
 import { getFxProviderConfig } from "@/lib/fx/provider";
@@ -22,9 +28,99 @@ import { cn, formatCompactNumber } from "@/lib/utils";
 export const metadata: Metadata = { title: "Data library" };
 
 const SAMPLE_CAP = 20_000;
+const MS_DAY = 86_400_000;
+
+const LIBRARY_TABLES = ["transactions", "entities", "accounts", "alerts", "cases", "rules", "reports"] as const;
+type LibraryTable = (typeof LIBRARY_TABLES)[number];
+
+interface TableHistory {
+  earliest: string | null;
+  latest: string | null;
+  days: number;
+  recent: number;
+  prior: number;
+}
 
 function percent(part: number, whole: number): number {
   return whole > 0 ? (part / whole) * 100 : 0;
+}
+
+/** Short label for a point in the past, so a depth reads as a date, not a number. */
+function shortDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
+/** Days for short spans, years once a table reaches back further than two of them. */
+function depthLabel(days: number): string {
+  if (days >= 730) return `${Math.round(days / 365)}y`;
+  return `${days.toLocaleString("en-US")}d`;
+}
+
+/**
+ * One table's own timeline.
+ *
+ * Every signal in the model is computed backwards from the payment's own
+ * timestamp, so how far a table reaches is part of its meaning: a window of
+ * nine days cannot support a trailing-90-day baseline no matter how many rows
+ * it holds.
+ */
+async function tableHistory<T extends LibraryTable>(
+  supabase: Awaited<ReturnType<typeof requireOrganization>>["supabase"],
+  table: T,
+  organizationId: string,
+  recentFrom: string,
+  priorFrom: string,
+): Promise<TableHistory> {
+  const [earliest, latest, recent, prior] = await Promise.all([
+    supabase
+      .from(table)
+      .select("created_at")
+      .filter("organization_id", "eq", organizationId)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from(table)
+      .select("created_at")
+      .filter("organization_id", "eq", organizationId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from(table)
+      .select("id", { count: "exact", head: true })
+      .filter("organization_id", "eq", organizationId)
+      .gte("created_at", recentFrom),
+    supabase
+      .from(table)
+      .select("id", { count: "exact", head: true })
+      .filter("organization_id", "eq", organizationId)
+      .gte("created_at", priorFrom)
+      .lt("created_at", recentFrom),
+  ]);
+
+  for (const result of [earliest, latest, recent, prior]) {
+    if (result.error) throw new Error(result.error.message);
+  }
+
+  // supabase-js resolves columns one table at a time; behind a union of table
+  // names it cannot narrow the row shape, even though every table here has
+  // created_at. Reading the two timestamps explicitly keeps the query itself
+  // fully typed.
+  const start = (earliest.data as { created_at: string } | null)?.created_at ?? null;
+  const end = (latest.data as { created_at: string } | null)?.created_at ?? null;
+  return {
+    earliest: start,
+    latest: end,
+    days: start && end ? Math.max(1, Math.round((new Date(end).getTime() - new Date(start).getTime()) / MS_DAY)) : 0,
+    recent: recent.count ?? 0,
+    prior: prior.count ?? 0,
+  };
+}
+
+function change(recent: number, prior: number): number | null {
+  if (prior === 0) return recent === 0 ? 0 : null;
+  return Math.round(((recent - prior) / prior) * 100);
 }
 
 function freshness(iso: string | null): { label: string; tone: "ok" | "warn" } {
@@ -36,8 +132,13 @@ function freshness(iso: string | null): { label: string; tone: "ok" | "warn" } {
   return { label: `${Math.round(hours / 24)}d ago`, tone: "warn" };
 }
 
-export default async function DataLibraryPage() {
-  const { supabase, organization } = await requireOrganization();
+export default async function DataLibraryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ welcome?: string }>;
+}) {
+  const { welcome } = await searchParams;
+  const { supabase, organization, profile } = await requireOrganization();
   const organizationId = organization!.id;
 
   const PAGE = 1_000;
@@ -70,7 +171,10 @@ export default async function DataLibraryPage() {
     return collected;
   })();
 
-  const [countResults, rows] = await Promise.all([
+  const recentFrom = new Date(Date.now() - 30 * MS_DAY).toISOString();
+  const priorFrom = new Date(Date.now() - 60 * MS_DAY).toISOString();
+
+  const [countResults, rows, historyEntries, domainResults] = await Promise.all([
     Promise.all([
       supabase.from("transactions").select("id", { count: "exact", head: true }).eq("organization_id", organizationId),
       supabase.from("entities").select("id", { count: "exact", head: true }).eq("organization_id", organizationId),
@@ -81,14 +185,56 @@ export default async function DataLibraryPage() {
       supabase.from("reports").select("id", { count: "exact", head: true }).eq("organization_id", organizationId),
     ]),
     samplePromise,
+    Promise.all(
+      LIBRARY_TABLES.map(
+        async (table) => [table, await tableHistory(supabase, table, organizationId, recentFrom, priorFrom)] as const,
+      ),
+    ),
+    // Counterparties and accounts carry their own domain dates. An entity
+    // incorporated in 2014 has a decade of history even though its row landed
+    // in this workspace today, and says more about the entity than created_at.
+    Promise.all([
+      supabase
+        .from("accounts")
+        .select("opened_at")
+        .eq("organization_id", organizationId)
+        .order("opened_at", { ascending: true })
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("entities")
+        .select("incorporated_on")
+        .eq("organization_id", organizationId)
+        .not("incorporated_on", "is", null)
+        .order("incorporated_on", { ascending: true })
+        .limit(1)
+        .maybeSingle(),
+    ]),
   ]);
 
   for (const result of countResults) {
     if (result.error) throw new Error(result.error.message);
   }
+  for (const result of domainResults) {
+    if (result.error) throw new Error(result.error.message);
+  }
+
+  const historyByTable = Object.fromEntries(historyEntries) as Record<LibraryTable, TableHistory>;
+  const domainEarliest: Partial<Record<LibraryTable, string | null>> = {
+    accounts: domainResults[0]?.data?.opened_at ?? null,
+    entities: domainResults[1]?.data?.incorporated_on ?? null,
+  };
 
   const [transactions, entities, accounts, alerts, cases, rules, reports] = countResults;
   const generatedAt = new Date().toISOString();
+
+  // Demo rows keep their marker in the payment reference, so the page can state
+  // how much of the workspace was generated rather than implying it is all real.
+  const { count: demoRows } = await supabase
+    .from("transactions")
+    .select("id", { count: "exact", head: true })
+    .eq("organization_id", organizationId)
+    .like("external_id", "DEMO-%");
 
   const latest = rows[0]?.created_at ?? null;
   const ingest = freshness(latest);
@@ -174,26 +320,95 @@ export default async function DataLibraryPage() {
     .url.replace(/^https?:\/\//, "")
     .split("/")[0];
 
-  const catalogue = [
-    { table: "transactions", rows: transactions.count ?? 0, purpose: "Scored payments and their base value", href: "/app/transactions" },
-    { table: "entities", rows: entities.count ?? 0, purpose: "Counterparties, ownership and PEP flags", href: "/app/network" },
-    { table: "accounts", rows: accounts.count ?? 0, purpose: "Accounts linking entities to payments", href: "/app/network" },
-    { table: "alerts", rows: alerts.count ?? 0, purpose: "Rule and model detections with SLA state", href: "/app/alerts" },
-    { table: "cases", rows: cases.count ?? 0, purpose: "Investigations opened from alerts", href: "/app/cases" },
-    { table: "rules", rows: rules.count ?? 0, purpose: "Versioned deterministic checks", href: "/app/rules" },
-    { table: "reports", rows: reports.count ?? 0, purpose: "Generated regulator-ready exports", href: "/app/reports" },
+  // Each table states what its own past is used for. History is not stored for
+  // compliance theatre: baselines, velocity and seasonal drift are all read
+  // backwards from the timestamp on the row being scored.
+  const catalogue: Array<{
+    table: LibraryTable;
+    rows: number;
+    purpose: string;
+    predicts: string;
+    href: string;
+  }> = [
+    {
+      table: "transactions",
+      rows: transactions.count ?? 0,
+      purpose: "Scored payments and their base value",
+      predicts: "Trailing 30-day volume and per-account baselines; velocity needs prior payments to compare against",
+      href: "/app/transactions",
+    },
+    {
+      table: "entities",
+      rows: entities.count ?? 0,
+      purpose: "Counterparties, ownership and PEP flags",
+      predicts: "Incorporation age and nominee overlap separate a young shell from an established trader",
+      href: "/app/network",
+    },
+    {
+      table: "accounts",
+      rows: accounts.count ?? 0,
+      purpose: "Accounts linking entities to payments",
+      predicts: "Opened-on age and pass-through history show whether an account has ever behaved normally",
+      href: "/app/network",
+    },
+    {
+      table: "alerts",
+      rows: alerts.count ?? 0,
+      purpose: "Rule and model detections with SLA state",
+      predicts: "Prior dispositions weigh which typologies convert into findings rather than noise",
+      href: "/app/alerts",
+    },
+    {
+      table: "cases",
+      rows: cases.count ?? 0,
+      purpose: "Investigations opened from alerts",
+      predicts: "Closure history shows which corridors keep producing real investigations",
+      href: "/app/cases",
+    },
+    {
+      table: "rules",
+      rows: rules.count ?? 0,
+      purpose: "Versioned deterministic checks",
+      predicts: "Version history records which thresholds fired before a rule changed, and when",
+      href: "/app/rules",
+    },
+    {
+      table: "reports",
+      rows: reports.count ?? 0,
+      purpose: "Generated regulator-ready exports",
+      predicts: "Past exports frame period-over-period totals, so a quiet quarter is measured against a noisy one",
+      href: "/app/reports",
+    },
   ];
+
+  const paymentDays = historyByTable.transactions.days;
 
   return (
     <PageShell
       eyebrow="Intelligence / Data"
       title="Data library"
-      description={`The tables behind ${organization!.name}, what they contain and how complete they are. Every figure below is read live from the workspace database.`}
+      description={`The tables behind ${organization!.name}, what they contain, how far back they reach and what that history predicts. Start with generated data, or read every figure live from the workspace database.`}
+      actions={
+        <Button asChild variant="accent" size="sm" className="gap-1.5">
+          <a href="#generate">
+            <Sparkles className="size-3.5" aria-hidden="true" />
+            Generate data
+          </a>
+        </Button>
+      }
       meta={
         <>
           <span className="chip">
             <span className="num">{(transactions.count ?? 0).toLocaleString("en-US")}</span> payments
           </span>
+          <span className="chip">
+            <span className="num">{paymentDays.toLocaleString("en-US")}d</span> of payment history
+          </span>
+          {demoRows ? (
+            <span className="chip">
+              <span className="num">{demoRows.toLocaleString("en-US")}</span> demo
+            </span>
+          ) : null}
           <span className="chip">
             last write <span className="num">{ingest.label}</span>
           </span>
@@ -203,6 +418,8 @@ export default async function DataLibraryPage() {
         </>
       }
     >
+      <DemoDataPanel canGenerate={profile.role !== "viewer"} welcome={welcome === "1"} />
+
       <MetricRow>
         <KpiCard
           label="Scored payments"
@@ -241,43 +458,83 @@ export default async function DataLibraryPage() {
           id="catalogue-heading"
           className="xl:col-span-8"
           title="Dataset catalogue"
-          description="Tables in this workspace with live row counts and the page that reads them"
+          description="Every table with its live row count, how far back it actually reaches and what that history is read for"
           action={<SectionLink href="/docs/api">Ingestion API</SectionLink>}
           flush
         >
           <div className="overflow-x-auto">
-            <table className="table-base min-w-[560px]">
-              <caption className="sr-only">Workspace tables, row counts and destinations</caption>
+            <table className="table-base min-w-[720px]">
+              <caption className="sr-only">
+                Workspace tables, coverage, trailing 30-day activity, row counts and destinations
+              </caption>
               <thead>
                 <tr>
                   <th scope="col" className="pl-5">Table</th>
-                  <th scope="col">Contains</th>
+                  <th scope="col">Contains · what its past predicts</th>
+                  <th scope="col" className="whitespace-nowrap">History</th>
+                  <th scope="col" className="whitespace-nowrap text-right">Last 30d</th>
                   <th scope="col" className="text-right">Rows</th>
                   <th scope="col" className="pr-5 text-right">Open</th>
                 </tr>
               </thead>
               <tbody>
-                {catalogue.map((entry) => (
-                  <tr key={entry.table}>
-                    <th scope="row" className="num pl-5 text-left font-normal">{entry.table}</th>
-                    <td className="text-muted-foreground">{entry.purpose}</td>
-                    <td className="num text-right">{entry.rows.toLocaleString("en-US")}</td>
-                    <td className="pr-5 text-right">
-                      <Link
-                        href={entry.href}
-                        className="text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        Inspect
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+                {catalogue.map((entry) => {
+                  const history = historyByTable[entry.table];
+                  const delta = change(history.recent, history.prior);
+                  const TrendIcon = delta === null || delta > 0 ? ArrowUpRight : delta < 0 ? ArrowDownRight : Minus;
+                  const start = domainEarliest[entry.table] ?? history.earliest;
+                  const days = start
+                    ? Math.max(1, Math.round((Date.now() - new Date(start).getTime()) / MS_DAY))
+                    : 0;
+                  return (
+                    <tr key={entry.table}>
+                      <th scope="row" className="num pl-5 text-left align-top font-normal">{entry.table}</th>
+                      <td className="align-top">
+                        <span className="block text-[11.5px] text-foreground">{entry.purpose}</span>
+                        <span className="mt-0.5 block text-[10.5px] leading-4 text-muted-foreground">
+                          {entry.predicts}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap align-top">
+                        {start ? (
+                          <>
+                            <span className="num text-[11.5px]">{depthLabel(days)}</span>
+                            <span className="mt-0.5 block text-[10px] text-muted-foreground">
+                              since {shortDate(start)}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-[10.5px] text-muted-foreground">no rows</span>
+                        )}
+                      </td>
+                      <td className="whitespace-nowrap text-right align-top">
+                        <span className="num text-[11.5px]">{history.recent.toLocaleString("en-US")}</span>
+                        <span className="mt-0.5 flex items-center justify-end gap-0.5 text-[10px] text-muted-foreground">
+                          <TrendIcon className="size-2.5" aria-hidden="true" />
+                          {delta === null ? "new" : delta === 0 ? "flat" : `${Math.abs(delta)}%`}
+                        </span>
+                      </td>
+                      <td className="num text-right align-top">{entry.rows.toLocaleString("en-US")}</td>
+                      <td className="pr-5 text-right align-top">
+                        <Link
+                          href={entry.href}
+                          className="text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          Inspect
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
-          <p className="border-t border-border/60 px-5 py-2.5 text-[11px] text-muted-foreground">
-            Counts are read with the signed-in analyst&apos;s session, so row-level security applies. Nothing is cached
-            beyond this request.
+          <p className="border-t border-border/60 px-5 py-2.5 text-[11px] leading-5 text-muted-foreground">
+            History is measured on each table&apos;s own clock: the oldest payment timestamp, the earliest account open
+            date and the earliest company incorporation, not the moment the row was ingested. The 30-day column compares
+            the trailing month with the one before it. Scores are always computed backwards: a workspace with nine days
+            of payments cannot support a 90-day baseline, however many rows it stores. Counts are read with the
+            signed-in analyst&apos;s session, so row-level security applies and nothing is cached beyond this request.
           </p>
         </PageSection>
 

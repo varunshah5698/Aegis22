@@ -71,7 +71,7 @@ export function SignupForm({ inviteToken }: { inviteToken?: string | undefined }
       }
 
       if (data.session) {
-        router.replace(inviteToken ? "/app/overview" : "/onboarding");
+        router.replace(inviteToken ? "/app/library" : "/onboarding");
         router.refresh();
         return;
       }

@@ -4,11 +4,13 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, CheckCircle2, CircleDot, Database, Gauge } from "lucide-react";
 
 import { MetricRow, MetricTile, PageSection } from "@/components/app/page-shell";
+import { DecisionDossierHero } from "@/components/dashboard/decision-dossier-hero";
 import { AmountLadder, ScoreDial, ScoreSimulator } from "@/components/dashboard/score-workbench";
 import { RiskBadge } from "@/components/risk-badge";
 import { ALERT_CUTOFF, RISK_COLORS, REPORTING_THRESHOLD_USD, scoreToLevel } from "@/config/risk";
 import { requireOrganization } from "@/lib/auth";
 import { getTransactionDetail } from "@/lib/data/transactions";
+import { clampScore, decisionFor, percentileRank, totalSignalWeight } from "@/lib/risk/dossier";
 import { cn, formatAmount, formatCompactNumber, formatCurrency } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Transaction workbench" };
@@ -27,6 +29,8 @@ function median(values: number[]): number | null {
   return sorted[Math.floor(sorted.length / 2)] ?? null;
 }
 
+const clampedPoints = (points: number) => clampScore(points).toFixed(1);
+
 export default async function TransactionWorkbenchPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { supabase, organization } = await requireOrganization();
@@ -41,6 +45,43 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
   const peerMax = Math.max(detail.amountBase, ...(peerAmounts.length ? peerAmounts : [0]));
   const level = scoreToLevel(detail.riskScore);
   const aboveThreshold = detail.amountBase >= REPORTING_THRESHOLD_USD;
+  const decision = decisionFor(detail.riskScore, detail.alerts);
+  const totalWeight = totalSignalWeight();
+  const pointsStored = factors.reduce((sum, factor) => sum + factor.points, 0);
+  const population = [detail.amountBase, ...peerAmounts];
+  const amountPercentile = percentileRank(population, detail.amountBase);
+  const dossier = {
+    score: detail.riskScore,
+    color: RISK_COLORS[level],
+    thresholdCrossed: detail.riskScore >= ALERT_CUTOFF,
+    modelVersion: detail.modelVersion ?? "model —",
+    corridor: `${detail.senderCountry} → ${detail.receiverCountry}`,
+    corridorNote: `${detail.purposeCode ?? "no purpose code"} · ${aboveThreshold ? "above" : "below"} the USD 10,000 reference threshold`,
+    counterparties: `${detail.senderName} → ${detail.receiverName}`,
+    channel: detail.channel,
+    amount: formatAmount(detail.amount, detail.currency).replace(/\s*[A-Z]{3}$/, ""),
+    amountUnit: detail.currency,
+    amountInUsd: formatCurrency(detail.amountBase, "USD", { maximumFractionDigits: 0 }),
+    amountNote: `Larger than ${Math.round(amountPercentile * 100)}% of the ${population.length} transfers grouped for this review.`,
+    points: clampedPoints(pointsStored),
+    contribution: `${Math.min(100, Math.round((pointsStored / Math.max(1, totalWeight)) * 100))}%`,
+    share: `Weighted against a ${totalWeight}-point normaliser, the stored signals explain ${Math.round((triggered.reduce((sum, f) => sum + f.points, 0) / Math.max(1, pointsStored)) * 100)}% of the published points.`,
+    signalsFired: String(triggered.length),
+    signalCount: factors.length,
+    topSignal: factors[0]?.label ?? "no stored signal",
+    weight: factors[0] ? `${factors[0].weight}` : "—",
+    peakPoints: factors[0] ? factors[0].points.toFixed(1) : "0",
+    timing: detail.scoredAt
+      ? `Scored ${detail.scoreMs ? `${detail.scoreMs} ms` : "on arrival"} after ingestion · ${when(detail.scoredAt)}`
+      : `Scoring time not recorded · ingested ${when(detail.createdAt)}`,
+    alertsLabel: String(detail.alerts.length),
+    alertsNote:
+      detail.alerts.length > 0
+        ? `${detail.alerts.length} linked alert${detail.alerts.length === 1 ? "" : "s"} in the review queue`
+        : `no alert raised · cutoff ${ALERT_CUTOFF}`,
+    decision: { ...decision, tone: decision.tone as "clear" | "review" | "block" },
+    moment: when(detail.createdAt),
+  };
 
   return (
     <div className="workspace-stack">
@@ -139,6 +180,8 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
         />
       </MetricRow>
 
+      <DecisionDossierHero data={dossier} />
+
       <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection
           id="signals"
@@ -216,12 +259,12 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
         </PageSection>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-12">
+      <div className="grid items-start gap-4 xl:grid-cols-12">
         <PageSection
           id="amount-context"
           title="Amount in context"
           description="Against the reporting threshold and the sender's recent transfers"
-          className="xl:col-span-5"
+          className="xl:col-span-7"
         >
           <AmountLadder amountBase={detail.amountBase} peerMedian={peerMedian} peerMax={peerMax} />
 
@@ -274,7 +317,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
           id="timeline"
           title="Decision trail"
           description="What the pipeline recorded, in order"
-          className="xl:col-span-4"
+          className="xl:col-span-7"
           flush
         >
           <ol className="relative px-5 py-4">
@@ -330,7 +373,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
           id="alerts"
           title="Linked alerts"
           description="Every alert opened from this payment"
-          className="xl:col-span-3"
+          className="xl:col-span-5"
           flush
         >
           {detail.alerts.length === 0 ? (

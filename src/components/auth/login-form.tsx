@@ -57,8 +57,9 @@ export function LoginForm({ next, initialError }: { next: string; initialError?:
     <div className="space-y-6">
       <div>
         <h1 className="text-display-md">Sign in</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Use your work account to reach the monitoring workspace.
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          Use your work account to reach the monitoring workspace. You will land in the data
+          library, ready to generate a scored dataset.
         </p>
       </div>
 

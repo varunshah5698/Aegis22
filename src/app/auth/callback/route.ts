@@ -4,10 +4,11 @@ import { getPublicOrigin } from "@/lib/public-origin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function safeNext(value: string | null): string {
-  if (!value) return "/app/overview";
+  // A fresh Google session lands where a dataset can be generated.
+  if (!value) return "/app/library";
   // Only same-origin, relative paths are allowed; protocol-relative URLs are not.
-  if (!value.startsWith("/") || value.startsWith("//")) return "/app/overview";
-  if (value.includes("\\") || value.includes("://")) return "/app/overview";
+  if (!value.startsWith("/") || value.startsWith("//")) return "/app/library";
+  if (value.includes("\\") || value.includes("://")) return "/app/library";
   return value;
 }
 

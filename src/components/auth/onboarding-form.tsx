@@ -52,7 +52,8 @@ export function OnboardingForm({
   }, [mode, setValue]);
 
   const finish = () => {
-    router.replace("/app/overview");
+    // The first screen of a new workspace is the one that can give it data.
+    router.replace("/app/library?welcome=1");
     router.refresh();
   };
 
@@ -208,6 +209,9 @@ export function OnboardingForm({
         <Button type="submit" variant="accent" size="lg" className="w-full" disabled={submitting}>
           {submitting ? "Setting up…" : mode === "create" ? "Create workspace" : "Join workspace"}
         </Button>
+        <p className="text-center text-[11px] leading-4 text-muted-foreground">
+          Next: the data library, where you can generate a scored demo dataset in one click.
+        </p>
       </form>
     </div>
   );
