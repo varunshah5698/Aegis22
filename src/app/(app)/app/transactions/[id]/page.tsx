@@ -182,7 +182,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
 
       <DecisionDossierHero data={dossier} />
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="signals"
           title="Why this score"
@@ -259,7 +259,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
         </PageSection>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="amount-context"
           title="Amount in context"

@@ -266,7 +266,7 @@ export default async function FxIntelligencePage({
         />
       </MetricRow>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="history-heading"
           className="xl:col-span-9"
@@ -333,7 +333,7 @@ export default async function FxIntelligencePage({
         </PageSection>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="comparison-heading"
           className="xl:col-span-8"
@@ -360,7 +360,7 @@ export default async function FxIntelligencePage({
         </PageSection>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="converter-heading"
           className="xl:col-span-5"
@@ -444,7 +444,7 @@ export default async function FxIntelligencePage({
         </PageSection>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="exposure-heading"
           className="xl:col-span-8"
@@ -517,7 +517,7 @@ export default async function FxIntelligencePage({
         </PageSection>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="co-movement-heading"
           className="xl:col-span-8"

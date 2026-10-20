@@ -453,7 +453,7 @@ export default async function DataLibraryPage({
         />
       </MetricRow>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="catalogue-heading"
           className="xl:col-span-8"
@@ -592,7 +592,7 @@ export default async function DataLibraryPage({
         </PageSection>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="fields-heading"
           className="xl:col-span-7"

@@ -142,7 +142,7 @@ export default async function EntityPage({
         />
       </MetricRow>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="entity-flow"
           title="Directional flow"
@@ -206,7 +206,7 @@ export default async function EntityPage({
         </PageSection>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="entity-counterparties"
           title="Counterparties"

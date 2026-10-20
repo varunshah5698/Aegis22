@@ -214,7 +214,7 @@ export default async function OverviewPage({
         />
       </MetricRow>
 
-      <div className="grid items-stretch gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="value-heading"
           className="xl:col-span-8"
@@ -251,7 +251,7 @@ export default async function OverviewPage({
         />
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <PageSection
           id="corridor-heading"
           className="xl:col-span-4"
@@ -385,7 +385,7 @@ export default async function OverviewPage({
         </PageSection>
       </div>
 
-      <div className="grid items-start gap-4 xl:grid-cols-12">
+      <div className="workspace-row">
         <div className="min-w-0 xl:col-span-8">
           <MiniFeed initialRows={recent} organizationId={organizationId} />
         </div>

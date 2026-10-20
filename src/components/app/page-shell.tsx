@@ -92,7 +92,7 @@ export function PageSection({
         </div>
         {action ? <div className="ml-auto flex shrink-0 items-center gap-1">{action}</div> : null}
       </div>
-      <div className={cn(!flush && "px-5 py-4", bodyClassName)}>{children}</div>
+      <div className={cn("panel-body", !flush && "px-5 py-4", bodyClassName)}>{children}</div>
       {footnote ? (
         <div className="border-t border-border/60 px-5 py-2.5 text-[11px] leading-4 text-muted-foreground">
           {footnote}

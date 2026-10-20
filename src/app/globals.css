@@ -279,6 +279,26 @@
     @apply space-y-5;
   }
 
+  /* Rows of panels share one height. A grid row is as tall as its tallest
+     card, so the shorter cards stretch to meet it instead of leaving a block
+     of dead space beside them. Bodies that hold a list or a table take the
+     slack; chart and metric bodies keep their intrinsic size and are centred
+     in the extra room, which reads as padding rather than a hole. */
+  .workspace-row {
+    @apply grid items-stretch gap-4 xl:grid-cols-12;
+  }
+
+  .workspace-row > * {
+    @apply flex min-w-0 flex-col;
+  }
+
+  /* Fill the slack left by the tallest card in the row instead of leaving a
+     blank block under the fewest-content panel. Written as plain CSS so it
+     does not depend on utility-layer ordering. */
+  .workspace-row > .panel > .panel-body {
+    flex: 1 1 auto;
+  }
+
   .toolbar {
     @apply flex flex-wrap items-center gap-2;
   }

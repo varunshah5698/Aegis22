@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import containerQueries from "@tailwindcss/container-queries";
 import animate from "tailwindcss-animate";
 
 const config: Config = {
@@ -126,7 +127,7 @@ const config: Config = {
       transitionDuration: { 400: "400ms" },
     },
   },
-  plugins: [animate],
+  plugins: [animate, containerQueries],
 };
 
 export default config;

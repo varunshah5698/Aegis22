@@ -116,7 +116,7 @@ export default async function AlertDetailPage({ params }: { params: Promise<{ al
         ))}
       </dl>
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      <div className="workspace-row lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <div className="space-y-4">
           <section aria-labelledby="explanation-heading" className="panel">
             <div className="panel-head">
