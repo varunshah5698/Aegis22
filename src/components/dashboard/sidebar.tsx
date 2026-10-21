@@ -15,15 +15,6 @@ import { cn } from "@/lib/utils";
 
 /* The rail is icon-only, so every destination keeps its label in a tooltip and
    an aria-label; the mobile sheet shows the same list with text. */
-interface RailItem {
-  label: string;
-  href: string;
-  icon: string;
-  badge?: string;
-}
-
-const railItems: RailItem[] = appNav.flatMap((group) => [...group.items]);
-
 function railIsActive(pathname: string, href: string) {
   if (href === "/app/settings/profile") return pathname.startsWith("/app/settings");
   return pathname === href || pathname.startsWith(`${href}/`);
