@@ -59,6 +59,10 @@ export function ScoreStack() {
         aria-hidden="true"
         className="pointer-events-none absolute -right-24 top-1/2 size-[480px] -translate-y-1/2 rounded-full bg-[#F0B250]/[0.07] blur-[120px]"
       />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-24 top-1/3 size-[420px] rounded-full bg-accent/[0.13] blur-[120px]"
+      />
 
       <div className="container-page relative grid items-center gap-12 py-16 md:py-20 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:gap-8 lg:py-24">
         <div className="min-w-0">
@@ -142,7 +146,7 @@ export function ScoreStack() {
                 <span className="block text-[11px] text-white/40">
                   Decision
                 </span>
-                <span className="block text-[10.5px] text-white/75">High risk · review in 4h</span>
+                <span className="block text-[11px] text-white/75">High risk · review in 4h</span>
               </span>
             </div>
 

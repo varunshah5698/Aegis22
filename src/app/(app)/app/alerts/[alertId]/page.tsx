@@ -164,7 +164,7 @@ export default async function AlertDetailPage({ params }: { params: Promise<{ al
                         .map(([key, value]) => (
                           <div
                             key={key}
-                            className="flex items-baseline gap-1 rounded-[5px] bg-muted/60 px-1.5 py-0.5 text-[10px]"
+                            className="flex items-baseline gap-1 rounded-[5px] bg-muted/60 px-1.5 py-0.5 text-[11px]"
                           >
                             <dt className="text-muted-foreground">{key.replace(/_/g, " ")}</dt>
                             <dd className="num text-foreground">{String(value)}</dd>

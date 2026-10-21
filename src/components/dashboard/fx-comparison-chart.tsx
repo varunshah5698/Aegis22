@@ -114,7 +114,7 @@ export function FxComparisonChart({
   };
 
   const remaining = available.filter((entry) => !codes.includes(entry.code));
-  const tick = { fontSize: 10, fill: "rgb(var(--muted-foreground))" } as const;
+  const tick = { fontSize: 11, fill: "rgb(var(--muted-foreground))" } as const;
 
   if (available.length === 0) {
     return (
@@ -184,7 +184,7 @@ export function FxComparisonChart({
               aria-pressed={days === option}
               onClick={() => setDays(option)}
               className={cn(
-                "rounded-[7px] px-2 py-1 text-[10.5px] font-medium transition-colors",
+                "rounded-[7px] px-2 py-1 text-[11px] font-medium transition-colors",
                 days === option ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
               )}
             >
@@ -241,7 +241,7 @@ export function FxComparisonChart({
                             <span className="num text-right">
                               <span className="font-medium">{indexed === null ? "—" : indexed.toFixed(2)}</span>
                               {typeof rate === "number" ? (
-                                <span className="ml-1.5 text-[10px] text-muted-foreground">
+                                <span className="ml-1.5 text-[11px] text-muted-foreground">
                                   {rate.toFixed(4)}
                                 </span>
                               ) : null}
@@ -250,7 +250,7 @@ export function FxComparisonChart({
                         );
                       })}
                     </ul>
-                    <p className="mt-1.5 border-t border-border/60 pt-1.5 text-[10px] text-muted-foreground">
+                    <p className="mt-1.5 border-t border-border/60 pt-1.5 text-[11px] text-muted-foreground">
                       Index · 100 = first fixing in the {days}-day window
                     </p>
                   </div>
@@ -267,7 +267,7 @@ export function FxComparisonChart({
                 strokeWidth={1.8}
                 dot={false}
                 activeDot={{ r: 3, strokeWidth: 2, stroke: "rgb(var(--card))" }}
-                isAnimationActive={false}
+                isAnimationActive animationDuration={650}
                 connectNulls
               />
             ))}
@@ -277,7 +277,7 @@ export function FxComparisonChart({
 
       <ul className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-border/60 pt-2.5">
         {stats.map((stat, index) => (
-          <li key={stat.code} className="flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
+          <li key={stat.code} className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <span className="size-2 rounded-full" style={{ background: COLORS[index % COLORS.length] }} aria-hidden="true" />
             <span className="num">USD/{stat.code}</span>
             <span
@@ -290,7 +290,7 @@ export function FxComparisonChart({
             </span>
           </li>
         ))}
-        <li className="ml-auto text-[10px] text-muted-foreground/80">Indexed to 100 · {days}-day window</li>
+        <li className="ml-auto text-[11px] text-muted-foreground/80">Indexed to 100 · {days}-day window</li>
       </ul>
     </div>
   );

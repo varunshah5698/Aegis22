@@ -152,7 +152,7 @@ class GlobeErrorBoundary extends React.Component<
 function TextureNotice({ status }: { status: EarthTextureStatus }) {
   if (status === "loading" || status === "ready") return null;
   return (
-    <p className="pointer-events-none absolute bottom-1 left-0 text-[9.5px] leading-4 text-white/32">
+    <p className="pointer-events-none absolute bottom-1 left-0 text-[11px] leading-4 text-white/32">
       {status === "failed"
         ? "Surface imagery unavailable — simplified planet shown."
         : "Some surface imagery could not load."}

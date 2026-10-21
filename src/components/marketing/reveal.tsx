@@ -16,9 +16,9 @@ export function Reveal({
   as = "div",
 }: {
   children: React.ReactNode;
-  className?: string;
-  delay?: number;
-  as?: "div" | "section" | "li";
+  className?: string | undefined;
+  delay?: number | undefined;
+  as?: "div" | "section" | "li" | undefined;
 }) {
   const ref = React.useRef<HTMLElement>(null);
   const [shown, setShown] = React.useState(false);
@@ -48,7 +48,7 @@ export function Reveal({
   const classes = cn(
     "transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none",
     shown
-      ? "translate-y-0 opacity-100"
+      ? "in-view translate-y-0 opacity-100"
       : "translate-y-4 opacity-0 motion-reduce:translate-y-0 motion-reduce:opacity-100",
     className,
   );
@@ -56,20 +56,20 @@ export function Reveal({
 
   if (as === "li") {
     return (
-      <li ref={ref as React.Ref<HTMLLIElement>} className={classes} style={style}>
+      <li ref={ref as React.Ref<HTMLLIElement>} data-reveal="" className={classes} style={style}>
         {children}
       </li>
     );
   }
   if (as === "section") {
     return (
-      <section ref={ref as React.Ref<HTMLElement>} className={classes} style={style}>
+      <section ref={ref as React.Ref<HTMLElement>} data-reveal="" className={classes} style={style}>
         {children}
       </section>
     );
   }
   return (
-    <div ref={ref as React.Ref<HTMLDivElement>} className={classes} style={style}>
+    <div ref={ref as React.Ref<HTMLDivElement>} data-reveal="" className={classes} style={style}>
       {children}
     </div>
   );

@@ -7,10 +7,10 @@ import { TrendPill } from "@/components/app/page-shell";
 import { RangeTabs } from "@/components/app/range-tabs";
 import {
   ScoreDistribution,
-  ScoredRadar,
   WindowTrend,
   ReadoutRail,
 } from "@/components/dashboard/overview-panels";
+import { RiskOrbit } from "@/components/dashboard/risk-orbit";
 import { HourBoard } from "@/components/charts/heatmaps";
 import { ActivityTable } from "@/components/dashboard/activity-table";
 import { KpiCard } from "@/components/dashboard/kpi-card";
@@ -130,7 +130,7 @@ export default async function OverviewPage({
               </p>
             </div>
             <div className="mt-4 flex justify-center lg:justify-start">
-              <ScoredRadar mix={analytics.riskMix} total={totals.count} />
+              <RiskOrbit mix={analytics.riskMix} total={totals.count} />
             </div>
             <ul className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2">
               {analytics.riskMix.map((entry) => (

@@ -18,6 +18,8 @@ const config = [
       "coverage/**",
       "next-env.d.ts",
       "src/lib/supabase/database.types.ts",
+      // Git-ignored scratch space: one-off audit/probe scripts run with node.
+      "tmp/**",
     ],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript"),

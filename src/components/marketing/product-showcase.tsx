@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 function PanelFrame({ title, meta, children }: { title: string; meta: string; children: React.ReactNode }) {
   return (
-    <div className="overflow-hidden rounded-hero border-2 border-foreground/15 bg-card">
+    <div className="overflow-hidden rounded-hero border border-accent/35 bg-card shadow-[0_0_60px_-30px_rgba(109,92,255,0.6)]">
       <div className="flex items-center justify-between border-b border-border px-5 py-3">
         <p className="font-display text-sm font-semibold tracking-tight">{title}</p>
         <p className="num text-xs text-muted-foreground">{meta}</p>
@@ -34,8 +34,12 @@ function OverviewMock() {
               { label: "Scanned", value: "12,438" },
               { label: "Flagged", value: "186", tone: "text-risk-high" },
               { label: "Open alerts", value: "34", tone: "text-risk-medium" },
-            ].map((item) => (
-              <div key={item.label} className="rounded-card border border-border p-3">
+            ].map((item, index) => (
+              <div
+                key={item.label}
+                className="anim-rise rounded-card border border-border p-3"
+                style={{ "--d": 160 + index * 100 } as React.CSSProperties}
+              >
                 <p className="text-[11px] text-muted-foreground">{item.label}</p>
                 <p className={cn("mt-1 font-display text-lg font-semibold tracking-tight num", item.tone)}>
                   {item.value}
@@ -57,15 +61,34 @@ function OverviewMock() {
                   <stop offset="100%" stopColor="#F0B250" stopOpacity="0.02" />
                 </linearGradient>
               </defs>
-              <polygon points={`0,72 ${points} 100,72`} fill="url(#showcaseArea)" />
-              <polyline points={points} fill="none" stroke="#14151A" strokeWidth="2" strokeLinecap="round" vectorEffect="non-scaling-stroke" className="stroke-foreground" />
+              <polygon
+                points={`0,72 ${points} 100,72`}
+                fill="url(#showcaseArea)"
+                className="anim-fade"
+                style={{ "--d": 820 } as React.CSSProperties}
+              />
+              <polyline
+                points={points}
+                fill="none"
+                stroke="#14151A"
+                strokeWidth="2"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                pathLength={1}
+                className="anim-draw stroke-foreground"
+                style={{ "--d": 140 } as React.CSSProperties}
+              />
             </svg>
           </div>
         </div>
         <div className="space-y-2">
           <p className="text-[12px] text-muted-foreground">Top corridors by risk</p>
-          {demoCorridors.slice(0, 4).map((corridor) => (
-            <div key={`${corridor.sender}-${corridor.receiver}`} className="flex items-center justify-between rounded-lg border border-border/70 px-3 py-2">
+          {demoCorridors.slice(0, 4).map((corridor, index) => (
+            <div
+              key={`${corridor.sender}-${corridor.receiver}`}
+              className="anim-rise flex items-center justify-between rounded-lg border border-border/70 px-3 py-2"
+              style={{ "--d": 360 + index * 90 } as React.CSSProperties}
+            >
               <div>
                 <p className="num text-xs font-medium">{corridor.sender}→{corridor.receiver}</p>
                 <p className="text-[10px] text-muted-foreground">{corridor.flagged} flagged</p>
@@ -87,7 +110,11 @@ function AlertsMock() {
     <PanelFrame title="Alerts" meta="34 open · 6 breaching SLA">
       <ul className="space-y-2">
         {alerts.map((alert, index) => (
-          <li key={alert.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border/70 px-3 py-2.5">
+          <li
+            key={alert.id}
+            className="anim-rise flex flex-wrap items-center gap-3 rounded-lg border border-border/70 px-3 py-2.5"
+            style={{ "--d": index * 110 } as React.CSSProperties}
+          >
             <RiskBadge level={alert.level} />
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-medium">Splitting window on {alert.corridor} for {alert.sender}</p>
@@ -133,7 +160,7 @@ function NetworkMock() {
   return (
     <PanelFrame title="Network" meta="72-hour window · 6 entities">
       <svg viewBox="0 0 100 80" className="h-56 w-full" role="img" aria-label="Funds move from an originator through two intermediaries and return to the originator within three hops.">
-        {edges.map(([from, to]) => {
+        {edges.map(([from, to], edgeIndex) => {
           const a = byId.get(from!)!;
           const b = byId.get(to!)!;
           const circular = (from === "a" && to === "c") || (from === "c" && to === "a");
@@ -147,11 +174,17 @@ function NetworkMock() {
               stroke={circular ? "#E5484D" : "#8A8F9C"}
               strokeWidth={circular ? 0.7 : 0.45}
               strokeDasharray={circular ? "2 1.4" : undefined}
+              className="anim-fade"
+              style={{ "--d": 120 + edgeIndex * 70 } as React.CSSProperties}
             />
           );
         })}
-        {nodes.map((node) => (
-          <g key={node.id}>
+        {nodes.map((node, nodeIndex) => (
+          <g
+            key={node.id}
+            className="anim-fade"
+            style={{ "--d": 640 + nodeIndex * 70 } as React.CSSProperties}
+          >
             <circle cx={node.x} cy={node.y} r={node.r / 3} fill={node.tone} opacity="0.18" />
             <circle cx={node.x} cy={node.y} r={node.r / 5} fill={node.tone} />
           </g>
@@ -173,21 +206,27 @@ function StructuringMock() {
     <PanelFrame title="Structuring" meta="7 transactions · 2 related accounts">
       <div className="space-y-3">
         <div className="relative h-32 rounded-card border border-border p-3">
-          <div className="absolute inset-x-3 top-[38%] border-t border-dashed border-risk-critical/70" />
+          <div
+            className="anim-grow-x absolute inset-x-3 top-[38%] border-t border-dashed border-risk-critical/70"
+            style={{ "--d": 160 } as React.CSSProperties}
+          />
           <span className="absolute right-3 top-[30%] text-[10px] text-risk-critical">10,000 threshold</span>
           <div className="flex h-full items-end gap-2">
             {amounts.map((amount, index) => (
               <div key={amount} className="flex flex-1 flex-col items-center gap-1">
                 <div
-                  className="w-full rounded-t bg-accent/80"
-                  style={{ height: `${(amount / threshold) * 72}px` }}
+                  className="anim-grow-y w-full rounded-t bg-accent/80"
+                  style={{
+                    height: `${(amount / threshold) * 72}px`,
+                    "--d": 300 + index * 60,
+                  } as React.CSSProperties}
                 />
                 <span className="num text-[9px] text-muted-foreground">{index + 1}</span>
               </div>
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-2 text-[11px]">
+        <div className="metric-row grid grid-cols-3 gap-2 text-[11px]">
           <div className="rounded-lg bg-muted p-2">
             <p className="text-muted-foreground">Cluster total</p>
             <p className="num mt-0.5 font-semibold">57,450 USD</p>

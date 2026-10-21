@@ -67,6 +67,7 @@ export function ScoredRadar({
                   strokeWidth={13}
                   strokeLinecap="round"
                   opacity={0.92}
+                  style={{ filter: `drop-shadow(0 0 5px ${RISK_COLORS[level]}80)` }}
                 />
               ) : null}
             </g>
@@ -156,7 +157,7 @@ export function ScoreDistribution({
         <ReadoutStat label="Median" value={String(medianScore)} />
         <ReadoutStat label="p90" value={String(p90)} />
       </div>
-      <p className="mt-2 text-[10.5px] leading-4 text-muted-foreground">
+      <p className="mt-2 text-[11px] leading-4 text-muted-foreground">
         Dashed line is the alert cutoff at {SCORE_BANDS.alert}. Mass to its right is what raises alerts.
       </p>
     </div>
@@ -166,7 +167,7 @@ export function ScoreDistribution({
 function ReadoutStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <p className="text-[10.5px] leading-4 text-muted-foreground">{label}</p>
+      <p className="text-[11px] leading-4 text-muted-foreground">{label}</p>
       <p className="num text-[15px] font-semibold leading-5 tracking-[-0.02em] text-foreground">{value}</p>
     </div>
   );
@@ -189,7 +190,7 @@ export function WindowTrend({ series, className }: { series: SeriesBucket[]; cla
     <div className={cn("min-w-0", className)}>
       <div className="flex gap-2">
         <div
-          className="flex w-9 shrink-0 flex-col justify-between text-right text-[10px] leading-3 text-muted-foreground"
+          className="flex w-9 shrink-0 flex-col justify-between text-right text-[11px] leading-3 text-muted-foreground"
           style={{ height: 132 }}
         >
           {tickShares.map((share) => (
@@ -230,7 +231,7 @@ export function WindowTrend({ series, className }: { series: SeriesBucket[]; cla
             </div>
           </div>
 
-          <div className="mt-2 flex justify-between text-[10px] leading-4 text-muted-foreground">
+          <div className="mt-2 flex justify-between text-[11px] leading-4 text-muted-foreground">
             <span>{series[0]?.label}</span>
             <span>{series[series.length - 1]?.label}</span>
           </div>

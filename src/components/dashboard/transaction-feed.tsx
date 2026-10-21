@@ -183,7 +183,7 @@ export function TransactionFeed({
             >
               <SlidersHorizontal aria-hidden="true" className="size-3.5" /> Filters
               {activeFilterCount > 0 ? (
-                <span className="num rounded-[4px] bg-foreground px-1 text-[10px] leading-4 text-background">{activeFilterCount}</span>
+                <span className="num rounded-[4px] bg-foreground px-1 text-[11px] leading-4 text-background">{activeFilterCount}</span>
               ) : null}
             </Button>
             <Button size="sm" variant="outline" className="h-8 gap-1.5 text-[12px]" onClick={exportCsv} disabled={rows.length === 0}>

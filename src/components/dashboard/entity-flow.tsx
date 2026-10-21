@@ -14,7 +14,7 @@ import {
 import type { EntityFlowBucket } from "@/lib/data/entity";
 import { formatCompactNumber, formatCurrency } from "@/lib/utils";
 
-const axisStyle = { fontSize: 10, fill: "rgb(var(--muted-foreground))" } as const;
+const axisStyle = { fontSize: 11, fill: "rgb(var(--muted-foreground))" } as const;
 
 const tooltipStyle = {
   background: "rgb(var(--card))",
@@ -70,8 +70,8 @@ export function EntityFlowChart({ flow, height = 250 }: { flow: EntityFlowBucket
                   : [formatCurrency(value, "USD", { maximumFractionDigits: 0 }), name === "inValue" ? "Inbound" : "Outbound"]
               }
             />
-            <Bar yAxisId="value" dataKey="inValue" name="inValue" stackId="flow" fill="#2DD4BF" fillOpacity={0.55} radius={[2, 2, 0, 0]} isAnimationActive={false} />
-            <Bar yAxisId="value" dataKey="outValue" name="outValue" stackId="flow" fill="#F0B250" fillOpacity={0.62} radius={[2, 2, 0, 0]} isAnimationActive={false} />
+            <Bar yAxisId="value" dataKey="inValue" name="inValue" stackId="flow" fill="#2DD4BF" fillOpacity={0.55} radius={[2, 2, 0, 0]} isAnimationActive animationDuration={650} />
+            <Bar yAxisId="value" dataKey="outValue" name="outValue" stackId="flow" fill="#F0B250" fillOpacity={0.62} radius={[2, 2, 0, 0]} isAnimationActive animationDuration={650} />
             <Line
               yAxisId="count"
               type="monotone"
@@ -80,7 +80,7 @@ export function EntityFlowChart({ flow, height = 250 }: { flow: EntityFlowBucket
               strokeOpacity={0.55}
               strokeWidth={1.4}
               dot={false}
-              isAnimationActive={false}
+              isAnimationActive animationDuration={650}
             />
           </ComposedChart>
         </ResponsiveContainer>

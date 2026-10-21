@@ -59,7 +59,7 @@ export function ScoreDial({ score, size = 148 }: { score: number; size?: number 
         </g>
       </svg>
       <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-1">
-        <span className="text-[10px] capitalize" style={{ color }}>
+        <span className="text-[11px] capitalize" style={{ color }}>
           {level}
         </span>
       </div>
@@ -141,7 +141,7 @@ export function ScoreSimulator({ factors, published }: { factors: Factor[]; publ
         </div>
         <div className="flex items-center gap-2">
           {crossing ? (
-            <span className="inline-flex items-center gap-1 rounded-full border border-risk-high/35 bg-risk-high/10 px-2 py-1 text-[10.5px] text-risk-high">
+            <span className="inline-flex items-center gap-1 rounded-full border border-risk-high/35 bg-risk-high/10 px-2 py-1 text-[11px] text-risk-high">
               <TriangleAlert className="size-3" aria-hidden="true" /> crosses the alert cutoff
             </span>
           ) : null}
@@ -172,7 +172,7 @@ export function ScoreSimulator({ factors, published }: { factors: Factor[]; publ
           aria-hidden="true"
         />
       </div>
-      <p className="mt-1 flex justify-between text-[10px] text-muted-foreground">
+      <p className="mt-1 flex justify-between text-[11px] text-muted-foreground">
         <span>0</span>
         <span className="num">alert at {ALERT_CUTOFF}</span>
         <span>100</span>
@@ -211,14 +211,14 @@ export function ScoreSimulator({ factors, published }: { factors: Factor[]; publ
                         }}
                       />
                     </div>
-                    <span className="num w-12 shrink-0 text-right text-[10.5px] text-muted-foreground">
+                    <span className="num w-12 shrink-0 text-right text-[11px] text-muted-foreground">
                       {(factor.points * config.strength).toFixed(1)} pts
                     </span>
                   </div>
                 </div>
               </div>
               <div className="mt-2 flex items-center gap-2 pl-6">
-                <span className="text-[10px] text-muted-foreground">strength</span>
+                <span className="text-[11px] text-muted-foreground">strength</span>
                 <input
                   type="range"
                   min={0}
@@ -236,7 +236,7 @@ export function ScoreSimulator({ factors, published }: { factors: Factor[]; publ
                   }}
                   className="h-1 flex-1 cursor-pointer accent-[rgb(var(--accent))]"
                 />
-                <span className="num w-9 text-right text-[10px] text-muted-foreground">
+                <span className="num w-9 text-right text-[11px] text-muted-foreground">
                   {Math.round(config.strength * 100)}%
                 </span>
               </div>
@@ -245,7 +245,7 @@ export function ScoreSimulator({ factors, published }: { factors: Factor[]; publ
         })}
       </ul>
 
-      <div className="mt-4 flex items-start gap-2 rounded-[10px] border border-border/70 bg-muted/30 px-3 py-2.5 text-[10.5px] leading-4 text-muted-foreground">
+      <div className="mt-4 flex items-start gap-2 rounded-[10px] border border-border/70 bg-muted/30 px-3 py-2.5 text-[11px] leading-4 text-muted-foreground">
         <SlidersHorizontal className="mt-0.5 size-3 shrink-0" aria-hidden="true" />
         <span>
           Recomputes the published score from this payment&apos;s own signal weights and strengths. It is a sensitivity
@@ -289,7 +289,7 @@ export function AmountLadder({
           />
         ) : null}
       </div>
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[10.5px] text-muted-foreground">
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
         <span>
           this payment <span className="num text-foreground">{formatCurrency(amountBase, "USD", { maximumFractionDigits: 0 })}</span>
         </span>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Reveal } from "@/components/marketing/reveal";
 import { RISK_COLORS, statusColors, type RiskLevel } from "@/config/risk";
 import { cn } from "@/lib/utils";
 
@@ -35,20 +36,25 @@ export function StatusMix({
 }) {
   const max = Math.max(1, ...data.map((entry) => entry.count));
   return (
-    <div className={className}>
+    <Reveal className={className}>
       <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-muted" role="img" aria-label="Alert status split">
-        {data.map((entry) =>
+        {data.map((entry, index) =>
           entry.count > 0 ? (
             <span
               key={entry.status}
-              style={{ width: `${(entry.count / Math.max(1, total)) * 100}%`, background: statusColors[entry.status as keyof typeof statusColors] }}
+              className="anim-grow-x"
+              style={{
+                width: `${(entry.count / Math.max(1, total)) * 100}%`,
+                background: statusColors[entry.status as keyof typeof statusColors],
+                "--d": 60 + index * 70,
+              } as React.CSSProperties}
             />
           ) : null,
         )}
       </div>
 
       <ul className="mt-4 space-y-2.5">
-        {data.map((entry) => (
+        {data.map((entry, index) => (
           <li key={entry.status} className="flex items-center gap-2.5">
             <span
               className="size-2.5 shrink-0 rounded-sm"
@@ -60,11 +66,12 @@ export function StatusMix({
             </span>
             <span className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted/70">
               <span
-                className="block h-full rounded-full"
+                className="anim-grow-x block h-full rounded-full"
                 style={{
                   width: `${(entry.count / max) * 100}%`,
                   background: statusColors[entry.status as keyof typeof statusColors],
-                }}
+                  "--d": 240 + index * 60,
+                } as React.CSSProperties}
               />
             </span>
             <span className="num w-10 shrink-0 text-right text-[12.5px] font-medium">{entry.count}</span>
@@ -78,7 +85,7 @@ export function StatusMix({
         </Link>{" "}
         to work through unresolved alerts.
       </p>
-    </div>
+    </Reveal>
   );
 }
 
@@ -92,9 +99,9 @@ export function SeverityLadder({
 }) {
   const total = data.reduce((sum, entry) => sum + entry.count, 0);
   return (
-    <ul className={cn("space-y-3", className)}>
-      {data.map((entry) => {
-        const share = total > 0 ? (entry.count / total) * 100 : 0;
+    <Reveal className={className}>      <ul className="space-y-3">
+        {data.map((entry, index) => {
+          const share = total > 0 ? (entry.count / total) * 100 : 0;
         return (
           <li key={entry.severity}>
             <div className="flex items-baseline justify-between gap-2">
@@ -106,14 +113,19 @@ export function SeverityLadder({
             </div>
             <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted/70">
               <div
-                className="h-full rounded-full"
-                style={{ width: `${Math.max(share > 0 ? 2 : 0, share)}%`, background: RISK_COLORS[entry.severity] }}
+                className="anim-grow-x h-full rounded-full"
+                style={{
+                  width: `${Math.max(share > 0 ? 2 : 0, share)}%`,
+                  background: RISK_COLORS[entry.severity],
+                  "--d": 60 + index * 80,
+                } as React.CSSProperties}
               />
             </div>
           </li>
         );
       })}
     </ul>
+    </Reveal>
   );
 }
 
@@ -137,24 +149,37 @@ export function SlaStrip({
   ];
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <Reveal className={cn("space-y-3", className)}>
       <div className="flex h-2 w-full overflow-hidden rounded-full bg-muted">
         {open > 0 ? (
           <>
-            <span className="bg-risk-critical" style={{ width: `${(breached / open) * 100}%` }} />
-            <span className="bg-risk-medium" style={{ width: `${(dueSoon / open) * 100}%` }} />
-            <span className="bg-risk-low" style={{ width: `${(onTrack / open) * 100}%` }} />
+            <span
+              className="anim-grow-x bg-risk-critical"
+              style={{ width: `${(breached / open) * 100}%`, "--d": 60 } as React.CSSProperties}
+            />
+            <span
+              className="anim-grow-x bg-risk-medium"
+              style={{ width: `${(dueSoon / open) * 100}%`, "--d": 150 } as React.CSSProperties}
+            />
+            <span
+              className="anim-grow-x bg-risk-low"
+              style={{ width: `${(onTrack / open) * 100}%`, "--d": 240 } as React.CSSProperties}
+            />
           </>
         ) : null}
       </div>
       <dl className="grid grid-cols-3 gap-2">
-        {items.map((item) => (
-          <div key={item.label} className="rounded-tile border border-border/70 bg-elevated/60 px-2.5 py-2">
+        {items.map((item, index) => (
+          <div
+            key={item.label}
+            className="anim-rise rounded-tile border border-border/70 bg-elevated/60 px-2.5 py-2"
+            style={{ "--d": 320 + index * 90 } as React.CSSProperties}
+          >
             <dt className="text-[11.5px] text-muted-foreground">{item.label}</dt>
             <dd className={cn("num mt-1 text-[17px] font-medium leading-5", item.tone)}>{item.value}</dd>
           </div>
         ))}
       </dl>
-    </div>
+    </Reveal>
   );
 }

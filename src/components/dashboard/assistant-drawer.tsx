@@ -25,8 +25,9 @@ function pageFor(pathname: string): string {
 }
 
 /**
- * One analyst, reachable from every page. The drawer keeps its conversation for
- * the session and re-grounds each question on the window currently in the URL.
+ * One analyst, reachable from every page. The drawer persists its conversation
+ * on this device (one history for the whole drawer, whatever page it is opened
+ * from) and re-grounds each question on the window currently in the URL.
  */
 export function AssistantDrawer() {
   const [open, setOpen] = useState(false);
@@ -67,6 +68,7 @@ export function AssistantDrawer() {
         <AnalystPanel
           range={range}
           page={pageFor(pathname)}
+          surface="drawer"
           variant="bare"
           className="min-h-0 flex-1"
           scrollAreaClassName="max-h-[calc(100dvh-190px)]"

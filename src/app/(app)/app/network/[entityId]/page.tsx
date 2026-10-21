@@ -148,7 +148,7 @@ export default async function EntityPage({
           title="Directional flow"
           description={`Value in and out of this entity over the last ${rangeLabel}`}
           className="xl:col-span-9"
-          action={<span className="num text-[10.5px] text-muted-foreground">{flow.length} buckets</span>}
+          action={<span className="num text-[11px] text-muted-foreground">{flow.length} buckets</span>}
         >
           <EntityFlowChart flow={flow} />
         </PageSection>
@@ -243,11 +243,11 @@ export default async function EntityPage({
                         ) : (
                           <span className="font-medium">{row.name}</span>
                         )}
-                        <span className="num ml-1.5 text-[10.5px] text-muted-foreground">{row.country}</span>
+                        <span className="num ml-1.5 text-[11px] text-muted-foreground">{row.country}</span>
                       </th>
                       <td>
                         <span
-                          className={`num rounded-[5px] px-1.5 py-0.5 text-[10px] ${
+                          className={`num rounded-[5px] px-1.5 py-0.5 text-[11px] ${
                             row.direction === "out" ? "bg-chart-3/15 text-chart-3" : "bg-risk-low/15 text-risk-low"
                           }`}
                         >
@@ -278,12 +278,12 @@ export default async function EntityPage({
             <ul className="divide-y divide-border/60">
               {accounts.map((account) => (
                 <li key={account.id} className="flex items-center gap-3 px-5 py-2.5">
-                  <span className="num rounded-[6px] border border-border bg-muted/50 px-1.5 py-0.5 text-[10.5px]">
+                  <span className="num rounded-[6px] border border-border bg-muted/50 px-1.5 py-0.5 text-[11px]">
                     {account.currency}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="num truncate text-[11.5px] font-medium">{account.externalRef}</p>
-                    <p className="num text-[10.5px] text-muted-foreground">
+                    <p className="num text-[11px] text-muted-foreground">
                       opened {account.openedAt.slice(0, 10)} · {account.riskTier} tier
                     </p>
                   </div>

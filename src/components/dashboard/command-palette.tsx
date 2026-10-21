@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeftRight, ArrowRight, FolderPlus, Moon, Search, ShieldAlert, Sun } from "lucide-react";
+import { ArrowLeftRight, ArrowRight, FolderPlus, Search, ShieldAlert } from "lucide-react";
 
 import {
   CommandDialog,
@@ -12,9 +12,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command";
-import { useTheme } from "@/components/theme-provider";
 import { appNav, settingsNav } from "@/config/site";
 
 interface SearchResults {
@@ -31,7 +29,6 @@ const RECENT_KEY = "aegis-recent";
 
 export function CommandPalette({ userId }: { userId: string }) {
   const router = useRouter();
-  const { resolvedTheme, setTheme } = useTheme();
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
   const [results, setResults] = React.useState<SearchResults>(emptyResults);
@@ -218,17 +215,6 @@ export function CommandPalette({ userId }: { userId: string }) {
           <CommandItem value="action-new-case" onSelect={() => go("/app/cases?new=1", "New case")}>
             <FolderPlus className="size-4" aria-hidden="true" />
             Create case
-          </CommandItem>
-          <CommandItem
-            value="action-theme"
-            onSelect={() => {
-              setTheme(resolvedTheme === "dark" ? "light" : "dark");
-              setOpen(false);
-            }}
-          >
-            {resolvedTheme === "dark" ? <Sun className="size-4" aria-hidden="true" /> : <Moon className="size-4" aria-hidden="true" />}
-            Toggle theme
-            <CommandShortcut>⌘⇧L</CommandShortcut>
           </CommandItem>
         </CommandGroup>
       </CommandList>

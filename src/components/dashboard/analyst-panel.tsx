@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUp, CircleStop, RotateCcw, Sparkles, TriangleAlert } from "lucide-react";
 
+import { ChatHistoryMenu, NewChatButton } from "@/components/dashboard/chat-history-menu";
+import { useChatHistory, type AssistantReply, type ChatTurn } from "@/lib/ai/chat-history";
 import type { RangeKey } from "@/lib/data/common";
 import { cn, formatCompactNumber } from "@/lib/utils";
 
@@ -15,29 +17,10 @@ import { cn, formatCompactNumber } from "@/lib/utils";
  * grounding visible so an answer can be checked against the dashboard.
  */
 
-export interface AssistantReply {
-  answer: string;
-  model: string;
-  usage: { promptTokens: number; completionTokens: number; totalTokens: number } | null;
-  evidence: {
-    window: string;
-    from: string;
-    to: string;
-    payments: number;
-    valueUsd: number;
-    flagged: number;
-    alertCutoff: number;
-    corridors: string[];
-  };
-}
-
-interface Turn {
-  id: string;
-  question: string;
-  reply: AssistantReply | null;
-  error: string | null;
-  pending: boolean;
-}
+// Shared with the console and re-exported for existing importers (the
+// insight surfaces); one definition keeps saved history decodable everywhere.
+export type { AssistantReply } from "@/lib/ai/chat-history";
+type Turn = ChatTurn;
 
 const SUGGESTIONS: Record<string, string[]> = {
   overview: [
@@ -136,7 +119,7 @@ export function AnswerBody({ text }: { text: string }) {
 
 export function EvidenceFooter({ reply }: { reply: AssistantReply }) {
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-border/50 pt-2.5 text-[10.5px] text-muted-foreground">
+    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-border/50 pt-2.5 text-[11px] text-muted-foreground">
       <span className="num">
         window {reply.evidence.window} · {reply.evidence.from} → {reply.evidence.to}
       </span>
@@ -157,17 +140,24 @@ export function AnalystPanel({
   range,
   page = "overview",
   variant = "card",
+  surface,
+  scope = "default",
   className,
   scrollAreaClassName,
 }: {
   range: RangeKey;
   page?: string;
   variant?: "card" | "bare";
+  /** Storage key for saved chats; defaults to the page it is rendered on. */
+  surface?: string;
+  /** Workspace id — separates this browser's saved chats per tenant. */
+  scope?: string;
   className?: string;
   scrollAreaClassName?: string;
 }) {
   const [question, setQuestion] = useState("");
-  const [turns, setTurns] = useState<Turn[]>([]);
+  const history = useChatHistory({ surface: surface ?? `panel:${page}`, scope });
+  const { turns, setTurns } = history;
   const [pending, setPending] = useState(false);
   const abort = useRef<AbortController | null>(null);
   const scroller = useRef<HTMLDivElement | null>(null);
@@ -186,6 +176,10 @@ export function AnalystPanel({
     const controller = new AbortController();
     abort.current = controller;
 
+    // Captured before the new turn is appended: this is the memory the model
+    // receives so a follow-up lands with the earlier exchange in context.
+    const priorTurns = history.promptHistory();
+
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     setTurns((current) => [...current, { id, question: text, reply: null, error: null, pending: true }]);
     setPending(true);
@@ -195,7 +189,7 @@ export function AnalystPanel({
       const response = await fetch("/api/assistant", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ question: text, range, page }),
+        body: JSON.stringify({ question: text, range, page, history: priorTurns }),
         signal: controller.signal,
       });
       const payload = (await response.json()) as {
@@ -258,13 +252,32 @@ export function AnalystPanel({
             <Sparkles className="size-3.5 text-accent" aria-hidden="true" />
             <h2 className="text-[13px] font-medium">Ask the analyst</h2>
           </div>
-          <span className="chip border-accent/30 bg-accent/10 text-[10.5px] text-accent">
+          <span className="chip border-accent/30 bg-accent/10 text-[11px] text-accent">
             grounded on this workspace · window-scoped
           </span>
         </div>
       ) : null}
 
       <div className={cn("flex min-h-0 flex-1 flex-col px-5 py-4")}>
+        {history.ready ? (
+          <div className="mb-3 flex items-center justify-between gap-2 border-b border-border/50 pb-2.5">
+            <p className="min-w-0 truncate text-[11px] text-muted-foreground">
+              {turns[0]?.question.slice(0, 48) ?? "New conversation"}
+              {turns.length > 0 ? <span className="num"> · {turns.length} turns</span> : null}
+            </p>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <ChatHistoryMenu
+                sessions={history.sessions}
+                activeId={history.activeId}
+                onOpen={history.open}
+                onRemove={history.remove}
+                onNew={history.newChat}
+              />
+              <NewChatButton onClick={history.newChat} />
+            </div>
+          </div>
+        ) : null}
+
         <div ref={scroller} className={cn("min-h-0 flex-1 space-y-4 overflow-y-auto", scrollAreaClassName)}>
           {turns.length === 0 ? (
             <div className="space-y-3">

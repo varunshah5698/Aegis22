@@ -73,10 +73,10 @@ export default async function StructuringPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="font-display text-sm font-semibold tracking-tight">{cluster.receiverName}</span>
-                        <span className="num rounded-pill bg-muted px-2 py-0.5 text-[10px]">{cluster.corridor}</span>
+                        <span className="num rounded-pill bg-muted px-2 py-0.5 text-[11px]">{cluster.corridor}</span>
                         <span
                           className={cn(
-                            "rounded-pill px-2 py-0.5 text-[10px] font-medium",
+                            "rounded-pill px-2 py-0.5 text-[11px] font-medium",
                             cluster.averageScore >= 70
                               ? "bg-risk-high/15 text-risk-high"
                               : "bg-risk-medium/20 text-[#6b4a00] dark:text-risk-medium",
@@ -85,7 +85,7 @@ export default async function StructuringPage() {
                           avg score {cluster.averageScore}
                         </span>
                         {cluster.excessOverThreshold > 0 ? (
-                          <span className="text-[10px] text-risk-high">
+                          <span className="text-[11px] text-risk-high">
                             +{formatCurrency(cluster.excessOverThreshold, "USD", { maximumFractionDigits: 0 })} over
                             threshold
                           </span>

@@ -253,7 +253,7 @@ export function CaptionCell({ index, title, children }: { index: string; title: 
   return (
     <div className="min-w-0 border-t border-border-strong/60 pt-2.5">
       <p className="flex items-baseline gap-2">
-        <span className="num text-[10px] text-muted-foreground/70">{index}</span>
+        <span className="num text-[11px] text-muted-foreground/70">{index}</span>
         <span className="label-xs truncate">{title}</span>
       </p>
       <div className="mt-1.5 text-[12px] leading-4 text-muted-foreground">{children}</div>

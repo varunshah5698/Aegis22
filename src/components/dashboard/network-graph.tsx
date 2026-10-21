@@ -181,7 +181,7 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
               {LEGEND.map((level) => (
                 <span
                   key={level}
-                  className="inline-flex items-center gap-1.5 text-[10.5px] text-white/60"
+                  className="inline-flex items-center gap-1.5 text-[11px] text-white/60"
                 >
                   <span
                     className="size-2.5 rounded-full bg-[#EEF3FB] ring-2"
@@ -194,7 +194,7 @@ export function NetworkGraph({ nodes, edges }: { nodes: NetworkNode[]; edges: Ne
                   {level}
                 </span>
               ))}
-              <span className="text-[10.5px] text-white/40">bead size = value · rim = risk</span>
+              <span className="text-[11px] text-white/40">bead size = value · rim = risk</span>
             </div>
             <div className="flex items-center gap-1">
               <Button

@@ -164,7 +164,7 @@ export default async function AnalyticsPage({
         />
       </MetricRow>
 
-      <AnalystPanel range={range} page="analytics" />
+      <AnalystPanel range={range} page="analytics" scope={organizationId} />
 
       <div className="workspace-row">
         <PageSection
@@ -219,7 +219,7 @@ export default async function AnalyticsPage({
                 aria-hidden="true"
               />
             </div>
-            <div className="mt-1.5 flex items-center justify-between text-[10.5px] text-muted-foreground">
+            <div className="mt-1.5 flex items-center justify-between text-[11px] text-muted-foreground">
               <span>
                 median <span className="num text-foreground">{totals.medianScore}</span>
               </span>
@@ -316,7 +316,7 @@ export default async function AnalyticsPage({
                 </dt>
                 <dd className="num mt-1 text-[18px] font-medium leading-6">{entry.value}</dd>
                 {entry.hint ? (
-                  <dd className="truncate text-[10.5px] leading-4 text-muted-foreground">
+                  <dd className="truncate text-[11px] leading-4 text-muted-foreground">
                     {entry.hint}
                   </dd>
                 ) : null}
@@ -606,7 +606,7 @@ export default async function AnalyticsPage({
                 <p className={cn("num mt-1.5 text-[20px] font-medium leading-6", item.tone)}>
                   {item.value}
                 </p>
-                <p className="mt-0.5 truncate text-[10.5px] leading-4 text-muted-foreground">
+                <p className="mt-0.5 truncate text-[11px] leading-4 text-muted-foreground">
                   {item.hint}
                 </p>
               </div>

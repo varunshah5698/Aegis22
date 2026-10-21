@@ -29,11 +29,15 @@ export function AlertsQueue({
 }) {
   const router = useRouter();
   const [selected, setSelected] = React.useState<Set<string>>(new Set());
-  const [now, setNow] = React.useState(Date.now());
+  // SLA labels are derived from the wall clock, so they start unmounted: the
+  // server renders a neutral placeholder and the client fills in the real
+  // countdown after hydration instead of risking a text mismatch.
+  const [now, setNow] = React.useState<number | null>(null);
   const [pending, setPending] = React.useState(false);
   const [confirmBulk, setConfirmBulk] = React.useState<null | "assign_me" | "escalate" | "false_positive">(null);
 
   React.useEffect(() => {
+    setNow(Date.now());
     const timer = window.setInterval(() => setNow(Date.now()), 30_000);
     return () => window.clearInterval(timer);
   }, []);
@@ -174,7 +178,7 @@ export function AlertsQueue({
               </tr>
             ) : (
               rows.map((row) => {
-                const state = slaState(row.dueAt, now);
+                const state = now === null ? "none" : slaState(row.dueAt, now);
                 return (
                   <tr key={row.id}>
                     <td>
@@ -189,7 +193,7 @@ export function AlertsQueue({
                       <Link href={`/app/alerts/${row.id}`} className="block truncate text-[12.5px] font-medium hover:underline">
                         {row.title}
                       </Link>
-                      <span className="num text-[10.5px] text-muted-foreground">{row.externalId}</span>
+                      <span className="num text-[11px] text-muted-foreground">{row.externalId}</span>
                     </td>
                     <td className="num whitespace-nowrap text-right text-[12.5px]">
                       {formatCurrency(row.amount, row.currency)}
@@ -207,7 +211,7 @@ export function AlertsQueue({
                         )}
                       >
                         <Clock className="size-3" aria-hidden="true" />
-                        {slaLabel(row.dueAt, now)}
+                        {now === null ? "\u00a0" : slaLabel(row.dueAt, now)}
                       </span>
                       <span className="ml-auto mt-1 block h-1 w-20 overflow-hidden rounded-full bg-muted">
                         <span

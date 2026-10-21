@@ -70,7 +70,7 @@ export default async function AnalystPage({
         <RangeTabs basePath="/app/analyst" current={range} />
       </header>
 
-      <AnalystConsole range={range} evidence={evidence} />
+      <AnalystConsole range={range} evidence={evidence} scope={organization!.id} />
 
       <div className="grid gap-4 lg:grid-cols-3">
         <PageSection
@@ -82,7 +82,7 @@ export default async function AnalystPage({
           <ol className="space-y-3">
             {steps.map((step, index) => (
               <li key={step} className="flex gap-2.5">
-                <span className="num mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-border bg-muted/60 text-[10px] font-medium text-muted-foreground">
+                <span className="num mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border border-border bg-muted/60 text-[11px] font-medium text-muted-foreground">
                   {index + 1}
                 </span>
                 <span className="text-[11.5px] leading-5 text-muted-foreground">{step}</span>

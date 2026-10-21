@@ -114,7 +114,7 @@ export function ApiKeysPanel({ keys, canManage }: { keys: ApiKeyRow[]; canManage
                 </span>
                 <span className="flex flex-wrap gap-1">
                   {key.scopes.map((scope) => (
-                    <Badge key={scope} variant="outline" className="text-[10px]">
+                    <Badge key={scope} variant="outline" className="text-[11px]">
                       {scope}
                     </Badge>
                   ))}

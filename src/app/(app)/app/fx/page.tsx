@@ -309,7 +309,7 @@ export default async function FxIntelligencePage({
                       <span className="num block text-[11px] text-muted-foreground">
                         {row.rate.toLocaleString("en-US", { maximumFractionDigits: 4 })}
                       </span>
-                      <span className="num block text-[10px] text-muted-foreground/80">
+                      <span className="num block text-[11px] text-muted-foreground/80">
                         {row.low.toLocaleString("en-US", { maximumFractionDigits: 3 })}–
                         {row.high.toLocaleString("en-US", { maximumFractionDigits: 3 })} · {TREND_DAYS}d
                       </span>
@@ -326,7 +326,7 @@ export default async function FxIntelligencePage({
               ))}
             </ul>
           )}
-          <div className="border-t border-border/60 px-4 py-2.5 text-[10.5px] leading-4 text-muted-foreground">
+          <div className="border-t border-border/60 px-4 py-2.5 text-[11px] leading-4 text-muted-foreground">
             A positive move means the quote currency strengthened against the dollar. This is a reference fixing, so it is
             not an executable rate.
           </div>
@@ -458,7 +458,7 @@ export default async function FxIntelligencePage({
                 <span className="inline-flex items-center gap-2">
                   <span className="num">{entry.currency}</span>
                   {hasRate(entry.currency) ? null : (
-                    <span className="rounded-[5px] bg-risk-medium/15 px-1.5 py-0.5 text-[10px] text-risk-medium">
+                    <span className="rounded-[5px] bg-risk-medium/15 px-1.5 py-0.5 text-[11px] text-risk-medium">
                       no reference rate
                     </span>
                   )}

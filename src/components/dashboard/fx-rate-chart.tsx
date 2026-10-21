@@ -55,7 +55,7 @@ function RateTooltip({
       <p className="label-xs">{formatDate(point.date)}</p>
       <p className="num mt-1.5 text-[15px] font-medium leading-5">
         {indexed ? point.value.toFixed(1) : formatRate(point.rate)}
-        <span className="ml-1 text-[10px] font-normal text-muted-foreground">
+        <span className="ml-1 text-[11px] font-normal text-muted-foreground">
           {indexed ? `index (${formatDate(payload[0]!.payload.date)})` : `USD/${code}`}
         </span>
       </p>
@@ -112,7 +112,7 @@ export function FxRateChart({
   const change = latest && first ? ((latest.rate - first.rate) / first.rate) * 100 : null;
   const high = points.length > 0 ? Math.max(...points.map((point) => point.rate)) : 0;
   const low = points.length > 0 ? Math.min(...points.map((point) => point.rate)) : 0;
-  const tick = { fontSize: 10, fill: "rgb(var(--muted-foreground))" } as const;
+  const tick = { fontSize: 11, fill: "rgb(var(--muted-foreground))" } as const;
   const span = Math.max(1e-9, (high - low) * 0.25);
 
   return (
@@ -148,7 +148,7 @@ export function FxRateChart({
                 aria-pressed={days === option}
                 onClick={() => setDays(option)}
                 className={cn(
-                  "rounded-[7px] px-2 py-1 text-[10.5px] font-medium transition-colors",
+                  "rounded-[7px] px-2 py-1 text-[11px] font-medium transition-colors",
                   days === option ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -168,7 +168,7 @@ export function FxRateChart({
                 aria-pressed={indexed === option.value}
                 onClick={() => setIndexed(option.value)}
                 className={cn(
-                  "rounded-[7px] px-2 py-1 text-[10.5px] font-medium transition-colors",
+                  "rounded-[7px] px-2 py-1 text-[11px] font-medium transition-colors",
                   indexed === option.value ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -178,7 +178,7 @@ export function FxRateChart({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10.5px] text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
           <span className="num">
             {latest ? formatRate(latest.rate) : "—"} <span className="opacity-70">per USD</span>
           </span>
@@ -245,14 +245,14 @@ export function FxRateChart({
                 fill="url(#fx-area)"
                 dot={false}
                 activeDot={{ r: 3.5, fill: "rgb(var(--chart-1))", stroke: "rgb(var(--card))", strokeWidth: 2 }}
-                isAnimationActive={false}
+                isAnimationActive animationDuration={650}
               />
             </ComposedChart>
           </ResponsiveContainer>
         )}
       </div>
 
-      <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10.5px] text-muted-foreground">
+      <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
         <span>{sourceLabel}</span>
         <span aria-hidden="true">·</span>
         <span className="num">fixing {rateDate}</span>

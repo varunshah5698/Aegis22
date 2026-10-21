@@ -100,9 +100,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
+  // ORION void: one color in both media queries — the light theme is gone.
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F4F4EF" },
-    { media: "(prefers-color-scheme: dark)", color: "#0E0F13" },
+    { media: "(prefers-color-scheme: light)", color: "#08080F" },
+    { media: "(prefers-color-scheme: dark)", color: "#08080F" },
   ],
   width: "device-width",
   initialScale: 1,

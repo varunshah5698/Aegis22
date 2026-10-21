@@ -90,7 +90,7 @@ export function TeamTable({
                         <span className="block truncate text-xs font-medium">{member.fullName || member.email}</span>
                         <span className="block truncate text-[11px] text-muted-foreground">{member.email}</span>
                       </span>
-                      {isSelf ? <Badge variant="outline" className="text-[10px]">You</Badge> : null}
+                      {isSelf ? <Badge variant="outline" className="text-[11px]">You</Badge> : null}
                     </div>
                   </th>
                   <td className="px-3 py-3">

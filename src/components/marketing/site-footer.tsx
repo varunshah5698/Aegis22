@@ -3,7 +3,6 @@ import { Github, Linkedin, Twitter } from "lucide-react";
 
 import { LogoMark } from "@/components/logo";
 import { NewsletterForm } from "@/components/marketing/newsletter-form";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { footerNav, siteConfig } from "@/config/site";
 
 const socials = [
@@ -80,7 +79,6 @@ export function SiteFooter() {
                 <Icon className="size-4" aria-hidden="true" />
               </a>
             ))}
-            <ThemeToggle />
           </div>
         </div>
       </div>

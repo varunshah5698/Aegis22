@@ -146,7 +146,7 @@ export function ProfileForm({
           <div>
             <dt className="text-muted-foreground">Email status</dt>
             <dd>
-              <Badge variant={verified ? "outline" : "high"} className="text-[10px]">
+              <Badge variant={verified ? "outline" : "high"} className="text-[11px]">
                 {verified ? "Verified" : "Unverified"}
               </Badge>
             </dd>

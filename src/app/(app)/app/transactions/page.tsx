@@ -416,7 +416,7 @@ export default async function TransactionsPage({
                       }}
                     />
                   </div>
-                  <p className="mt-1.5 text-[10.5px] text-muted-foreground">
+                  <p className="mt-1.5 text-[11px] text-muted-foreground">
                     <span className="num">{entry.count.toLocaleString("en-US")}</span> payments
                   </p>
                 </li>

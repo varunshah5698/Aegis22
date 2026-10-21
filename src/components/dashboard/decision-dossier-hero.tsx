@@ -96,20 +96,20 @@ export function DecisionDossierHero({ data }: { data: DossierData }) {
       <>
         <div className="flex items-start justify-between gap-3">
           <CardEyebrow>Amount</CardEyebrow>
-          <span className="chip h-5 px-1.5 text-[9.5px] leading-none">{data.amount.includes("USD") ? "base" : "converted"}</span>
+          <span className="chip h-5 px-1.5 text-[11px] leading-none">{data.amount.includes("USD") ? "base" : "converted"}</span>
         </div>
         <div className="mt-4">
           <CardValue value={data.amount} unit={data.amountUnit} size="md" />
         </div>
         <p className="num mt-2 text-[11px] text-muted-foreground">{data.amountInUsd} in USD</p>
-        <p className="mt-auto pt-4 text-[10.5px] leading-4 text-muted-foreground">{data.amountNote}</p>
+        <p className="mt-auto pt-4 text-[11px] leading-4 text-muted-foreground">{data.amountNote}</p>
       </>
     ),
     corridor: (
       <>
         <div className="flex items-start justify-between gap-3">
           <CardEyebrow>Corridor</CardEyebrow>
-          <span className="font-mono text-[9.5px] text-muted-foreground/70">{data.channel}</span>
+          <span className="font-mono text-[11px] text-muted-foreground/70">{data.channel}</span>
         </div>
         <div className="mt-4 flex items-baseline gap-2">
           <span className="font-display text-[clamp(30px,4.6vw,44px)] font-medium leading-none tracking-[-0.04em]">{data.corridor}</span>
@@ -163,7 +163,7 @@ export function DecisionDossierHero({ data }: { data: DossierData }) {
           </div>
         </div>
         <p className="mt-3 text-[11px] leading-4 text-muted-foreground">{data.share}</p>
-        <p className="mt-auto pt-4 text-[10.5px] leading-4 text-muted-foreground">{data.timing}</p>
+        <p className="mt-auto pt-4 text-[11px] leading-4 text-muted-foreground">{data.timing}</p>
       </>
     ),
   };
@@ -245,7 +245,7 @@ export function DecisionDossierHero({ data }: { data: DossierData }) {
                     <span className="label-xs">Decision</span>
                   </p>
                   <p className="mt-1 font-display text-[19px] font-medium leading-tight tracking-[-0.02em]">{data.decision.headline}</p>
-                  <p className="mt-1 text-[10.5px] leading-4 text-muted-foreground">{data.decision.detail}</p>
+                  <p className="mt-1 text-[11px] leading-4 text-muted-foreground">{data.decision.detail}</p>
                 </div>
               </div>
 

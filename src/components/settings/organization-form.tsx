@@ -74,8 +74,8 @@ export function OrganizationForm({
             Workspace
           </h2>
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] capitalize">{plan} plan</Badge>
-            <Badge variant="outline" className="text-[10px]">{memberCount} members</Badge>
+            <Badge variant="outline" className="text-[11px] capitalize">{plan} plan</Badge>
+            <Badge variant="outline" className="text-[11px]">{memberCount} members</Badge>
           </div>
         </div>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">

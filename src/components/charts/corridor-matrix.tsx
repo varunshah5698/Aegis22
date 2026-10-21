@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { Reveal } from "@/components/marketing/reveal";
 import { cn, formatCompactNumber } from "@/lib/utils";
 
 export interface CorridorCell {
@@ -42,9 +43,10 @@ export function CorridorMatrix({
   }
 
   return (
-    <div className={cn("min-w-0", className)}>
+    <Reveal className={className}>
+      <div className="min-w-0">
       {legend ? (
-        <div className="mb-3 flex flex-wrap items-center gap-3 text-[10.5px] text-muted-foreground">
+        <div className="mb-3 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
           {[
             { label: "0–39 low", className: "bg-risk-low/70" },
             { label: "40–69 medium", className: "bg-risk-medium/85" },
@@ -75,19 +77,19 @@ export function CorridorMatrix({
                 From \ To
               </th>
               {receivers.map((receiver) => (
-                <th key={receiver} scope="col" className="num px-2 py-1 text-[10px] font-medium text-muted-foreground">
+                <th key={receiver} scope="col" className="num px-2 py-1 text-[11px] font-medium text-muted-foreground">
                   {receiver}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {senders.map((sender) => (
+            {senders.map((sender, rowIndex) => (
               <tr key={sender}>
-                <th scope="row" className="num sticky left-0 bg-card px-2 py-1 text-left text-[10.5px] font-medium text-muted-foreground">
+                <th scope="row" className="num sticky left-0 bg-card px-2 py-1 text-left text-[11px] font-medium text-muted-foreground">
                   {sender}
                 </th>
-                {receivers.map((receiver) => {
+                {receivers.map((receiver, colIndex) => {
                   const cell = byPair.get(`${sender}-${receiver}`);
                   if (!cell) {
                     return (
@@ -101,13 +103,14 @@ export function CorridorMatrix({
                       <Link
                         href={`/app/transactions?corridor=${sender}-${receiver}`}
                         className={cn(
-                          "flex h-11 w-full flex-col items-center justify-center rounded-[7px] text-[10px] font-medium transition-transform hover:scale-[1.04]",
+                          "anim-cell flex h-11 w-full flex-col items-center justify-center rounded-[7px] text-[11px] font-medium transition-transform hover:scale-[1.04]",
                           scoreTone(cell.averageScore),
                         )}
+                        style={{ "--d": rowIndex * 34 + colIndex * 14 } as React.CSSProperties}
                         aria-label={`${sender} to ${receiver}: average score ${cell.averageScore}, ${cell.count} payments, ${cell.flagged} flagged`}
                       >
                         <span className="num text-[12.5px] leading-4">{cell.averageScore}</span>
-                        <span className="num text-[10px] leading-4 opacity-80">{formatCompactNumber(cell.value)}</span>
+                        <span className="num text-[11px] leading-4 opacity-80">{formatCompactNumber(cell.value)}</span>
                       </Link>
                     </td>
                   );
@@ -117,6 +120,7 @@ export function CorridorMatrix({
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
+    </Reveal>
   );
 }

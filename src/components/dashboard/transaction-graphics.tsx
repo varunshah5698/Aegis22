@@ -49,11 +49,29 @@ export function CorridorFlow({
       <svg viewBox="0 0 658 172" className="h-auto w-full" role="img"
         aria-label={`${senderName} in ${senderCountry} sent ${amountLabel} to ${receiverName} in ${receiverCountry}. ${level} risk, status ${status}.`}
       >
+        <defs>
+          {/* one neon source for the arc halo, pulse, and endpoints */}
+          <filter id="flow-glow" x="-200%" y="-200%" width="500%" height="500%">
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <radialGradient id="flow-halo" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor={color} stopOpacity="0.26" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
         {/* baseline the two endpoints sit on */}
         <line x1="58" y1="150" x2="600" y2="150" stroke="rgb(var(--border))" strokeWidth="1" />
 
+        {/* bloom behind the apex figures, tinted by the payment's own colour */}
+        <circle cx="329" cy="46" r="74" fill="url(#flow-halo)" />
+
         {/* soft halo arc, then the marching arc itself */}
-        <path d={path} fill="none" stroke={color} strokeWidth="9" opacity="0.14" strokeLinecap="round" />
+        <path d={path} fill="none" stroke={color} strokeWidth="9" opacity="0.22" strokeLinecap="round" filter="url(#flow-glow)" />
         <path
           d={path}
           fill="none"
@@ -65,7 +83,7 @@ export function CorridorFlow({
         />
 
         {/* travelling pulse */}
-        <circle r="4.5" fill={color} className="flow-pulse">
+        <circle r="4.5" fill={color} className="flow-pulse" filter="url(#flow-glow)">
           <animateMotion dur="3.4s" repeatCount="indefinite" path={path} />
         </circle>
 
@@ -75,14 +93,16 @@ export function CorridorFlow({
           { x: 600, code: receiverCountry, name: receiverName },
         ].map((node) => (
           <g key={node.x}>
-            <circle cx={node.x} cy="132" r="13" fill="rgb(var(--card))" stroke={color} strokeWidth="1.5" opacity="0.9" />
-            <circle cx={node.x} cy="132" r="5" fill={color} />
+            <g filter="url(#flow-glow)">
+              <circle cx={node.x} cy="132" r="13" fill="rgb(var(--card))" stroke={color} strokeWidth="1.5" opacity="0.9" />
+              <circle cx={node.x} cy="132" r="5" fill={color} />
+            </g>
             <text
               x={node.x}
               y="164"
               textAnchor="middle"
               className="num"
-              style={{ fontSize: 10.5, fill: "rgb(var(--muted-foreground))" }}
+              style={{ fontSize: 11, fill: "rgb(var(--muted-foreground))" }}
             >
               {node.code} · {trunc(node.name, 20)}
             </text>
@@ -197,7 +217,7 @@ export function ScoreBuild({
           x={at(SCORE_BANDS.alert) + 5}
           y="17"
           className="num"
-          style={{ fontSize: 9.5, fill: "rgb(var(--risk-high))" }}
+          style={{ fontSize: 11.5, fill: "rgb(var(--risk-high))" }}
         >
           alert {SCORE_BANDS.alert}
         </text>
@@ -231,7 +251,7 @@ export function ScoreBuild({
                 x={Math.min(648, left + barWidth + 6)}
                 y={y + 14}
                 className="num"
-                style={{ fontSize: 10, fill: "rgb(var(--muted-foreground))" }}
+                style={{ fontSize: 11, fill: "rgb(var(--muted-foreground))" }}
               >
                 +{row.points.toFixed(1)}
               </text>
@@ -272,7 +292,7 @@ export function ScoreBuild({
             y={height - 1}
             textAnchor="middle"
             className="num"
-            style={{ fontSize: 9, fill: "rgb(var(--muted-foreground))" }}
+            style={{ fontSize: 11, fill: "rgb(var(--muted-foreground))" }}
           >
             {tick}
           </text>
@@ -366,7 +386,7 @@ export function ScorePlacement({
           x={x0 + (SCORE_BANDS.alert / 100) * width + 5}
           y="24"
           className="num"
-          style={{ fontSize: 9.5, fill: "rgb(var(--risk-high))" }}
+          style={{ fontSize: 11.5, fill: "rgb(var(--risk-high))" }}
         >
           alert {SCORE_BANDS.alert}
         </text>
@@ -379,7 +399,7 @@ export function ScorePlacement({
           y="16"
           textAnchor="middle"
           className="num"
-          style={{ fontSize: 10.5, fontWeight: 600, fill: RISK_COLORS[level] }}
+          style={{ fontSize: 11, fontWeight: 600, fill: RISK_COLORS[level] }}
         >
           this payment {Math.round(score)}
         </text>
@@ -392,7 +412,7 @@ export function ScorePlacement({
             y={baseY + 26}
             textAnchor="middle"
             className="num"
-            style={{ fontSize: 9.5, fill: "rgb(var(--muted-foreground))" }}
+            style={{ fontSize: 11.5, fill: "rgb(var(--muted-foreground))" }}
           >
             {tick}
           </text>

@@ -78,7 +78,7 @@ function AccountMenu({
           </span>
           <span className="hidden min-w-0 leading-4 xl:block">
             <span className="block max-w-[150px] truncate text-[12px] font-medium">{userName || email}</span>
-            <span className="block max-w-[150px] truncate text-[10px] capitalize text-muted-foreground">{role}</span>
+            <span className="block max-w-[150px] truncate text-[11px] capitalize text-muted-foreground">{role}</span>
           </span>
           <ChevronDown className="hidden size-3.5 shrink-0 text-muted-foreground xl:block" aria-hidden="true" />
         </button>

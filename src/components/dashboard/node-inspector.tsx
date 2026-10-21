@@ -156,7 +156,7 @@ export function NodeInspector({
                 {item.label}
               </dt>
               <dd className="num mt-1 truncate text-[15px] font-medium leading-5">{item.value}</dd>
-              <dd className="num truncate text-[10.5px] text-muted-foreground">{item.hint}</dd>
+              <dd className="num truncate text-[11px] text-muted-foreground">{item.hint}</dd>
             </div>
           ))}
         </dl>
@@ -205,7 +205,7 @@ export function NodeInspector({
                     />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-[12px]">{row.node.label}</span>
-                      <span className={cn("num block text-[10.5px] text-muted-foreground")}>
+                      <span className={cn("num block text-[11px] text-muted-foreground")}>
                         {row.out > 0 ? (
                           <span className="text-chart-2">out {formatCompactNumber(row.out)}</span>
                         ) : null}

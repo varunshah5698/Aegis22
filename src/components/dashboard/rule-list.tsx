@@ -74,7 +74,7 @@ export function RuleList({ rules, canPublish }: { rules: RuleRow[]; canPublish: 
                   <h2 className="text-[14px] font-semibold tracking-[-0.01em]">{rule.name}</h2>
                   <span
                     className={cn(
-                      "inline-flex items-center gap-1.5 rounded-[5px] px-1.5 py-0.5 text-[10px] font-medium",
+                      "inline-flex items-center gap-1.5 rounded-[5px] px-1.5 py-0.5 text-[11px] font-medium",
                       statusTone[rule.status],
                     )}
                   >
@@ -131,7 +131,7 @@ export function RuleList({ rules, canPublish }: { rules: RuleRow[]; canPublish: 
                   )}
                 </div>
               ) : (
-                <Badge variant="outline" className="text-[10px]">
+                <Badge variant="outline" className="text-[11px]">
                   Admin only
                 </Badge>
               )}
@@ -163,7 +163,7 @@ export function RuleList({ rules, canPublish }: { rules: RuleRow[]; canPublish: 
                           <span className="num font-medium">v{version.version}</span>
                           <span
                             className={cn(
-                              "rounded-[5px] px-1.5 py-0.5 text-[10px] font-medium",
+                              "rounded-[5px] px-1.5 py-0.5 text-[11px] font-medium",
                               version.isDraft ? "bg-risk-medium/15 text-risk-medium" : "bg-risk-low/15 text-risk-low",
                             )}
                           >

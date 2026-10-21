@@ -77,7 +77,7 @@ export function InsightPanel({
             <p className="panel-caption mt-0.5">Measured deviations in the {windowLabel} window</p>
           </div>
         </div>
-        <span className="chip border-border/70 text-[10px] text-muted-foreground">{findings.length} findings</span>
+        <span className="chip border-border/70 text-[11px] text-muted-foreground">{findings.length} findings</span>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col">
@@ -116,7 +116,7 @@ export function InsightPanel({
                     <RiskBadge level={finding.severity} className="mt-0.5 shrink-0" />
                     <span className="min-w-0 flex-1">
                       <span className="block text-[12px] font-medium leading-4">{finding.title}</span>
-                      <span className="mt-1 flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
+                      <span className="mt-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
                         <span className="num">{finding.period?.label ?? (finding.kind === "backlog" ? "Queue" : "Window")}</span>
                         {finding.metric ? (
                           <>

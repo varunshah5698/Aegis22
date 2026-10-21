@@ -491,7 +491,7 @@ export default async function DataLibraryPage({
                       <th scope="row" className="num pl-5 text-left align-top font-normal">{entry.table}</th>
                       <td className="align-top">
                         <span className="block text-[11.5px] text-foreground">{entry.purpose}</span>
-                        <span className="mt-0.5 block text-[10.5px] leading-4 text-muted-foreground">
+                        <span className="mt-0.5 block text-[11px] leading-4 text-muted-foreground">
                           {entry.predicts}
                         </span>
                       </td>
@@ -499,17 +499,17 @@ export default async function DataLibraryPage({
                         {start ? (
                           <>
                             <span className="num text-[11.5px]">{depthLabel(days)}</span>
-                            <span className="mt-0.5 block text-[10px] text-muted-foreground">
+                            <span className="mt-0.5 block text-[11px] text-muted-foreground">
                               since {shortDate(start)}
                             </span>
                           </>
                         ) : (
-                          <span className="text-[10.5px] text-muted-foreground">no rows</span>
+                          <span className="text-[11px] text-muted-foreground">no rows</span>
                         )}
                       </td>
                       <td className="whitespace-nowrap text-right align-top">
                         <span className="num text-[11.5px]">{history.recent.toLocaleString("en-US")}</span>
-                        <span className="mt-0.5 flex items-center justify-end gap-0.5 text-[10px] text-muted-foreground">
+                        <span className="mt-0.5 flex items-center justify-end gap-0.5 text-[11px] text-muted-foreground">
                           <TrendIcon className="size-2.5" aria-hidden="true" />
                           {delta === null ? "new" : delta === 0 ? "flat" : `${Math.abs(delta)}%`}
                         </span>
@@ -552,7 +552,7 @@ export default async function DataLibraryPage({
               <ArrowDownToLine className="size-3.5 shrink-0 text-accent" aria-hidden="true" />
               <span className="min-w-0 flex-1">
                 <span className="block font-medium">Payments, last 90 days</span>
-                <span className="block text-[10.5px] text-muted-foreground">CSV · 12 columns · up to 50,000 rows</span>
+                <span className="block text-[11px] text-muted-foreground">CSV · 12 columns · up to 50,000 rows</span>
               </span>
             </a>
             <a
@@ -562,7 +562,7 @@ export default async function DataLibraryPage({
               <ArrowDownToLine className="size-3.5 shrink-0 text-accent" aria-hidden="true" />
               <span className="min-w-0 flex-1">
                 <span className="block font-medium">Payments, last 24 hours</span>
-                <span className="block text-[10.5px] text-muted-foreground">CSV · same schema · newest first</span>
+                <span className="block text-[11px] text-muted-foreground">CSV · same schema · newest first</span>
               </span>
             </a>
             <a
@@ -572,7 +572,7 @@ export default async function DataLibraryPage({
               <FileSpreadsheet className="size-3.5 shrink-0 text-accent" aria-hidden="true" />
               <span className="min-w-0 flex-1">
                 <span className="block font-medium">Ingestion template</span>
-                <span className="block text-[10.5px] text-muted-foreground">CSV header and one example row</span>
+                <span className="block text-[11px] text-muted-foreground">CSV header and one example row</span>
               </span>
             </a>
           </div>
@@ -670,7 +670,7 @@ export default async function DataLibraryPage({
               </li>
             ))}
           </ul>
-          <p className="mt-4 border-t border-border/60 pt-3 text-[10.5px] leading-4 text-muted-foreground">
+          <p className="mt-4 border-t border-border/60 pt-3 text-[11px] leading-4 text-muted-foreground">
             Sample capped at {SAMPLE_CAP.toLocaleString("en-US")} newest rows. Checks describe this workspace only; they
             are not a substitute for a warehouse-level data quality programme.
           </p>
@@ -720,11 +720,11 @@ export default async function DataLibraryPage({
               <p className="mt-1.5 truncate text-[12px] font-medium" title={source.value}>
                 {source.value}
               </p>
-              <p className="mt-1 text-[10.5px] leading-4 text-muted-foreground">{source.detail}</p>
+              <p className="mt-1 text-[11px] leading-4 text-muted-foreground">{source.detail}</p>
             </div>
           ))}
         </div>
-        <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border/60 pt-3 text-[10.5px] text-muted-foreground">
+        <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border/60 pt-3 text-[11px] text-muted-foreground">
           <span>
             Snapshot generated <span className="num">{generatedAt.slice(0, 19).replace("T", " ")}Z</span>
           </span>

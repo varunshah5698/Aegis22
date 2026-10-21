@@ -97,7 +97,7 @@ export function InsightHero({
         {finding ? (
           <span
             className={cn(
-              "rounded-[5px] border px-2 py-0.5 text-[10px] font-medium",
+              "rounded-[5px] border px-2 py-0.5 text-[11px] font-medium",
               finding.severity === "critical"
                 ? "border-risk-critical/30 bg-risk-critical/10 text-risk-critical"
                 : finding.severity === "high"
@@ -108,7 +108,7 @@ export function InsightHero({
             {impactLabel[finding.severity]}
           </span>
         ) : (
-          <span className="rounded-[5px] border border-risk-low/30 bg-risk-low/10 px-2 py-0.5 text-[10px] font-medium text-risk-low">
+          <span className="rounded-[5px] border border-risk-low/30 bg-risk-low/10 px-2 py-0.5 text-[11px] font-medium text-risk-low">
             Inside baseline
           </span>
         )}
@@ -199,7 +199,7 @@ export function InsightHero({
               <p className="text-[11.5px] font-semibold text-muted-foreground">Evidence</p>
               <ul className="mt-1.5 space-y-1">
                 {finding.evidence.map((line) => (
-                  <li key={line} className="flex gap-1.5 text-[10.5px] leading-4 text-muted-foreground">
+                  <li key={line} className="flex gap-1.5 text-[11px] leading-4 text-muted-foreground">
                     <span className="mt-[5px] size-1 shrink-0 rounded-full bg-border-strong" aria-hidden="true" />
                     <span className="num min-w-0">{line}</span>
                   </li>

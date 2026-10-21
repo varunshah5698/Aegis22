@@ -1,4 +1,5 @@
 import { RISK_COLORS, type RiskLevel } from "@/config/risk";
+import { Reveal } from "@/components/marketing/reveal";
 import { cn } from "@/lib/utils";
 
 export interface ScoreBand {
@@ -39,7 +40,7 @@ export function ScoreBands({
   const cutoffPosition = Math.min(100, Math.max(0, threshold));
 
   return (
-    <div className={className}>
+    <Reveal className={className}>
       <div className="relative" style={{ height }}>
         <div className="absolute inset-0" aria-hidden="true">
           {gridLines.map((ratio) => (
@@ -52,7 +53,7 @@ export function ScoreBands({
         </div>
 
         <div className="absolute bottom-0 top-0 grid grid-cols-10 items-end gap-1.5" aria-hidden="true">
-          {bins.map((bin) => {
+          {bins.map((bin, binIndex) => {
             const below = bin.high < threshold;
             const columnHeight = bin.count > 0 ? Math.max(3, (bin.count / max) * 92) : 0;
             return (
@@ -60,21 +61,23 @@ export function ScoreBands({
                 {bin.count > 0 ? (
                   <span
                     className={cn(
-                      "num mb-1 text-[10px] leading-3",
+                      "anim-fade num mb-1 text-[11px] leading-3",
                       bin.high >= threshold ? "text-foreground" : "text-muted-foreground",
                     )}
+                    style={{ "--d": 360 + binIndex * 45 } as React.CSSProperties}
                     title={`${bin.count} payments scored ${bin.low}–${bin.high}`}
                   >
                     {bin.count}
                   </span>
                 ) : null}
                 <div
-                  className="w-full rounded-t-[5px] transition-opacity"
+                  className="anim-grow-y w-full rounded-t-[5px] transition-opacity"
                   style={{
                     height: `${columnHeight}%`,
                     background: `linear-gradient(180deg, ${RISK_COLORS[bin.level]} 0%, ${RISK_COLORS[bin.level]}55 100%)`,
                     opacity: below ? 0.5 : 1,
-                  }}
+                    "--d": binIndex * 45,
+                  } as React.CSSProperties}
                   title={`${bin.count} payments scored ${bin.low}–${bin.high} (${bin.share.toFixed(1)}%)`}
                 />
               </div>
@@ -83,17 +86,17 @@ export function ScoreBands({
         </div>
 
         <div
-          className="pointer-events-none absolute bottom-0 top-0 border-l border-dashed border-foreground/45"
-          style={{ left: `${cutoffPosition}%` }}
+          className="anim-rise pointer-events-none absolute bottom-0 top-0 border-l border-dashed border-foreground/45"
+          style={{ left: `${cutoffPosition}%`, "--d": 620 } as React.CSSProperties}
           aria-hidden="true"
         >
-          <span className="absolute -top-1 left-1 whitespace-nowrap rounded-sm bg-elevated px-1.5 py-0.5 text-[10px] font-medium text-foreground ring-1 ring-border">
+          <span className="absolute -top-1 left-1 whitespace-nowrap rounded-sm bg-elevated px-1.5 py-0.5 text-[11px] font-medium text-foreground ring-1 ring-border">
             Cutoff {threshold}
           </span>
         </div>
       </div>
 
-      <div className="mt-2 grid grid-cols-10 gap-1.5 text-[10px] text-muted-foreground">
+      <div className="mt-2 grid grid-cols-10 gap-1.5 text-[11px] text-muted-foreground">
         {bins.map((bin) => (
           <span key={bin.bin} className="num text-center">
             {bin.low}
@@ -114,7 +117,7 @@ export function ScoreBands({
           Bands left of the cutoff stay monitoring-only; bars to the right raise an alert.
         </p>
       </div>
-    </div>
+    </Reveal>
   );
 }
 
@@ -144,21 +147,22 @@ export function BandStrip({
   const cutoffLeft = Math.min(96, Math.max(4, (below / total) * 100));
 
   return (
-    <div className={className}>
+    <Reveal className={className}>
       <div
         className="flex h-9 w-full overflow-hidden rounded-[7px] border border-border/70 bg-muted/40"
         role="img"
         aria-label={`Score bands sized by share of ${total} payments; the alert cutoff sits at ${threshold}.`}
       >
-        {bins.map((bin) =>
+        {bins.map((bin, binIndex) =>
           bin.count > 0 ? (
             <span
               key={bin.bin}
-              className="h-full border-r border-card/50 last:border-r-0"
+              className="anim-grow-x h-full border-r border-card/50 last:border-r-0"
               style={{
                 width: `${(bin.count / total) * 100}%`,
                 background: `linear-gradient(180deg, ${RISK_COLORS[bin.level]} 0%, ${RISK_COLORS[bin.level]}77 100%)`,
-              }}
+                "--d": binIndex * 55,
+              } as React.CSSProperties}
               title={`${bin.low}–${bin.high}: ${bin.count.toLocaleString("en-US")} payments (${bin.share.toFixed(1)}%)`}
             />
           ) : null,
@@ -167,19 +171,19 @@ export function BandStrip({
 
       <div className="relative mt-1 h-4" aria-hidden="true">
         <span
-          className="absolute top-0 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-foreground"
-          style={{ left: `${cutoffLeft}%` }}
+          className="anim-rise absolute top-0 -translate-x-1/2 whitespace-nowrap text-[11px] font-medium text-foreground"
+          style={{ left: `${cutoffLeft}%`, "--d": 560 } as React.CSSProperties}
         >
           <span className="text-muted-foreground">▲</span> cutoff {threshold}
         </span>
       </div>
 
-      <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-[10.5px] text-muted-foreground">
+      <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
         <span>Each segment is one score band, sized by share.</span>
         <span className="num">
           {bins[0]?.low ?? 0}–{bins[bins.length - 1]?.high ?? 100}
         </span>
       </div>
-    </div>
+    </Reveal>
   );
 }

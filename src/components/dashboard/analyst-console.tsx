@@ -1,8 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { ArrowUp, CircleStop, Mic, RotateCcw, ShieldCheck, Sparkles, TriangleAlert, Waves } from "lucide-react";
+import { ArrowUp, CircleStop, History, Mic, RotateCcw, ShieldCheck, Sparkles, TriangleAlert, Waves } from "lucide-react";
 
+import { ChatHistoryList, NewChatButton } from "@/components/dashboard/chat-history-menu";
+import { useChatHistory, type AssistantReply } from "@/lib/ai/chat-history";
 import type { RangeKey } from "@/lib/data/common";
 import { cn, formatCompactNumber } from "@/lib/utils";
 
@@ -29,30 +31,6 @@ export interface ConsoleEvidence {
   configured: boolean;
   corridors: Array<{ corridor: string; count: number; value: number; flagged: number }>;
   signals: Array<{ label: string; count: number }>;
-}
-
-interface AssistantReply {
-  answer: string;
-  model: string;
-  usage: { promptTokens: number; completionTokens: number; totalTokens: number } | null;
-  evidence: {
-    window: string;
-    from: string;
-    to: string;
-    payments: number;
-    valueUsd: number;
-    flagged: number;
-    alertCutoff: number;
-    corridors: string[];
-  };
-}
-
-interface Turn {
-  id: string;
-  question: string;
-  reply: AssistantReply | null;
-  error: string | null;
-  pending: boolean;
 }
 
 const STARTERS = [
@@ -145,9 +123,19 @@ function AnswerBody({ text }: { text: string }) {
 
 /* ---------------------------------------------------------------- console */
 
-export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence: ConsoleEvidence }) {
+export function AnalystConsole({
+  range,
+  evidence,
+  scope = "default",
+}: {
+  range: RangeKey;
+  evidence: ConsoleEvidence;
+  /** Workspace id — separates this browser's saved chats per tenant. */
+  scope?: string;
+}) {
   const [question, setQuestion] = React.useState("");
-  const [turns, setTurns] = React.useState<Turn[]>([]);
+  const history = useChatHistory({ surface: "console", scope });
+  const { turns, setTurns } = history;
   const [pending, setPending] = React.useState(false);
   const [listening, setListening] = React.useState(false);
   const [voiceNote, setVoiceNote] = React.useState("");
@@ -169,6 +157,10 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
     const controller = new AbortController();
     abort.current = controller;
 
+    // Captured before the new turn is appended: this is the memory the model
+    // receives so a follow-up lands with the earlier exchange in context.
+    const priorTurns = history.promptHistory();
+
     const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
     setTurns((current) => [...current, { id, question: text, reply: null, error: null, pending: true }]);
     setPending(true);
@@ -178,7 +170,7 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
       const response = await fetch("/api/assistant", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ question: text, range, page: "analyst" }),
+        body: JSON.stringify({ question: text, range, page: "analyst", history: priorTurns }),
         signal: controller.signal,
       });
       const payload = (await response.json()) as {
@@ -271,7 +263,10 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
               <Sparkles className="size-3.5 text-[#F0B250]" aria-hidden="true" />
               <p className="stage-label">Session</p>
             </div>
-            <p className="mt-2 text-[13px] font-medium leading-5 text-white">Aegis analyst</p>
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <p className="text-[13px] font-medium leading-5 text-white">Aegis analyst</p>
+              <NewChatButton tone="stage" onClick={history.newChat} />
+            </div>
             <p className="mt-1 text-[11.5px] leading-[1.6] text-white/55">
               Reads only the aggregates this workspace has already computed. It never sees raw payment rows and never
               talks to another tenant.
@@ -292,6 +287,26 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
           </div>
 
           <div className="glass-quiet p-3.5">
+            <div className="flex items-center gap-2">
+              <History className="size-3.5 text-white/55" aria-hidden="true" />
+              <p className="stage-label">History</p>
+              <span className="num ml-auto text-[11px] text-white/40">
+                {history.sessions.length} saved
+              </span>
+            </div>
+            <div className="mt-2.5">
+              <ChatHistoryList
+                sessions={history.sessions}
+                activeId={history.activeId}
+                onOpen={history.open}
+                onRemove={history.remove}
+                tone="stage"
+                emptyHint="No saved conversations yet. Chats are kept on this device."
+              />
+            </div>
+          </div>
+
+          <div className="glass-quiet p-3.5">
             <p className="stage-label">Start with</p>
             <div className="mt-2.5 space-y-1.5">
               {STARTERS.map((starter) => (
@@ -308,7 +323,7 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
             </div>
           </div>
 
-          <div className="flex items-start gap-2 px-1 text-[10.5px] leading-4 text-white/40">
+          <div className="flex items-start gap-2 px-1 text-[11px] leading-4 text-white/40">
             <ShieldCheck className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
             <span>Answers cite the window and the figures behind them. No legal or compliance determinations.</span>
           </div>
@@ -329,7 +344,7 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
             </div>
             <span
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10.5px]",
+                "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px]",
                 evidence.configured
                   ? "border-[#2DD4BF]/35 bg-[#2DD4BF]/10 text-[#7FE9DA]"
                   : "border-[#F0B250]/40 bg-[#F0B250]/10 text-[#F0B250]",
@@ -401,7 +416,7 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
                 {turn.reply ? (
                   <div className="glass max-w-[92%] px-4 py-3.5">
                     <AnswerBody text={turn.reply.answer} />
-                    <div className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 border-t border-white/10 pt-2.5 text-[10px] text-white/40">
+                    <div className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 border-t border-white/10 pt-2.5 text-[11px] text-white/40">
                       <span className="num">{turn.reply.evidence.window}</span>
                       <span aria-hidden="true">·</span>
                       <span className="num">{turn.reply.evidence.payments.toLocaleString("en-US")} payments</span>
@@ -437,7 +452,7 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
 
             {pending ? (
               <div className="flex justify-end">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[10.5px] text-white/60">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-[11px] text-white/60">
                   Generating
                   <span className="flex items-center gap-0.5" aria-hidden="true">
                     {[0, 1, 2].map((dot) => (
@@ -517,7 +532,7 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
                 </button>
               )}
             </div>
-            <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 px-1 text-[10px] text-white/35">
+            <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2 px-1 text-[11px] text-white/35">
               <span>{voiceNote || (listening ? "Listening…" : "Enter to send · Shift + Enter for a new line")}</span>
               <span className="num">
                 {evidence.payments.toLocaleString("en-US")} payments · ${formatCompactNumber(evidence.valueUsd)} in scope
@@ -533,7 +548,7 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
             <p className="num mt-2 text-[19px] font-medium leading-6 text-white">
               ${formatCompactNumber(evidence.valueUsd)}
             </p>
-            <p className="mt-0.5 text-[10.5px] text-white/45">
+            <p className="mt-0.5 text-[11px] text-white/45">
               {evidence.payments.toLocaleString("en-US")} payments · {evidence.windowLabel}
             </p>
             <div className="mt-3 grid grid-cols-2 gap-2">
@@ -547,7 +562,7 @@ export function AnalystConsole({ range, evidence }: { range: RangeKey; evidence:
                 </div>
               ))}
             </div>
-            <p className="num mt-3 border-t border-white/10 pt-2.5 text-[10px] text-white/35">
+            <p className="num mt-3 border-t border-white/10 pt-2.5 text-[11px] text-white/35">
               {evidence.from.slice(0, 10)} → {evidence.to.slice(0, 10)} UTC
             </p>
           </div>

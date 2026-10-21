@@ -149,7 +149,7 @@ export default function HomePage() {
         </div>
 
         <div className="relative z-10 border-t border-white/[0.07]">
-          <div className="container-page flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3.5 text-[10.5px] text-white/35">
+          <div className="container-page flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-3.5 text-[11px] text-white/35">
             <span className="inline-flex items-center gap-2">
               <span className="size-1.5 rounded-full bg-[#2DD4BF]" aria-hidden="true" />
               Watching 5 reference corridors · 11,844 payments
@@ -165,7 +165,7 @@ export default function HomePage() {
       <HowItWorks />
       <ScoreStack />
 
-      <section id="platform" aria-labelledby="showcase-heading" className="section-pad border-y border-border bg-card">
+      <section id="platform" aria-labelledby="showcase-heading" className="section-pad lit-section">
         <div className="container-page">
           <Reveal>
             <p className="section-kicker mb-4">
@@ -179,9 +179,9 @@ export default function HomePage() {
               network path behind a shell, and the clusters that add up to structuring.
             </p>
           </Reveal>
-          <div className="mt-8">
+          <Reveal className="mt-8">
             <ProductShowcase />
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -225,9 +225,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="faq" aria-labelledby="faq-heading" className="section-pad scroll-mt-24 border-t border-border bg-card">
-        <div className="container-page grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
-          <Reveal>
+      <section id="faq" aria-labelledby="faq-heading" className="section-pad scroll-mt-24 lit-section">
+        <div className="container-page grid items-start gap-10 lg:grid-cols-[0.8fr_1.2fr]">
+          <Reveal className="lg:sticky lg:top-24">
             <p className="section-kicker mb-4">
               FAQ
             </p>
@@ -235,12 +235,30 @@ export default function HomePage() {
               The questions compliance teams ask first.
             </h2>
             <p className="type-deck mt-4">
-              Anything not covered here is best answered against your own data.{" "}
-              <Link href="/contact?intent=demo" className="underline decoration-accent decoration-2 underline-offset-4">
-                Book a working session
-              </Link>
-              .
+              Anything not covered here is best answered against your own data.
             </p>
+            <div className="neon-card mt-6 rounded-[18px] p-3">
+              <ul>
+                {[
+                  { label: "Read the documentation", href: "/docs/quickstart" },
+                  { label: "Book a working session", href: "/contact?intent=demo" },
+                  { label: "Compare the plans", href: "/pricing" },
+                ].map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="group flex items-center justify-between gap-4 rounded-xl px-3 py-2.5 text-sm text-foreground/80 transition-colors hover:bg-white/[0.05] hover:text-foreground"
+                    >
+                      {item.label}
+                      <ArrowRight
+                        className="size-3.5 text-accent transition-transform group-hover:translate-x-0.5"
+                        aria-hidden="true"
+                      />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </Reveal>
           <FaqSection />
         </div>

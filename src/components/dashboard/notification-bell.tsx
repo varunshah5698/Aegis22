@@ -76,7 +76,7 @@ export function NotificationBell({ userId }: { userId: string }) {
       >
         <p className="text-xs font-medium">{row.title}</p>
         {row.body ? <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">{row.body}</p> : null}
-        <p className="mt-1 text-[10px] text-muted-foreground">
+        <p className="mt-1 text-[11px] text-muted-foreground">
           {new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit" }).format(new Date(row.created_at))}
         </p>
       </Link>
@@ -96,7 +96,7 @@ export function NotificationBell({ userId }: { userId: string }) {
         >
           <Bell aria-hidden="true" />
           {unread.length > 0 ? (
-            <span className="num absolute -right-0.5 -top-0.5 flex min-w-[15px] items-center justify-center rounded-full bg-risk-critical px-1 text-[9px] font-semibold leading-[15px] text-white ring-2 ring-background">
+            <span className="num absolute -right-0.5 -top-0.5 flex min-w-[15px] items-center justify-center rounded-full bg-risk-critical px-1 text-[11px] font-semibold leading-[15px] text-white ring-2 ring-background">
               {unread.length > 99 ? "99+" : unread.length}
             </span>
           ) : null}

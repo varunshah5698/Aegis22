@@ -1,5 +1,6 @@
 import { RISK_COLORS, SCORE_BANDS, scoreToLevel } from "@/config/risk";
 import { Sparkline } from "@/components/app/page-shell";
+import { Reveal } from "@/components/marketing/reveal";
 import { cn, formatCompactNumber } from "@/lib/utils";
 
 const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -39,15 +40,16 @@ export function CorridorHeatGrid({
   }
 
   return (
-    <div className={cn("overflow-x-auto", className)}>
-      <div className="min-w-[560px]">
+    <Reveal className={className}>
+      <div className="overflow-x-auto">
+        <div className="min-w-[560px]">
         <div className="flex items-center gap-2 pb-1.5">
           <span className="w-[74px] shrink-0" aria-hidden="true" />
           <div className="grid flex-1 gap-1" style={{ gridTemplateColumns: `repeat(${matrix.bucketLabels.length}, minmax(0, 1fr))` }}>
             {matrix.bucketLabels.map((label, index) => (
               <span
                 key={`${label}-${index}`}
-                className="truncate text-center text-[10px] text-muted-foreground"
+                className="truncate text-center text-[11px] text-muted-foreground"
                 title={label}
               >
                 {index % 2 === 0 || matrix.bucketLabels.length <= 8 ? label : ""}
@@ -60,7 +62,7 @@ export function CorridorHeatGrid({
         </div>
 
         <ul className="space-y-1">
-          {matrix.rows.map((row) => (
+          {matrix.rows.map((row, rowIndex) => (
             <li key={row.corridor} className="flex items-center gap-2">
               <span className="num w-[74px] shrink-0 truncate text-[11.5px] text-foreground/90" title={`${row.senderCountry} → ${row.receiverCountry}`}>
                 {row.corridor}
@@ -70,10 +72,15 @@ export function CorridorHeatGrid({
                   <span
                     key={`${row.corridor}-${index}`}
                     className={cn(
-                      "flex h-7 items-center justify-center rounded-[5px] text-[10.5px] font-medium",
+                      "anim-cell flex h-7 items-center justify-center rounded-[5px] text-[11px] font-medium",
                       cell === null ? "bg-muted/40 text-muted-foreground/40" : "text-foreground/90",
                     )}
-                    style={cell === null ? undefined : { background: heatColor(cell) }}
+                    style={
+                      {
+                        ...(cell === null ? {} : { background: heatColor(cell) }),
+                        "--d": rowIndex * 50 + index * 10,
+                      } as React.CSSProperties
+                    }
                     title={
                       cell === null
                         ? `${row.corridor} · ${matrix.bucketLabels[index]}: no payments`
@@ -91,7 +98,7 @@ export function CorridorHeatGrid({
                   fill={false}
                   strokeWidth={1.4}
                 />
-                <span className="num text-[10.5px]">{formatCompactNumber(row.value)}</span>
+                <span className="num text-[11px]">{formatCompactNumber(row.value)}</span>
               </span>
             </li>
           ))}
@@ -101,7 +108,7 @@ export function CorridorHeatGrid({
           <span className="text-[11px] text-muted-foreground">
             Cell colour is the average score that period; the alert cutoff sits at {SCORE_BANDS.alert}.
           </span>
-          <span className="flex items-center gap-2 text-[10.5px] text-muted-foreground">
+          <span className="flex items-center gap-2 text-[11px] text-muted-foreground">
             Score 0
             <span className="flex h-2 w-24 overflow-hidden rounded-full" aria-hidden="true">
               {[0, 20, 40, 60, 80, 100].map((score) => (
@@ -112,7 +119,8 @@ export function CorridorHeatGrid({
           </span>
         </div>
       </div>
-    </div>
+      </div>
+    </Reveal>
   );
 }
 
@@ -132,9 +140,10 @@ export function HourBoard({
   const max = Math.max(1, ...counts.flat());
 
   return (
-    <div className={cn("min-w-0", className)}>
-      <div className="overflow-x-auto">
-        <div className="min-w-[520px]">
+    <Reveal className={className}>
+      <div className="min-w-0">
+        <div className="overflow-x-auto">
+          <div className="min-w-[520px]">
           <div className="flex items-center gap-2 pb-1.5">
             <span className="w-8 shrink-0" aria-hidden="true" />
             <div
@@ -142,7 +151,7 @@ export function HourBoard({
               style={{ gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}
             >
               {Array.from({ length: 24 }, (_, hour) => (
-                <span key={hour} className="num text-center text-[9.5px] text-muted-foreground">
+                <span key={hour} className="num text-center text-[11px] text-muted-foreground">
                   {hour % 3 === 0 ? String(hour).padStart(2, "0") : ""}
                 </span>
               ))}
@@ -152,7 +161,7 @@ export function HourBoard({
           <ul className="space-y-[3px]">
             {counts.map((hours, weekday) => (
               <li key={weekday} className="flex items-center gap-2">
-                <span className="w-8 shrink-0 text-[10.5px] text-muted-foreground">{weekdayLabels[weekday]}</span>
+                <span className="w-8 shrink-0 text-[11px] text-muted-foreground">{weekdayLabels[weekday]}</span>
                 <div
                   className="grid flex-1 gap-[3px]"
                   style={{ gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}
@@ -164,15 +173,18 @@ export function HourBoard({
                       <span
                         key={hour}
                         className={cn(
-                          "h-5 rounded-[4px]",
+                          "anim-cell h-5 rounded-[4px]",
                           isPeak && "ring-1 ring-accent/70",
                         )}
-                        style={{
-                          background:
-                            count === 0
-                              ? "rgb(var(--muted) / 0.5)"
-                              : `rgb(var(--accent) / ${(0.14 + intensity * 0.72).toFixed(2)})`,
-                        }}
+                        style={
+                          {
+                            background:
+                              count === 0
+                                ? "rgb(var(--muted) / 0.5)"
+                                : `rgb(var(--accent) / ${(0.14 + intensity * 0.72).toFixed(2)})`,
+                            "--d": weekday * 90 + hour * 6,
+                          } as React.CSSProperties
+                        }
                         title={`${weekdayLabels[weekday]} ${String(hour).padStart(2, "0")}:00 UTC · ${count} payments`}
                       />
                     );
@@ -192,6 +204,7 @@ export function HourBoard({
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </Reveal>
   );
 }

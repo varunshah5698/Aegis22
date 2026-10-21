@@ -2,6 +2,7 @@ import { fail, ok } from "@/lib/api/response";
 import { getAuthContext } from "@/lib/auth";
 import { AiError, chat, getAiConfig } from "@/lib/ai/river";
 import { SYSTEM_PROMPT, buildEvidence, buildUserPrompt } from "@/lib/ai/analyst";
+import { buildMessages, parseHistory } from "@/lib/ai/conversation";
 import { getWorkspaceAnalytics } from "@/lib/data/analytics";
 import { parseRange } from "@/lib/data/common";
 
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
     return fail("invalid_body", "Expected a JSON body.", { status: 400 });
   }
 
-  const payload = body as { question?: unknown; range?: unknown; page?: unknown };
+  const payload = body as { question?: unknown; range?: unknown; page?: unknown; history?: unknown };
   const question = typeof payload.question === "string" ? payload.question.trim() : "";
   if (question.length < 4) return fail("invalid_question", "Ask a question of at least four characters.", { status: 422 });
   if (question.length > MAX_QUESTION) {
@@ -56,6 +57,8 @@ export async function POST(request: Request) {
 
   const range = parseRange(typeof payload.range === "string" ? payload.range : undefined);
   const page = typeof payload.page === "string" ? payload.page.slice(0, 40) : "overview";
+  // Prior turns from the client's saved chat, so follow-ups land in context.
+  const history = parseHistory(payload.history);
 
   if (!allow(context.user.id)) {
     return fail("too_many_requests", "The analyst allows 15 questions per ten minutes. Try again shortly.", { status: 429 });
@@ -65,10 +68,13 @@ export async function POST(request: Request) {
   const evidence = buildEvidence(analytics);
 
   try {
-    const result = await chat([
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: buildUserPrompt(question, evidence, page) },
-    ]);
+    const result = await chat(
+      buildMessages({
+        system: SYSTEM_PROMPT,
+        history,
+        userPrompt: buildUserPrompt(question, evidence, page),
+      }),
+    );
 
     return ok({
       answer: result.content,

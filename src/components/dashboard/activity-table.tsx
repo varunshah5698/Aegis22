@@ -116,7 +116,7 @@ export function ActivityTable({ rows }: { rows: FeedRow[] }) {
                     </td>
                     <td className="max-w-[260px]">
                       <span className="block truncate text-[12px]">{row.senderName}</span>
-                      <span className="block truncate text-[10.5px] text-muted-foreground">
+                      <span className="block truncate text-[11px] text-muted-foreground">
                         {row.senderCountry} → {row.receiverCountry} · {row.receiverName}
                       </span>
                     </td>

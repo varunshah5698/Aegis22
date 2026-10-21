@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CircleHelp, PanelLeft } from "lucide-react";
 
-import { ThemeToggle } from "@/components/theme-toggle";
 import { dashboardIcons } from "@/components/dashboard/icons";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -49,7 +48,7 @@ function RailLink({
         >
           <Icon className="size-[17px]" aria-hidden={true} />
           {badge ? (
-            <span className="num absolute -right-0.5 -top-0.5 flex min-w-[15px] items-center justify-center rounded-full bg-risk-critical px-1 text-[9px] font-semibold leading-[15px] text-white ring-2 ring-card">
+            <span className="num absolute -right-0.5 -top-0.5 flex min-w-[15px] items-center justify-center rounded-full bg-risk-critical px-1 text-[11px] font-semibold leading-[15px] text-white ring-2 ring-card">
               {badge > 99 ? "99+" : badge}
             </span>
           ) : null}
@@ -70,9 +69,7 @@ export function IconRail({ openAlerts }: { openAlerts: number }) {
       aria-label="Workspace"
       className="sticky top-0 hidden h-dvh w-[68px] shrink-0 flex-col items-center border-r border-border/70 bg-card py-3 lg:flex"
     >
-      <ThemeToggle className="size-10 rounded-full border border-border/70 bg-card text-muted-foreground shadow-sm hover:bg-muted hover:text-foreground" />
-
-      <nav aria-label="Sections" className="no-scrollbar mt-3 flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto">
+      <nav aria-label="Sections" className="no-scrollbar mt-1 flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto">
         {appNav.map((group, index) => (
           <React.Fragment key={group.label}>
             {index > 0 ? <div className="my-1.5 h-px w-7 shrink-0 bg-border" aria-hidden="true" /> : null}

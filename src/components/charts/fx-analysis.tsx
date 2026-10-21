@@ -98,7 +98,7 @@ export function FxVolatilityTable({ rows }: { rows: FxVolatilityRow[] }) {
                         aria-hidden="true"
                       />
                     </div>
-                    <div className="num mt-1 flex justify-between text-[9.5px] text-muted-foreground">
+                    <div className="num mt-1 flex justify-between text-[11px] text-muted-foreground">
                       <span>{formatRate(row.range.low)}</span>
                       <span>{formatRate(row.range.high)}</span>
                     </div>
@@ -109,7 +109,7 @@ export function FxVolatilityTable({ rows }: { rows: FxVolatilityRow[] }) {
           ))}
         </tbody>
       </table>
-      <p className="border-t border-border/60 px-5 py-2.5 text-[10.5px] leading-4 text-muted-foreground">
+      <p className="border-t border-border/60 px-5 py-2.5 text-[11px] leading-4 text-muted-foreground">
         Volatility is the annualised standard deviation of daily log returns over the 90-day window. Range position
         places the latest fixing between the window&apos;s low and high; it is a description of where the rate sits, not
         a forecast.
@@ -146,21 +146,21 @@ export function FxCorrelationGrid({ matrix }: { matrix: FxCorrelationMatrix }) {
       >
         <span aria-hidden="true" />
         {matrix.codes.map((code) => (
-          <span key={`head-${code}`} className="num pb-1.5 text-center text-[10px] text-muted-foreground">
+          <span key={`head-${code}`} className="num pb-1.5 text-center text-[11px] text-muted-foreground">
             {code}
           </span>
         ))}
 
         {matrix.codes.map((rowCode, rowIndex) => (
           <div key={`row-${rowCode}`} className="contents">
-            <span className="num flex h-7 items-center pr-2 text-[10.5px] text-muted-foreground">{rowCode}</span>
+            <span className="num flex h-7 items-center pr-2 text-[11px] text-muted-foreground">{rowCode}</span>
             {matrix.values[rowIndex]!.map((value, columnIndex) => {
               const isDiagonal = rowIndex === columnIndex;
               return (
                 <span
                   key={`${rowCode}-${matrix.codes[columnIndex]}`}
                   className={cn(
-                    "num mx-[2px] mb-[2px] flex h-7 items-center justify-center rounded-[5px] text-[10.5px]",
+                    "num mx-[2px] mb-[2px] flex h-7 items-center justify-center rounded-[5px] text-[11px]",
                     isDiagonal ? "bg-muted/50 text-muted-foreground" : value === null ? "bg-muted/30 text-muted-foreground/50" : "text-foreground/90",
                   )}
                   style={!isDiagonal && value !== null ? { background: correlationColor(value) } : undefined}
@@ -179,7 +179,7 @@ export function FxCorrelationGrid({ matrix }: { matrix: FxCorrelationMatrix }) {
           </div>
         ))}
       </div>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-2.5 text-[10.5px] text-muted-foreground">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border/60 pt-2.5 text-[11px] text-muted-foreground">
         <span>Pearson correlation of daily log returns, overlapping fixings only.</span>
         <span className="flex items-center gap-1.5">
           -1
@@ -216,11 +216,11 @@ export function FxExposureSensitivityPanel({ sensitivity }: { sensitivity: Expos
             <div className="grid grid-cols-[minmax(0,1fr)_88px_88px] items-baseline gap-2">
               <span className="min-w-0 truncate text-[12px]">
                 <span className="num font-medium">{row.currency}</span>
-                <span className="num ml-2 text-[10.5px] text-muted-foreground">
+                <span className="num ml-2 text-[11px] text-muted-foreground">
                   {formatCompactNumber(row.value)} USD
                 </span>
                 {row.unpriced ? (
-                  <span className="ml-1.5 rounded-[5px] bg-risk-medium/15 px-1.5 py-0.5 text-[9.5px] text-risk-medium">
+                  <span className="ml-1.5 rounded-[5px] bg-risk-medium/15 px-1.5 py-0.5 text-[11px] text-risk-medium">
                     no fixing
                   </span>
                 ) : null}
@@ -250,7 +250,7 @@ export function FxExposureSensitivityPanel({ sensitivity }: { sensitivity: Expos
           ${formatCompactNumber(sensitivity.totalImpact)}
         </span>
       </div>
-      <p className="mt-2 text-[10.5px] leading-4 text-muted-foreground">
+      <p className="mt-2 text-[11px] leading-4 text-muted-foreground">
         Parametric estimate: the currency&apos;s 90-day annualised volatility ÷ √252 × 1.645, applied to the screened USD
         value and summed as if currencies moved independently. It sizes translation exposure only and is not a
         portfolio VaR, a forecast or advice.

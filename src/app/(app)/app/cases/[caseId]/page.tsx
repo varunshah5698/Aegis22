@@ -178,7 +178,7 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ cas
                     <span className="num text-muted-foreground">{entity.country}</span>
                     <span>{entity.legalName}</span>
                     {entity.pepFlag ? (
-                      <span className="rounded-[4px] bg-risk-critical/15 px-1 text-[10px] font-medium text-risk-critical">
+                      <span className="rounded-[4px] bg-risk-critical/15 px-1 text-[11px] font-medium text-risk-critical">
                         PEP
                       </span>
                     ) : null}

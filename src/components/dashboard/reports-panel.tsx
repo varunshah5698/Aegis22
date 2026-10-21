@@ -133,7 +133,7 @@ export function ReportsPanel({
               <tr key={row.id}>
                 <th scope="row" className="text-left font-normal">
                   <span className="block text-[12px] font-medium">{REPORT_KIND_LABELS[row.kind]}</span>
-                  <span className="num block text-[10px] text-muted-foreground">{row.id.slice(0, 8)}</span>
+                  <span className="num block text-[11px] text-muted-foreground">{row.id.slice(0, 8)}</span>
                 </th>
                 <td className="num whitespace-nowrap text-muted-foreground">
                   {row.from} → {row.to}
@@ -142,7 +142,7 @@ export function ReportsPanel({
                 <td className="num text-right">{row.rowCount?.toLocaleString("en-US") ?? "—"}</td>
                 <td className="text-[12px]">
                   <span className="block">{row.requesterName ?? "Former member"}</span>
-                  <span className="num block text-[10px] text-muted-foreground">
+                  <span className="num block text-[11px] text-muted-foreground">
                     {new Intl.DateTimeFormat("en-GB", {
                       month: "short",
                       day: "2-digit",
@@ -162,7 +162,7 @@ export function ReportsPanel({
                     {row.status}
                   </span>
                   {row.error ? (
-                    <span className="mt-1 block max-w-48 text-[10px] text-risk-critical">{row.error}</span>
+                    <span className="mt-1 block max-w-48 text-[11px] text-risk-critical">{row.error}</span>
                   ) : null}
                 </td>
                 <td className="text-right">

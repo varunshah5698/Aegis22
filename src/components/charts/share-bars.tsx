@@ -63,7 +63,7 @@ export function ShareBars({ items, className }: { items: ShareBarItem[]; classNa
           {ticks.map((tick) => (
             <span
               key={tick}
-              className="num absolute top-1 -translate-x-1/2 text-[9.5px] text-muted-foreground/80"
+              className="num absolute top-1 -translate-x-1/2 text-[11px] text-muted-foreground/80"
               style={{ left: `${tick * 100}%` }}
             >
               {Math.round(ceiling * tick)}%
@@ -73,7 +73,7 @@ export function ShareBars({ items, className }: { items: ShareBarItem[]; classNa
         <span aria-hidden="true" />
       </div>
 
-      <p className="mt-1.5 text-[10.5px] leading-4 text-muted-foreground">
+      <p className="mt-1.5 text-[11px] leading-4 text-muted-foreground">
         Share of screened value in the window. Select a corridor to open its payments.
       </p>
     </div>

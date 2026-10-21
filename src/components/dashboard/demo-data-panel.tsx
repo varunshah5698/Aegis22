@@ -68,7 +68,7 @@ export function DemoDataPanel({
         <div className="order-2 flex flex-col justify-between border-t border-border/70 p-5 md:p-7 lg:order-1 lg:border-r lg:border-t-0">
           <div>
             <div className="hidden lg:block">
-              <p className="inline-flex items-center gap-1.5 rounded-pill border border-accent/25 bg-accent/[0.08] px-2.5 py-1 text-[10.5px] font-medium text-accent">
+              <p className="inline-flex items-center gap-1.5 rounded-pill border border-accent/25 bg-accent/[0.08] px-2.5 py-1 text-[11px] font-medium text-accent">
                 <Sparkles className="size-3" aria-hidden="true" />
                 {welcome ? "Your workspace is ready" : "Start here"}
               </p>
@@ -112,7 +112,7 @@ export function DemoDataPanel({
                   </span>
                   <span className="min-w-0">
                     <span className="flex items-baseline gap-2">
-                      <span className="num text-[10px] text-muted-foreground/70">
+                      <span className="num text-[11px] text-muted-foreground/70">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       <span className="text-[12.5px] font-medium">{step.title}</span>
@@ -126,7 +126,7 @@ export function DemoDataPanel({
             </ol>
           </div>
 
-          <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border/60 pt-3 text-[10.5px] text-muted-foreground">
+          <p className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border/60 pt-3 text-[11px] text-muted-foreground">
             <span className="inline-flex items-center gap-1.5">
               <span className="size-1.5 rounded-full bg-risk-low" aria-hidden="true" />
               Model {preset.days <= 90 ? "needs 90d for full baselines" : "full seasonal history"}
@@ -143,7 +143,7 @@ export function DemoDataPanel({
 
         <div className="order-1 min-w-0 p-5 md:p-7 lg:order-2">
           <div className="mb-5 lg:hidden">
-            <p className="inline-flex items-center gap-1.5 rounded-pill border border-accent/25 bg-accent/[0.08] px-2.5 py-1 text-[10.5px] font-medium text-accent">
+            <p className="inline-flex items-center gap-1.5 rounded-pill border border-accent/25 bg-accent/[0.08] px-2.5 py-1 text-[11px] font-medium text-accent">
               <Sparkles className="size-3" aria-hidden="true" />
               {welcome ? "Your workspace is ready" : "Start here"}
             </p>
@@ -158,7 +158,7 @@ export function DemoDataPanel({
           <fieldset className="min-w-0">
             <legend className="flex w-full items-baseline justify-between gap-3">
               <span className="text-[12px] font-semibold">History depth</span>
-              <span className="num text-[10.5px] text-muted-foreground">
+              <span className="num text-[11px] text-muted-foreground">
                 {preset.days} days · {preset.payments.toLocaleString("en-US")} payments
               </span>
             </legend>
@@ -187,7 +187,7 @@ export function DemoDataPanel({
                     <span className="block font-display text-[17px] font-semibold leading-5 tracking-[-0.02em]">
                       {entry.label}
                     </span>
-                    <span className="num mt-1 block text-[10.5px] text-muted-foreground">
+                    <span className="num mt-1 block text-[11px] text-muted-foreground">
                       {entry.days}d · {entry.payments.toLocaleString("en-US")} rows
                     </span>
                     <span className="mt-3 flex h-6 items-end gap-[3px]" aria-hidden="true">
@@ -218,12 +218,12 @@ export function DemoDataPanel({
               <Label htmlFor="demo-typologies" className="font-medium">
                 Plant typologies to investigate
               </Label>
-              <p className="mt-0.5 text-[10.5px] leading-4 text-muted-foreground">
+              <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
                 Structuring, circular flow, pass-through and PEP clusters. Turn it off for a quiet
                 book with ordinary noise only.
               </p>
             </div>
-            <span className="ml-auto hidden shrink-0 rounded-pill border border-border/70 px-2 py-0.5 text-[9.5px] text-muted-foreground sm:inline">
+            <span className="ml-auto hidden shrink-0 rounded-pill border border-border/70 px-2 py-0.5 text-[11px] text-muted-foreground sm:inline">
               4 patterns
             </span>
           </div>
@@ -250,7 +250,7 @@ export function DemoDataPanel({
                 />
               ) : null}
             </Button>
-            <p className="text-[10.5px] leading-4 text-muted-foreground">
+            <p className="text-[11px] leading-4 text-muted-foreground">
               Writes {preset.payments.toLocaleString("en-US")} payments with {preset.days} days of
               history, scored at insert. About 10 seconds.
             </p>
@@ -317,7 +317,7 @@ export function DemoDataPanel({
               <p className="text-[11.5px] font-semibold text-muted-foreground">
                 What lands in the queue
               </p>
-              <span className="text-[9.5px] text-muted-foreground/70">illustrative</span>
+              <span className="text-[11px] text-muted-foreground/70">illustrative</span>
             </div>
             <ul className="divide-y divide-border/50">
               {[
@@ -326,13 +326,13 @@ export function DemoDataPanel({
                 { route: "DE → NG", detail: "$212,400 · returned in 61h", score: 74, tone: "medium" },
               ].map((row) => (
                 <li key={row.route} className="flex items-center gap-3 px-3 py-2">
-                  <span className="num w-[54px] shrink-0 text-[10.5px] text-foreground">{row.route}</span>
-                  <span className="min-w-0 flex-1 truncate text-[10px] text-muted-foreground">
+                  <span className="num w-[54px] shrink-0 text-[11px] text-foreground">{row.route}</span>
+                  <span className="min-w-0 flex-1 truncate text-[11px] text-muted-foreground">
                     {row.detail}
                   </span>
                   <span
                     className={cn(
-                      "num rounded-pill px-1.5 py-0.5 text-[9.5px] font-medium",
+                      "num rounded-pill px-1.5 py-0.5 text-[11px] font-medium",
                       row.tone === "high"
                         ? "bg-risk-high/[0.12] text-risk-high"
                         : "bg-risk-medium/[0.12] text-risk-medium",
@@ -343,14 +343,14 @@ export function DemoDataPanel({
                 </li>
               ))}
             </ul>
-            <p className="border-t border-border/60 px-3 py-2 text-[10px] leading-4 text-muted-foreground">
+            <p className="border-t border-border/60 px-3 py-2 text-[11px] leading-4 text-muted-foreground">
               Backdated, scored at insert and labelled{" "}
               <span className="num text-foreground">DEMO-</span> so generated history stays
               distinguishable from your own feed.
             </p>
           </div>
 
-          <p className="mt-3 text-[10.5px] leading-4 text-muted-foreground">
+          <p className="mt-3 text-[11px] leading-4 text-muted-foreground">
             Additive, not a reset. Limited to three runs per ten minutes.
           </p>
         </div>

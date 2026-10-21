@@ -15,49 +15,26 @@ const ThemeContext = React.createContext<ThemeContextValue | null>(null);
 
 const STORAGE_KEY = "aegis-theme";
 
-function resolve(theme: Theme): ResolvedTheme {
-  if (theme !== "system") return theme;
-  if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
+/**
+ * ORION is the only theme: the light palette was removed from globals.css, so
+ * every path here resolves dark. The context keeps its shape (components read
+ * `resolvedTheme`), but `setTheme` can no longer produce a light render, and
+ * the head script forces the `.dark` class before first paint so there is no
+ * flash of an unthemed frame.
+ */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = React.useState<Theme>("light");
-  const [resolvedTheme, setResolvedTheme] = React.useState<ResolvedTheme>("light");
-
-  React.useEffect(() => {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    const initial: Theme =
-      stored === "light" || stored === "dark" || stored === "system" ? stored : "light";
-    setThemeState(initial);
-    const next = resolve(initial);
-    setResolvedTheme(next);
-    document.documentElement.classList.toggle("dark", next === "dark");
-  }, []);
-
-  React.useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = () => {
-      if (theme !== "system") return;
-      const next = media.matches ? "dark" : "light";
-      setResolvedTheme(next);
-      document.documentElement.classList.toggle("dark", next === "dark");
-    };
-    media.addEventListener("change", onChange);
-    return () => media.removeEventListener("change", onChange);
-  }, [theme]);
+  const resolvedTheme: ResolvedTheme = "dark";
 
   const setTheme = React.useCallback((next: Theme) => {
-    setThemeState(next);
-    const resolved = resolve(next);
-    setResolvedTheme(resolved);
-    document.documentElement.classList.toggle("dark", resolved === "dark");
-    window.localStorage.setItem(STORAGE_KEY, next);
+    // Persist the preference for forward compatibility, but the resolved
+    // theme stays dark until a light palette exists again.
+    window.localStorage.setItem(STORAGE_KEY, next === "light" ? "dark" : next);
+    document.documentElement.classList.add("dark");
   }, []);
 
   const value = React.useMemo(
-    () => ({ theme, resolvedTheme, setTheme }),
-    [theme, resolvedTheme, setTheme],
+    () => ({ theme: "dark" as Theme, resolvedTheme, setTheme }),
+    [resolvedTheme, setTheme],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
@@ -71,10 +48,6 @@ export function useTheme(): ThemeContextValue {
 
 export const themeInitScript = `
 (function(){
-  try {
-    var stored = localStorage.getItem('${STORAGE_KEY}');
-    var dark = stored === 'dark' || (stored === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    if (dark) document.documentElement.classList.add('dark');
-  } catch (e) {}
+  try { document.documentElement.classList.add('dark'); } catch (e) {}
 })();
 `;

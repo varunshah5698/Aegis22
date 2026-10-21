@@ -8,7 +8,7 @@ import { ArrowUpRight, TriangleAlert } from "lucide-react";
 import type { SeriesBucket } from "@/lib/data/analytics";
 import { cn, formatCompactNumber, formatCurrency } from "@/lib/utils";
 
-const axisStyle = { fontSize: 10, fill: "rgb(var(--muted-foreground))" } as const;
+const axisStyle = { fontSize: 11, fill: "rgb(var(--muted-foreground))" } as const;
 
 /** Rounds an axis maximum to a readable figure (800K rather than 718.9K). */
 function niceCeiling(value: number): number {
@@ -302,7 +302,7 @@ export function ValueTrendChart({
                   fill="url(#value-area)"
                   dot={false}
                   activeDot={{ r: 4, strokeWidth: 2, stroke: "rgb(var(--card))", fill: "rgb(var(--accent))" }}
-                  isAnimationActive={false}
+                  isAnimationActive animationDuration={650}
                 />
               </AreaChart>
             ) : (
@@ -319,7 +319,7 @@ export function ValueTrendChart({
                   tickFormatter={axisTick}
                 />
                 <Tooltip content={tooltip} cursor={{ fill: "rgb(var(--muted) / 0.35)" }} />
-                <Bar dataKey="primary" fill="rgb(var(--accent))" radius={[3, 3, 0, 0]} maxBarSize={34} isAnimationActive={false} />
+                <Bar dataKey="primary" fill="rgb(var(--accent))" radius={[3, 3, 0, 0]} maxBarSize={34} isAnimationActive animationDuration={650} />
               </BarChart>
             )}
           </ResponsiveContainer>
@@ -370,7 +370,7 @@ export function ValueTrendChart({
         </div>
       ) : null}
 
-      <p className="mt-2.5 text-[10.5px] leading-4 text-muted-foreground">
+      <p className="mt-2.5 text-[11px] leading-4 text-muted-foreground">
         Trailing median is the median of the previous six {bucket === "hour" ? "hours" : "days"} in this window. It needs
         three earlier buckets before it is drawn, so a short window shows an empty baseline rather than a guess.
       </p>

@@ -55,7 +55,7 @@ export function RiskMixDonut({
                 cornerRadius={3}
                 startAngle={90}
                 endAngle={-270}
-                isAnimationActive={false}
+                isAnimationActive animationDuration={700}
                 stroke="none"
               >
                 {data.map((entry) => (
@@ -69,7 +69,7 @@ export function RiskMixDonut({
               {formatCompactNumber(total)}
             </span>
             <span className="text-[11px] font-semibold text-muted-foreground">scored</span>
-            <span className={cn("num mt-1 text-[10.5px] leading-4", flagged > 0 ? "text-risk-high" : "text-risk-low")}>
+            <span className={cn("num mt-1 text-[11px] leading-4", flagged > 0 ? "text-risk-high" : "text-risk-low")}>
               {flagged} flagged
             </span>
           </div>

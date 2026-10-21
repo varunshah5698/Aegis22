@@ -94,7 +94,7 @@ export default async function NetworkPage({
               <li key={flag.id} className="flex flex-wrap items-center gap-2 px-4 py-2.5 text-[12px]">
                 <span
                   className={cn(
-                    "rounded-[5px] px-1.5 py-0.5 text-[10px] font-medium tracking-wide",
+                    "rounded-[5px] px-1.5 py-0.5 text-[11px] font-medium tracking-wide",
                     flag.severity === "critical"
                       ? "bg-risk-critical/15 text-risk-critical"
                       : "bg-risk-high/15 text-risk-high",

@@ -17,7 +17,7 @@ import {
 import { RISK_COLORS, type RiskLevel } from "@/config/risk";
 import { cn, formatCompactNumber, formatCurrency } from "@/lib/utils";
 
-const axisStyle = { fontSize: 10, fill: "rgb(var(--muted-foreground))" } as const;
+const axisStyle = { fontSize: 11, fill: "rgb(var(--muted-foreground))" } as const;
 
 const tooltipStyle = {
   background: "rgb(var(--card))",
@@ -98,7 +98,7 @@ export function VolumeAreaChart({
               stroke="rgb(var(--accent))"
               strokeWidth={1.75}
               fill="url(#volumeFill)"
-              isAnimationActive={false}
+              isAnimationActive animationDuration={650}
               activeDot={{ r: 3.5, strokeWidth: 2, stroke: "rgb(var(--card))", fill: "rgb(var(--accent))" }}
             />
           </AreaChart>
@@ -263,7 +263,7 @@ export function RiskHistogram({
                 return [value, `Score ${payload.low}–${payload.high}`];
               }}
             />
-            <Bar dataKey="count" radius={[2, 2, 0, 0]} isAnimationActive={false}>
+            <Bar dataKey="count" radius={[2, 2, 0, 0]} isAnimationActive animationDuration={650}>
               {data.map((bin) => (
                 <Cell key={bin.bin} fill={bin.fill} opacity={bin.low >= threshold ? 0.95 : 0.32} />
               ))}

@@ -59,16 +59,14 @@ export function PricingSection({ compact = false }: { compact?: boolean }) {
             className={cn(
               "flex flex-col rounded-hero border-2 p-6",
               "highlighted" in tier && tier.highlighted
-                ? "border-foreground bg-foreground text-background shadow-lift"
-                : "border-foreground/15 bg-card",
+                ? "border-accent bg-accent/[0.07] text-foreground shadow-[inset_0_1px_0_rgb(255_255_255/0.07),0_0_70px_-30px_rgba(109,92,255,0.95)]"
+                : "border-accent/25 bg-card",
             )}
           >
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-display text-xl font-semibold tracking-tight">{tier.name}</h3>
-                <p className={cn("mt-1 text-sm", "highlighted" in tier && tier.highlighted ? "text-background/70" : "text-muted-foreground")}>
-                  {tier.tagline}
-                </p>
+                <p className="mt-1 text-sm text-muted-foreground">{tier.tagline}</p>
               </div>
               {"highlighted" in tier && tier.highlighted ? (
                 <span className="rounded-pill bg-accent px-2.5 py-1 text-[11px] font-medium text-accent-foreground">
@@ -79,7 +77,7 @@ export function PricingSection({ compact = false }: { compact?: boolean }) {
 
             <div className="mt-6">
               <Price monthly={tier.monthly} annual={tier.annual} billing={billing} />
-              <p className={cn("mt-1 text-xs", "highlighted" in tier && tier.highlighted ? "text-background/60" : "text-muted-foreground")}>
+              <p className="mt-1 text-xs text-muted-foreground">
                 {billing === "annual" ? "Billed annually" : "Billed monthly"} · {tier.volume}
               </p>
             </div>
@@ -88,14 +86,12 @@ export function PricingSection({ compact = false }: { compact?: boolean }) {
               {tier.features.map((feature) => (
                 <li key={feature} className="flex gap-2">
                   <Check className="mt-0.5 size-4 shrink-0 text-risk-low" aria-hidden="true" />
-                  <span className={cn("highlighted" in tier && tier.highlighted ? "text-background/85" : "text-foreground/85")}>
-                    {feature}
-                  </span>
+                  <span className="text-foreground/85">{feature}</span>
                 </li>
               ))}
             </ul>
 
-            <p className={cn("mt-5 text-xs", "highlighted" in tier && tier.highlighted ? "text-background/60" : "text-muted-foreground")}>
+            <p className="mt-5 text-xs text-muted-foreground">
               {tier.seats} · {tier.support}
             </p>
 

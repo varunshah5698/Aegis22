@@ -148,8 +148,10 @@ export function Sparkline({
       aria-hidden="true"
       preserveAspectRatio="none"
     >
-      {fill ? <polygon points={area} fill="currentColor" opacity={0.14} /> : null}
+      {fill ? <polygon className="anim-fade" points={area} fill="currentColor" opacity={0.14} /> : null}
       <polyline
+        className="anim-draw"
+        pathLength={1}
         points={line}
         fill="none"
         stroke="currentColor"
@@ -230,7 +232,7 @@ export function MetricRow({
             ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
             : "grid-cols-1 sm:grid-cols-2";
 
-  return <div className={cn("grid gap-4", columns, className)}>{children}</div>;
+  return <div className={cn("metric-row grid gap-4", columns, className)}>{children}</div>;
 }
 
 const toneText = (tone: string) =>
@@ -351,7 +353,7 @@ export function MetricTile({
       {comparison ? (
         <p
           className={cn(
-            "mt-0.5 truncate text-[10.5px] leading-4",
+            "mt-0.5 truncate text-[11px] leading-4",
             gradient ? "text-white/70" : "text-muted-foreground/80",
           )}
         >
@@ -371,7 +373,7 @@ export function MetricTile({
       className={cn(
         "panel flex min-h-[112px] min-w-0 flex-col px-5 py-4",
         gradient &&
-          "border-0 bg-[linear-gradient(140deg,#FF9A5F_0%,#FB7A34_45%,#F06414_100%)] shadow-[0_16px_36px_-18px_rgb(249_115_22_0.55)]",
+          "border-0 bg-[linear-gradient(140deg,#8B7CFF_0%,#6D5CFF_45%,#5B4BE8_100%)] shadow-[0_16px_36px_-18px_rgba(109,92,255,0.55)]",
         href && "transition-colors hover:border-border-strong",
         className,
       )}

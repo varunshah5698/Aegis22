@@ -18,7 +18,7 @@ import { RISK_COLORS, SCORE_BANDS, type RiskLevel } from "@/config/risk";
 import type { SeriesBucket } from "@/lib/data/analytics";
 import { cn, formatCompactNumber, formatCurrency } from "@/lib/utils";
 
-const axisStyle = { fontSize: 10, fill: "rgb(var(--muted-foreground))" } as const;
+const axisStyle = { fontSize: 11, fill: "rgb(var(--muted-foreground))" } as const;
 
 /** Rounds a chart maximum up to a readable axis value (10, 25, 50, 100…). */
 function niceMax(value: number): number {
@@ -232,7 +232,7 @@ export function FlowChart({
                     stroke={colour}
                     strokeOpacity={0.65}
                     strokeDasharray="3 3"
-                    label={{ value: "anomaly", position: "insideTopRight", fill: colour, fontSize: 9 }}
+                    label={{ value: "anomaly", position: "insideTopRight", fill: colour, fontSize: 11 }}
                   />
                 </React.Fragment>
               );
@@ -252,7 +252,7 @@ export function FlowChart({
                 dataKey={metric === "count" ? level.key : `${level.key}Value`}
                 stackId="risk"
                 fill={`url(#flow-${level.key})`}
-                isAnimationActive={false}
+                isAnimationActive animationDuration={650}
                 maxBarSize={34}
               />
             ))}
@@ -264,7 +264,7 @@ export function FlowChart({
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 3.5, strokeWidth: 2, stroke: "rgb(var(--card))", fill: "rgb(var(--accent))" }}
-              isAnimationActive={false}
+              isAnimationActive animationDuration={650}
             />
           </ComposedChart>
         </ResponsiveContainer>

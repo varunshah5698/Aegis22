@@ -321,7 +321,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
                             {Object.entries(factor.facts)
                               .slice(0, 6)
                               .map(([key, value]) => (
-                                <span key={key} className="num rounded-[5px] border border-border/70 bg-muted/40 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                                <span key={key} className="num rounded-[5px] border border-border/70 bg-muted/40 px-1.5 py-0.5 text-[11px] text-muted-foreground">
                                   {key.replace(/_/g, " ")} {typeof value === "number" ? Math.round(value * 100) / 100 : String(value)}
                                 </span>
                               ))}
@@ -418,7 +418,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
                   }}
                 />
               </div>
-              <p className="mt-1.5 text-[10px] text-muted-foreground">
+              <p className="mt-1.5 text-[11px] text-muted-foreground">
                 Older transfers in grey, this payment in <span style={{ color: RISK_COLORS[level] }}>risk colour</span>.
               </p>
             </div>
@@ -491,7 +491,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
                   </span>
                   <div className="min-w-0 pb-0.5">
                     <p className="text-[11.5px] font-medium leading-4">{step.title}</p>
-                    <p className="num mt-0.5 text-[10.5px] leading-4 text-muted-foreground">{step.detail}</p>
+                    <p className="num mt-0.5 text-[11px] leading-4 text-muted-foreground">{step.detail}</p>
                   </div>
                 </li>
               ))}
@@ -505,7 +505,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
               <p className="num mt-1 text-[19px] font-semibold leading-6 tracking-[-0.03em]">
                 {detail.scoreMs ? `${detail.scoreMs} ms` : "not recorded"}
               </p>
-              <p className="mt-1 text-[10.5px] leading-4 text-muted-foreground">
+              <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
                 {detail.scoredAt
                   ? `Scored ${when(detail.scoredAt)}`
                   : `Ingested ${when(detail.createdAt)}; scoring latency was not stored.`}
@@ -535,7 +535,7 @@ export default async function TransactionWorkbenchPage({ params }: { params: Pro
                     <Link href={`/app/alerts/${alert.id}`} className="flex items-center gap-2 px-5 py-3 transition-colors hover:bg-muted/40">
                       <RiskBadge level={alert.severity} />
                       <span className="min-w-0 flex-1 truncate text-[11.5px]">{alert.title}</span>
-                      <span className="text-[10.5px] capitalize text-muted-foreground">{alert.status}</span>
+                      <span className="text-[11px] capitalize text-muted-foreground">{alert.status}</span>
                       <ArrowUpRight className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
                     </Link>
                   </li>

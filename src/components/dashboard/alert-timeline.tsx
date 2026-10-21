@@ -44,7 +44,7 @@ export function AlertTimeline({ events }: { events: TimelineEvent[] }) {
               <Icon className="size-2.5 text-muted-foreground" aria-hidden="true" />
             </span>
             <p className="text-xs">{describe(event)}</p>
-            <p className="mt-0.5 text-[10px] text-muted-foreground">
+            <p className="mt-0.5 text-[11px] text-muted-foreground">
               {event.actorName ?? "System"} ·{" "}
               {new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" }).format(
                 new Date(event.created_at),

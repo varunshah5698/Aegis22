@@ -21,7 +21,7 @@ const DEMO_ACCOUNTS = [
 const DEMO_PASSWORD = "Sentinel-Demo-2026!";
 
 const fieldClass =
-  "h-11 rounded-lg border-border bg-muted/40 px-3.5 text-[15px] transition-[border-color,background-color,box-shadow] focus-visible:border-accent/70 focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-accent/20";
+  "h-11 rounded-lg border-border bg-muted/40 px-3.5 text-[15px] transition-[border-color,background-color,box-shadow] focus-visible:border-accent/70 focus-visible:bg-background focus-visible:ring-2 focus-visible:ring-accent/20 focus-visible:shadow-[0_0_22px_-6px_rgb(109_92_255/0.55)]";
 
 export function LoginForm({ next, initialError }: { next: string; initialError?: string | undefined }) {
   const router = useRouter();
@@ -185,7 +185,7 @@ export function LoginForm({ next, initialError }: { next: string; initialError?:
           type="submit"
           variant="accent"
           size="lg"
-          className="group h-11 w-full rounded-lg text-[14.5px] font-semibold shadow-[0_1px_0_rgb(255_255_255/0.25)_inset,0_10px_24px_-14px_rgb(240_160_64/0.9)]"
+          className="group h-11 w-full rounded-lg text-[14.5px] font-semibold shadow-[0_1px_0_rgb(255_255_255/0.25)_inset,0_12px_28px_-14px_rgb(109_92_255/0.95),0_0_26px_-8px_rgb(109_92_255/0.6)]"
           disabled={submitting}
         >
           {submitting ? (

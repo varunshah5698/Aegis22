@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
+import { AuthConstellation } from "@/components/auth/auth-constellation";
 import { Logo } from "@/components/logo";
 
 /**
@@ -56,19 +57,21 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </header>
 
         <div className="grid flex-1 items-stretch gap-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1fr)] lg:gap-8">
-          {/* Rail */}
-          <aside className="relative hidden overflow-hidden rounded-panel bg-[#0B0E14] p-10 text-[#F4F4EF] lg:flex lg:flex-col">
+          {/* Rail: deeper void than the page, lit violet top-right and teal
+              bottom-left, with the glowing corridor constellation as its
+              centre — the product's own graph, not decoration. */}
+          <aside className="relative hidden overflow-hidden rounded-panel bg-[#06060D] p-10 text-[#F4F4EF] lg:flex lg:flex-col">
             <div
               aria-hidden="true"
               className="paper-grid absolute inset-0 opacity-[0.12] [background-size:40px_40px]"
             />
             <div
               aria-hidden="true"
-              className="absolute -right-24 -top-24 size-[420px] rounded-full bg-accent/25 blur-[110px]"
+              className="absolute -right-24 -top-24 size-[420px] rounded-full bg-accent/30 blur-[110px]"
             />
             <div
               aria-hidden="true"
-              className="absolute -bottom-28 -left-20 size-[340px] rounded-full bg-risk-low/15 blur-[110px]"
+              className="absolute -bottom-28 -left-20 size-[340px] rounded-full bg-risk-low/18 blur-[110px]"
             />
             <div
               aria-hidden="true"
@@ -83,9 +86,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 Financial intelligence
               </p>
 
-              <h1 className="mt-8 max-w-[17ch] font-display text-[2.6rem] font-semibold leading-[1.02] tracking-[-0.035em]">
-                Monitoring that can{" "}
-                <span className="font-serif font-normal italic text-accent">explain itself</span>.
+              <h1 className="mt-8 max-w-[17ch] font-display text-[2.75rem] font-semibold leading-[1.02] tracking-[-0.04em]">
+                Monitoring that can explain itself.
               </h1>
 
               <p className="mt-5 max-w-[34ch] text-sm leading-6 text-[#F4F4EF]/65">
@@ -93,7 +95,12 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
                 which payments, and how the case was closed.
               </p>
 
-              <dl className="mt-auto grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
+              {/* The glowing corridor constellation — the rail's one loud thing. */}
+              <div className="flex min-h-[240px] flex-1 items-center justify-center py-6">
+                <AuthConstellation className="w-full max-w-[560px]" />
+              </div>
+
+              <dl className="grid grid-cols-3 gap-4 border-t border-white/10 pt-6">
                 {proofPoints.map((point) => (
                   <div key={point.label}>
                     <dt className="num font-display text-2xl font-semibold tracking-[-0.03em] text-[#F4F4EF]">

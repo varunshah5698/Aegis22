@@ -1,3 +1,4 @@
+import { Reveal } from "@/components/marketing/reveal";
 import type { MonthlyTotal } from "@/lib/data/overview";
 import { formatCompactNumber } from "@/lib/utils";
 
@@ -21,9 +22,9 @@ export function MonthlyValueBars({ data, height = 200 }: { data: MonthlyTotal[];
   const ticks = [1, 0.75, 0.5, 0.25, 0];
 
   return (
-    <div className="flex gap-2">
+    <Reveal className="flex gap-2">
       {/* Y-axis value labels, aligned to the gridlines. */}
-      <div className="flex w-10 shrink-0 flex-col justify-between text-right text-[10px] leading-3 text-muted-foreground" style={{ height }}>
+      <div className="flex w-10 shrink-0 flex-col justify-between text-right text-[11px] leading-3 text-muted-foreground" style={{ height }}>
         {ticks.map((share) => (
           <span key={share} className="num">
             {share === 0 ? "0" : `$${formatCompactNumber(Math.round(max * share))}`}
@@ -41,19 +42,25 @@ export function MonthlyValueBars({ data, height = 200 }: { data: MonthlyTotal[];
           </div>
 
           <div className="relative flex h-full items-end justify-between gap-1">
-            {data.map((point) => (
+            {data.map((point, pointIndex) => (
               <div
                 key={point.label}
                 className="group flex h-full min-w-0 flex-1 items-end justify-center gap-[3px]"
                 title={`${point.label}: screened $${formatCompactNumber(point.value)} · flagged $${formatCompactNumber(point.flaggedValue)}`}
               >
                 <div
-                  className="w-[10px] rounded-t-[4px] bg-[rgb(var(--chart-1))] transition-opacity group-hover:opacity-80 sm:w-[13px]"
-                  style={{ height: `${Math.max(2, (point.value / max) * 100)}%` }}
+                  className="anim-grow-y w-[10px] rounded-t-[4px] bg-[rgb(var(--chart-1))] transition-opacity group-hover:opacity-80 sm:w-[13px]"
+                  style={{
+                    height: `${Math.max(2, (point.value / max) * 100)}%`,
+                    "--d": pointIndex * 55,
+                  } as React.CSSProperties}
                 />
                 <div
-                  className="w-[10px] rounded-t-[4px] bg-[rgb(var(--chart-2))] transition-opacity group-hover:opacity-80 sm:w-[13px]"
-                  style={{ height: `${Math.max(1.5, (point.flaggedValue / max) * 100)}%` }}
+                  className="anim-grow-y w-[10px] rounded-t-[4px] bg-[rgb(var(--chart-2))] transition-opacity group-hover:opacity-80 sm:w-[13px]"
+                  style={{
+                    height: `${Math.max(1.5, (point.flaggedValue / max) * 100)}%`,
+                    "--d": pointIndex * 55 + 90,
+                  } as React.CSSProperties}
                 />
               </div>
             ))}
@@ -63,12 +70,12 @@ export function MonthlyValueBars({ data, height = 200 }: { data: MonthlyTotal[];
         {/* Month labels in their own row, one column per month. */}
         <div className="mt-2 flex justify-between gap-1">
           {data.map((point) => (
-            <span key={point.label} className="min-w-0 flex-1 truncate text-center text-[10.5px] leading-4 text-muted-foreground">
+            <span key={point.label} className="min-w-0 flex-1 truncate text-center text-[11px] leading-4 text-muted-foreground">
               {point.label}
             </span>
           ))}
         </div>
       </div>
-    </div>
+    </Reveal>
   );
 }
