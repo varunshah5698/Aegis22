@@ -91,7 +91,7 @@ export function NotificationBell({ userId }: { userId: string }) {
         <Button
           variant="ghost"
           size="icon"
-          className="relative overflow-visible border border-border/70 bg-card shadow-sm hover:bg-muted/70 [&_svg]:size-4"
+          className="relative size-10 overflow-visible rounded-full border border-border/70 bg-card text-muted-foreground shadow-sm hover:bg-muted hover:text-foreground [&_svg]:size-4"
           aria-label={unread.length ? `${unread.length} unread notifications` : "Notifications"}
         >
           <Bell aria-hidden="true" />

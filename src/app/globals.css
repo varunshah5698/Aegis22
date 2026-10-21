@@ -1182,3 +1182,155 @@
     background-size: 30px 30px;
   }
 }
+
+/* -------------------------------------------------------------------------- */
+/* Overview command band + statistical surfaces                               */
+/* -------------------------------------------------------------------------- */
+
+/*
+ * The overview hero is one continuous band, not a card: the headline figure
+ * and its supporting readouts share a single field lit by a low coral light
+ * source on the left. Light in both themes — the coral signal is the product's
+ * identity, so the band keeps it and simply deepens its own surface.
+ */
+.overview-band {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: var(--radius-panel, 18px);
+  border: 1px solid rgb(var(--border));
+  background:
+    radial-gradient(120% 150% at 4% 8%, rgb(var(--accent) / 0.13) 0%, transparent 58%),
+    radial-gradient(80% 120% at 100% 100%, rgb(var(--chart-3) / 0.08) 0%, transparent 62%),
+    linear-gradient(158deg, rgb(var(--elevated)) 0%, rgb(var(--card)) 62%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.6),
+    0 20px 44px -26px rgb(15 15 20 / 0.22);
+}
+
+.dark .overview-band {
+  border-color: rgb(var(--border));
+  background:
+    radial-gradient(120% 150% at 4% 8%, rgb(var(--accent) / 0.24) 0%, transparent 56%),
+    radial-gradient(80% 120% at 100% 100%, rgb(56 189 248 / 0.1) 0%, transparent 60%),
+    linear-gradient(158deg, rgb(var(--elevated)) 0%, rgb(var(--card)) 68%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.05),
+    0 30px 70px -40px rgb(0 0 0 / 0.9);
+}
+
+/* Faint measurement grid so the band reads as an instrument, not a banner. */
+.overview-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, rgb(var(--foreground) / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--foreground) / 0.04) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: radial-gradient(90% 90% at 30% 20%, black 10%, transparent 82%);
+  -webkit-mask-image: radial-gradient(90% 90% at 30% 20%, black 10%, transparent 82%);
+}
+
+/* Hairline between the headline column and the readout rail. */
+.overview-band__split {
+  border-left: 1px solid rgb(var(--border) / 0.7);
+}
+
+@media (max-width: 1023px) {
+  .overview-band__split {
+    border-left: 0;
+    border-top: 1px solid rgb(var(--border) / 0.7);
+  }
+}
+
+/* The readout rail: label, figure, and a thin proportional track per row. */
+.readout {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 0;
+}
+
+.readout + .readout {
+  border-top: 1px solid rgb(var(--border) / 0.55);
+}
+
+.readout__label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.01em;
+  color: rgb(var(--muted-foreground));
+}
+
+.readout__value {
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: rgb(var(--foreground));
+}
+
+.readout__track {
+  position: relative;
+  height: 4px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(var(--muted));
+}
+
+.readout__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+}
+
+/*
+ * Scored radar: a radial distribution of the selected window's payments by
+ * risk band. Each band is a concentric arc; the arc length is that band's
+ * share. Drawn as an SVG so it stays crisp and needs no chart library.
+ */
+.radar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  width: 100%;
+  max-width: 208px;
+}
+
+.radar__center {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+/* The distribution curve panel: soft area under the score histogram. */
+.dist-area {
+  fill: url(#dist-fill);
+}
+
+/* A quiet pill for the range of a readout, e.g. "p90 41". */
+.readout-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--border));
+  background: rgb(var(--elevated));
+  padding: 2px 8px;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: rgb(var(--muted-foreground));
+  font-variant-numeric: tabular-nums;
+}

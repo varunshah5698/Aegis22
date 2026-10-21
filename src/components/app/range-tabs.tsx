@@ -19,14 +19,14 @@ export function RangeTabs({
   };
 
   return (
-    <div className="flex items-center rounded-panel border border-border bg-card p-0.5" role="group" aria-label="Time range">
+    <div className="flex items-center rounded-pill border border-border/70 bg-card p-1 shadow-sm" role="group" aria-label="Time range">
       {rangeOptions.map((option) => (
         <Link
           key={option.value}
           href={query(option.value)}
           aria-current={option.value === current ? "page" : undefined}
           className={cn(
-            "rounded-[8px] px-2.5 py-1 text-[11px] font-medium transition-colors",
+            "rounded-full px-3 py-1 text-[11.5px] font-medium transition-colors",
             option.value === current
               ? "bg-foreground text-background"
               : "text-muted-foreground hover:bg-muted hover:text-foreground",

@@ -284,6 +284,62 @@ export async function getAlertStatusCounts(
   }));
 }
 
+export interface MonthlyTotal {
+  label: string;
+  value: number;
+  flaggedValue: number;
+}
+
+/**
+ * Monthly screened and flagged value for the bar chart on the overview.
+ *
+ * Deliberately independent of the selected window: the chart answers "how has
+ * the year been going", while the KPI tiles answer "how is the window going".
+ */
+export async function getMonthlyTotals(
+  supabase: Client,
+  organizationId: string,
+  months = 8,
+): Promise<MonthlyTotal[]> {
+  const now = new Date();
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - (months - 1), 1));
+
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("created_at, amount_base, risk_score")
+    .eq("organization_id", organizationId)
+    .gte("created_at", start.toISOString())
+    .limit(20_000);
+  if (error) throw new Error(error.message);
+
+  const buckets = Array.from({ length: months }, (_, index) => {
+    const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - (months - 1) + index, 1));
+    return {
+      key: `${date.getUTCFullYear()}-${date.getUTCMonth()}`,
+      label: date.toLocaleDateString("en-GB", { month: "short", timeZone: "UTC" }),
+      value: 0,
+      flaggedValue: 0,
+    };
+  });
+  const indexByKey = new Map(buckets.map((bucket, index) => [bucket.key, index] as const));
+
+  for (const row of data ?? []) {
+    const created = new Date(row.created_at);
+    const index = indexByKey.get(`${created.getUTCFullYear()}-${created.getUTCMonth()}`);
+    const bucket = index === undefined ? undefined : buckets[index];
+    if (!bucket) continue;
+    const amount = Number(row.amount_base ?? 0);
+    bucket.value += amount;
+    if ((row.risk_score ?? 0) >= SCORE_BANDS.alert) bucket.flaggedValue += amount;
+  }
+
+  return buckets.map((bucket) => ({
+    label: bucket.label,
+    value: Math.round(bucket.value),
+    flaggedValue: Math.round(bucket.flaggedValue),
+  }));
+}
+
 export async function getOpenAlertSummary(supabase: Client, organizationId: string) {
   const { data, error } = await supabase
     .from("alerts")

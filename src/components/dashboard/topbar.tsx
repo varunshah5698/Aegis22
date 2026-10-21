@@ -2,22 +2,19 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo } from "react";
 import {
   Bell,
-  Check,
   ChevronDown,
   CircleHelp,
   LogOut,
   Search,
   Settings2,
-  Sparkles,
   UserRound,
 } from "lucide-react";
 
+import { LogoMark } from "@/components/logo";
 import { MobileSidebar } from "@/components/dashboard/sidebar";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,72 +23,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { appNav } from "@/config/site";
 import { createClient } from "@/lib/supabase/client";
 import { cn, initials } from "@/lib/utils";
 
-const pageLabels: Record<string, string> = {
-  transactions: "Transactions",
-  analytics: "Analytics",
-  corridors: "Corridors",
-  fx: "FX intelligence",
-  analyst: "AI analyst",
-  library: "Data library",
-  alerts: "Alerts",
-  network: "Network",
-  structuring: "Structuring",
-  rules: "Rules",
-  cases: "Cases",
-  reports: "Reports",
-  settings: "Settings",
-};
+/* The header mirrors the reference: a logo chip on the left, the primary
+   sections as centered pills, and search, notifications, help and the account
+   chip on the right. The full section list lives in the icon rail. */
+const primaryTabs = [
+  { label: "Overview", href: "/app/overview" },
+  { label: "Analytics", href: "/app/analytics" },
+  { label: "Transactions", href: "/app/transactions" },
+  { label: "Alerts", href: "/app/alerts" },
+  { label: "Network", href: "/app/network" },
+  { label: "Reports", href: "/app/reports" },
+];
 
-function usePageTrail(pathname: string) {
-  return useMemo(() => {
-    const segments = pathname.split("/").filter(Boolean);
-    const root = segments[1] ?? "overview";
-    const label = root === "overview" ? "Executive overview" : pageLabels[root] ?? "Workspace";
-    return { root, label };
-  }, [pathname]);
-}
-
-function PageSelector({ pathname }: { pathname: string }) {
-  const { root, label } = usePageTrail(pathname);
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className="flex h-9 min-w-0 items-center gap-2 rounded-pill border border-foreground/90 bg-foreground px-3.5 text-[12.5px] font-medium text-background shadow-sm transition-colors hover:bg-foreground/85"
-          aria-label={`Current page: ${label}. Switch page.`}
-        >
-          <span className="truncate">{label}</span>
-          <ChevronDown className="size-3.5 shrink-0 text-background/70" aria-hidden="true" />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-64">
-        {appNav.map((group) => (
-          <div key={group.label} className="mb-1 last:mb-0">
-            <DropdownMenuLabel className="text-[11px] text-muted-foreground/70">
-              {group.label}
-            </DropdownMenuLabel>
-            {group.items.map((item) => {
-              const active = root === item.href.split("/")[2];
-              return (
-                <DropdownMenuItem key={item.href} asChild>
-                  <Link href={item.href} className={cn("justify-between", active && "bg-muted/60")}>
-                    <span>{item.label}</span>
-                    {active ? <Check className="size-3.5 text-accent" aria-hidden="true" /> : null}
-                  </Link>
-                </DropdownMenuItem>
-              );
-            })}
-          </div>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+function tabIsActive(pathname: string, href: string) {
+  if (href === "/app/settings/profile") return pathname.startsWith("/app/settings");
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 function AccountMenu({
@@ -121,10 +70,10 @@ function AccountMenu({
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex h-9 items-center gap-2 rounded-pill border border-border/70 bg-card px-1.5 text-left shadow-sm transition-colors hover:bg-muted/60"
+          className="flex h-10 items-center gap-2 rounded-full border border-border/70 bg-card pl-1 pr-2 text-left shadow-sm transition-colors hover:bg-muted/60 md:pr-3"
           aria-label={`Account menu for ${userName || email}`}
         >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-[10.5px] font-semibold">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent/12 text-[11px] font-semibold text-accent">
             {initials(userName || email)}
           </span>
           <span className="hidden min-w-0 leading-4 xl:block">
@@ -169,7 +118,6 @@ function AccountMenu({
 export function DashboardTopbar(props: {
   userId: string;
   sidebar: {
-    defaultCollapsed: boolean;
     organizationName: string;
     organizationSlug: string;
     userName: string;
@@ -179,52 +127,65 @@ export function DashboardTopbar(props: {
   };
 }) {
   const pathname = usePathname();
-  const onCases = pathname.startsWith("/app/cases");
 
   return (
-    <header className="sticky top-0 z-30 flex h-[60px] shrink-0 items-center gap-2 border-b border-border/70 bg-background/85 px-3 backdrop-blur-xl md:px-4">
-      <MobileSidebar {...props.sidebar} />
-
-      <div className="flex min-w-0 items-center gap-2">
-        <PageSelector pathname={pathname} />
+    <header className="sticky top-0 z-30 flex h-[68px] shrink-0 items-center gap-3 border-b border-border/60 bg-background/80 px-3 backdrop-blur-xl md:px-5">
+      <div className="flex items-center gap-2">
+        <MobileSidebar openAlerts={props.sidebar.openAlerts} />
+        <Link
+          href="/app/overview"
+          aria-label="Aegis overview"
+          className="flex h-10 items-center gap-2 rounded-full border border-border/70 bg-card pl-1.5 pr-3.5 shadow-sm transition-colors hover:bg-muted/60"
+        >
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-border/60 bg-elevated">
+            <LogoMark className="size-[17px] text-accent" />
+          </span>
+          <span className="font-display text-[13.5px] font-semibold leading-none tracking-[-0.02em]">Aegis</span>
+        </Link>
       </div>
 
-      <button
-        type="button"
-        onClick={() => window.dispatchEvent(new Event("sf:open-command"))}
-        className="mx-auto hidden h-9 w-full max-w-[420px] items-center gap-2 rounded-pill border border-border/80 bg-card px-3.5 text-[12.5px] text-muted-foreground shadow-sm transition-colors hover:border-border-strong hover:text-foreground md:flex"
-        aria-label="Search transactions, entities, corridors and datasets"
-      >
-        <Search className="size-3.5 shrink-0" aria-hidden="true" />
-        <span className="flex-1 truncate text-left">Ask AI or search transactions, corridors, datasets…</span>
-        <span className="kbd shrink-0">⌘K</span>
-      </button>
+      <nav aria-label="Primary" className="mx-auto hidden items-center gap-1 lg:flex">
+        {primaryTabs.map((tab) => {
+          const active = tabIsActive(pathname, tab.href);
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "rounded-full px-3.5 py-2 text-[12.5px] font-medium transition-colors xl:px-4",
+                active
+                  ? "bg-foreground text-background shadow-sm"
+                  : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
+              )}
+            >
+              {tab.label}
+            </Link>
+          );
+        })}
+      </nav>
 
-      <div className="ml-auto flex items-center gap-1 md:ml-0">
+      <div className="ml-auto flex items-center gap-2">
         <button
           type="button"
-          onClick={() => window.dispatchEvent(new Event("aegis:assistant"))}            className="flex size-9 items-center justify-center rounded-pill border border-border/70 bg-card text-accent shadow-sm transition-colors hover:bg-accent/10"
-          aria-label="Open the AI analyst"
-          title="Ask the AI analyst (⌘J)"
+          onClick={() => window.dispatchEvent(new Event("sf:open-command"))}
+          className="flex size-10 items-center justify-center rounded-full border border-border/70 bg-card text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground"
+          aria-label="Search transactions, entities, corridors and datasets (⌘K)"
+          title="Search (⌘K)"
         >
-          <Sparkles className="size-4" aria-hidden="true" />
+          <Search className="size-4" aria-hidden="true" />
         </button>
 
         <NotificationBell userId={props.userId} />
 
         <Link
           href="/docs"
-          className="hidden size-9 items-center justify-center rounded-pill border border-border/70 bg-card text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground lg:flex"
+          className="hidden size-10 items-center justify-center rounded-full border border-border/70 bg-card text-muted-foreground shadow-sm transition-colors hover:bg-muted hover:text-foreground md:flex"
           aria-label="Documentation and help"
+          title="Documentation and help"
         >
           <CircleHelp className="size-4" aria-hidden="true" />
         </Link>
-
-        {!onCases ? (
-          <Button asChild size="sm" variant="outline" className="hidden h-9 gap-1.5 text-[12px] xl:inline-flex">
-            <Link href="/app/cases">New case</Link>
-          </Button>
-        ) : null}
 
         <AccountMenu
           userName={props.sidebar.userName}

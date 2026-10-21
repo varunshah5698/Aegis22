@@ -1,11 +1,10 @@
 import { Suspense } from "react";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { AssistantDrawer } from "@/components/dashboard/assistant-drawer";
 import { CommandPalette } from "@/components/dashboard/command-palette";
 import { KeyboardShortcuts } from "@/components/dashboard/keyboard-shortcuts";
-import { Sidebar } from "@/components/dashboard/sidebar";
+import { IconRail } from "@/components/dashboard/sidebar";
 import { DashboardTopbar } from "@/components/dashboard/topbar";
 import { requireOrganization } from "@/lib/auth";
 
@@ -13,17 +12,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   const { supabase, user, profile, organization } = await requireOrganization();
   if (!organization) redirect("/onboarding");
 
-  const [{ count }, cookieStore] = await Promise.all([
-    supabase
-      .from("alerts")
-      .select("id", { count: "exact", head: true })
-      .eq("organization_id", organization.id)
-      .in("status", ["new", "investigating", "escalated"]),
-    cookies(),
-  ]);
+  const { count } = await supabase
+    .from("alerts")
+    .select("id", { count: "exact", head: true })
+    .eq("organization_id", organization.id)
+    .in("status", ["new", "investigating", "escalated"]);
 
   const sidebar = {
-    defaultCollapsed: cookieStore.get("sf-sidebar")?.value === "1",
     organizationName: organization.name,
     organizationSlug: organization.slug,
     userName: profile.full_name || profile.email,
@@ -40,7 +35,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       >
         Skip to main content
       </a>
-      <Sidebar {...sidebar} />
+      <IconRail openAlerts={sidebar.openAlerts} />
       <div className="flex min-w-0 flex-1 flex-col">
         <DashboardTopbar userId={user.id} sidebar={sidebar} />
         <main id="main-content" className="app-canvas flex-1 px-4 py-5 md:px-6 md:py-6">

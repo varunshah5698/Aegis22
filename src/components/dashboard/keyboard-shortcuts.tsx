@@ -17,7 +17,6 @@ const shortcuts = [
   { keys: "g i", label: "Go to the AI analyst" },
   { keys: "g d", label: "Go to the data library" },
   { keys: "g r", label: "Go to rules" },
-  { keys: "[", label: "Collapse or expand the sidebar" },
   { keys: "?", label: "Show this help" },
   { keys: "⌘K", label: "Search the workspace" },
   { keys: "⌘J", label: "Open the Aegis analyst" },
@@ -55,11 +54,6 @@ export function KeyboardShortcuts() {
       if (event.key === "?") {
         event.preventDefault();
         setOpen(true);
-        return;
-      }
-      if (event.key === "[") {
-        event.preventDefault();
-        window.dispatchEvent(new Event("sf:toggle-sidebar"));
         return;
       }
       if (pending.current === "g") {
