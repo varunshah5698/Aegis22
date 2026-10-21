@@ -1320,6 +1320,27 @@
   fill: url(#dist-fill);
 }
 
+/* Corridor flow: a marching-dash arc with a pulse travelling origin→destination. */
+.flow-arc {
+  animation: flow-march 1.4s linear infinite;
+}
+
+@keyframes flow-march {
+  to {
+    stroke-dashoffset: -19;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-arc {
+    animation: none;
+  }
+
+  .flow-pulse {
+    display: none;
+  }
+}
+
 /* A quiet pill for the range of a readout, e.g. "p90 41". */
 .readout-pill {
   display: inline-flex;
