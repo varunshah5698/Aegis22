@@ -49,7 +49,6 @@ export default async function AnalystPage({
     avgScore: analytics.totals.avgScore,
     cutoff: SCORE_BANDS.alert,
     modelVersion: MODEL_VERSION,
-    model: config.model,
     configured: config.configured,
     corridors: analytics.corridors.slice(0, 4).map((corridor) => ({
       corridor: corridor.corridor,
@@ -109,17 +108,11 @@ export default async function AnalystPage({
 
         <PageSection
           id="provider-heading"
-          title="Provider"
-          description="Server-side only; credentials never reach the browser"
+          title="Grounding"
+          description="What every reply is built from"
           className="lg:col-span-1"
         >
           <dl className="space-y-2.5 text-[11.5px]">
-            <div className="flex items-center justify-between gap-3">
-              <dt className="flex items-center gap-1.5 text-muted-foreground">
-                <Cpu className="size-3" aria-hidden="true" /> Model
-              </dt>
-              <dd className="num text-right text-foreground">{config.model}</dd>
-            </div>
             <div className="flex items-center justify-between gap-3">
               <dt className="flex items-center gap-1.5 text-muted-foreground">
                 <Database className="size-3" aria-hidden="true" /> Evidence
@@ -127,8 +120,10 @@ export default async function AnalystPage({
               <dd className="text-right text-foreground">Workspace aggregates</dd>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <dt className="flex items-center gap-1.5 text-muted-foreground">Endpoint</dt>
-              <dd className="num truncate text-right text-foreground">{config.baseUrl.replace(/^https?:\/\//, "")}</dd>
+              <dt className="flex items-center gap-1.5 text-muted-foreground">
+                <Cpu className="size-3" aria-hidden="true" /> Scoring
+              </dt>
+              <dd className="num text-right text-foreground">{config.configured ? MODEL_VERSION : "not configured"}</dd>
             </div>
           </dl>
           <div className="mt-3 flex flex-wrap gap-2 border-t border-border/60 pt-3">

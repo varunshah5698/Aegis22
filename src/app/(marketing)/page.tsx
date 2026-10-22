@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 
+import { CurrencyDesk, type DeskSeries } from "@/components/marketing/currency-desk";
 import { FaqSection } from "@/components/marketing/faq-section";
 import { HeroBackdrop } from "@/components/marketing/hero-backdrop";
 import { RiskGlobe } from "@/components/marketing/risk-globe";
@@ -19,6 +20,7 @@ import { Reveal } from "@/components/marketing/reveal";
 import { ScoreStack } from "@/components/marketing/score-stack";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
+import { getLatestRates, getRateHistory } from "@/lib/fx/provider";
 
 export const metadata: Metadata = {
   title: "Catch dirty money before it crosses the border",
@@ -65,7 +67,57 @@ const jsonLd = {
   ],
 };
 
-export default function HomePage() {
+/** Currencies the rate desk can quote, in the order it shows them. */
+const DESK_CURRENCIES = ["EUR", "GBP", "INR", "JPY", "CHF", "CAD", "AUD", "SGD", "CNY", "HKD", "ZAR", "TRY"];
+
+const DESK_WINDOW_DAYS = 30;
+
+/**
+ * Loads the fixing the desk converts at, plus each pair's own 30-day shape.
+ * The provider is cached server-side and honest about its source; any failure
+ * degrades to a blank desk rather than blocking the landing page.
+ */
+async function loadDesk() {
+  const to = new Date();
+  const from = new Date(to.getTime() - DESK_WINDOW_DAYS * 86_400_000);
+  try {
+    const [latest, history] = await Promise.all([
+      getLatestRates("USD", DESK_CURRENCIES),
+      getRateHistory("USD", DESK_CURRENCIES, from, to),
+    ]);
+    const published = DESK_CURRENCIES.filter((code) => typeof latest.rates[code] === "number");
+    const series: Record<string, DeskSeries> = {};
+    for (const code of published) {
+      const points = history.points
+        .map((point) => ({ date: point.date, rate: point.rates[code] }))
+        .filter((point): point is { date: string; rate: number } => typeof point.rate === "number");
+      if (points.length >= 2) series[code] = { points };
+    }
+    return {
+      rates: latest.rates,
+      series,
+      currencies: ["USD", ...published],
+      rateDate: latest.rateDate,
+      fetchedAt: latest.fetchedAt,
+      sourceLabel: latest.source.label,
+      sourceNote: latest.source.note,
+    };
+  } catch {
+    return {
+      rates: null,
+      series: {},
+      currencies: ["USD", ...DESK_CURRENCIES],
+      rateDate: "—",
+      fetchedAt: new Date().toISOString(),
+      sourceLabel: "unavailable",
+      sourceNote: "The reference-rate provider did not respond, so no conversion is shown.",
+    };
+  }
+}
+
+export default async function HomePage() {
+  const desk = await loadDesk();
+
   return (
     <>
       <script
@@ -164,6 +216,69 @@ export default function HomePage() {
       <ProblemGrid />
       <HowItWorks />
       <ScoreStack />
+
+      <section
+        aria-labelledby="rate-desk-heading"
+        className="relative isolate overflow-hidden border-t border-white/[0.06] bg-[#05080F] text-[#EDF1F8]"
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgb(255_255_255/0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.035)_1px,transparent_1px)] bg-[size:56px_56px] [mask-image:radial-gradient(75%_85%_at_30%_50%,black,transparent)]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-28 top-1/3 size-[440px] rounded-full bg-[#F0B250]/[0.08] blur-[120px]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-24 bottom-0 size-[380px] rounded-full bg-[#2DD4BF]/[0.06] blur-[110px]"
+        />
+
+        <div className="container-page relative grid items-center gap-12 py-16 md:py-20 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:gap-10 lg:py-24">
+          <div className="min-w-0">
+            <p className="text-[11.5px] font-medium text-[#F0B250]/85">Rate desk</p>
+            <h2
+              id="rate-desk-heading"
+              className="mt-5 max-w-[14ch] font-display text-[clamp(2.1rem,3.6vw,3.2rem)] font-semibold leading-[0.99] tracking-[-0.045em]"
+            >
+              Convert at the fixing, <em className="not-italic text-[#F0B250]">not the fantasy.</em>
+            </h2>
+            <p className="mt-5 max-w-[46ch] text-[13.5px] leading-6 text-[#EDF1F8]/50">
+              The same published reference rates the workspace scores every payment against, in a converter that shows
+              its work: the fixing date, the fetch time, the source, and the pair's own 30-day shape. If the provider
+              goes quiet, the desk goes blank — it never improvises a rate.
+            </p>
+            <dl className="mt-8 grid max-w-[430px] grid-cols-3 gap-4 border-t border-white/10 pt-5">
+              <div>
+                <dt className="text-[12px] text-white/40">Fixing for</dt>
+                <dd className="num mt-1 text-[17px] font-semibold tracking-[-0.02em] text-white">
+                  {desk.rates ? desk.rateDate : "—"}
+                </dd>
+              </div>
+              <div className="border-l border-white/10 pl-4">
+                <dt className="text-[12px] text-white/40">Pairs</dt>
+                <dd className="num mt-1 text-[17px] font-semibold tracking-[-0.02em] text-white">
+                  {desk.rates ? Object.keys(desk.rates).length : 0}
+                </dd>
+              </div>
+              <div className="border-l border-white/10 pl-4">
+                <dt className="text-[12px] text-white/40">Cadence</dt>
+                <dd className="num mt-1 text-[17px] font-semibold tracking-[-0.02em] text-white">1× daily</dd>
+              </div>
+            </dl>
+            <div className="mt-8">
+              <Button asChild size="lg" variant="accent" className="h-11 gap-2 px-5 text-[13.5px]">
+                <Link href="/signup">
+                  Score a payment at this rate
+                  <ArrowRight className="size-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          <CurrencyDesk {...desk} />
+        </div>
+      </section>
 
       <section id="platform" aria-labelledby="showcase-heading" className="section-pad lit-section">
         <div className="container-page">

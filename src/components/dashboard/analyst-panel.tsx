@@ -119,19 +119,17 @@ export function AnswerBody({ text }: { text: string }) {
 
 export function EvidenceFooter({ reply }: { reply: AssistantReply }) {
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-t border-border/50 pt-2.5 text-[11px] text-muted-foreground">
-      <span className="num">
-        window {reply.evidence.window} · {reply.evidence.from} → {reply.evidence.to}
-      </span>
-      <span aria-hidden="true">·</span>
-      <span className="num">{reply.evidence.payments.toLocaleString("en-US")} payments</span>
-      <span aria-hidden="true">·</span>
-      <span className="num">${formatCompactNumber(reply.evidence.valueUsd)} screened</span>
-      <span aria-hidden="true">·</span>
-      <span className="num">
-        {reply.evidence.flagged} flagged (score ≥ {reply.evidence.alertCutoff})
-      </span>
-      <span className="num ml-auto opacity-70">{reply.model}</span>
+    <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-border/50 pt-2.5 text-[11px] text-muted-foreground">
+      {[
+        `window ${reply.evidence.window} · ${reply.evidence.from} → ${reply.evidence.to}`,
+        `${reply.evidence.payments.toLocaleString("en-US")} payments`,
+        `$${formatCompactNumber(reply.evidence.valueUsd)} screened`,
+        `${reply.evidence.flagged} flagged (score ≥ ${reply.evidence.alertCutoff})`,
+      ].map((item) => (
+        <span key={item} className="num rounded-md border border-border/50 bg-muted/30 px-1.5 py-0.5">
+          {item}
+        </span>
+      ))}
     </div>
   );
 }

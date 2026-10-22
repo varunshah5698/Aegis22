@@ -27,7 +27,6 @@ export interface ConsoleEvidence {
   avgScore: number;
   cutoff: number;
   modelVersion: string;
-  model: string;
   configured: boolean;
   corridors: Array<{ corridor: string; count: number; value: number; flagged: number }>;
   signals: Array<{ label: string; count: number }>;
@@ -274,7 +273,6 @@ export function AnalystConsole({
             <dl className="mt-3 space-y-2 border-t border-white/10 pt-3 text-[11px]">
               {[
                 { label: "Window", value: evidence.windowLabel },
-                { label: "Model", value: evidence.model.split("/").pop() ?? evidence.model },
                 { label: "Scoring", value: evidence.modelVersion },
                 { label: "Alert cutoff", value: String(evidence.cutoff) },
               ].map((item) => (
@@ -396,7 +394,7 @@ export function AnalystConsole({
             {turns.map((turn) => (
               <article key={turn.id} className="space-y-3">
                 <div className="flex justify-end">
-                  <p className="max-w-[85%] rounded-[16px] rounded-br-[4px] border border-white/10 bg-white/[0.08] px-3.5 py-2.5 text-[12.5px] leading-5 text-white/90">
+                  <p className="max-w-[85%] rounded-[16px] rounded-br-[4px] border border-white/12 bg-[linear-gradient(180deg,rgb(255_255_255/0.13),rgb(255_255_255/0.07))] px-3.5 py-2.5 text-[12.5px] leading-5 text-white/90 shadow-[inset_0_1px_0_rgb(255_255_255/0.10),0_14px_28px_-22px_rgb(0_0_0/0.9)]">
                     {turn.question}
                   </p>
                 </div>
@@ -414,19 +412,19 @@ export function AnalystConsole({
                 ) : null}
 
                 {turn.reply ? (
-                  <div className="glass max-w-[92%] px-4 py-3.5">
+                  <div className="glass max-w-[92%] px-4 py-3.5 shadow-[0_24px_54px_-40px_rgb(0_0_0/0.9),inset_0_1px_0_rgb(255_255_255/0.10)]">
                     <AnswerBody text={turn.reply.answer} />
-                    <div className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 border-t border-white/10 pt-2.5 text-[11px] text-white/40">
-                      <span className="num">{turn.reply.evidence.window}</span>
-                      <span aria-hidden="true">·</span>
-                      <span className="num">{turn.reply.evidence.payments.toLocaleString("en-US")} payments</span>
-                      <span aria-hidden="true">·</span>
-                      <span className="num">${formatCompactNumber(turn.reply.evidence.valueUsd)} screened</span>
-                      <span aria-hidden="true">·</span>
-                      <span className="num">
-                        {turn.reply.evidence.flagged} flagged ≥ {turn.reply.evidence.alertCutoff}
-                      </span>
-                      <span className="num ml-auto opacity-80">{turn.reply.model.split("/").pop()}</span>
+                    <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-white/10 pt-2.5 text-[11px] text-white/45">
+                      {[
+                        `window ${turn.reply.evidence.window}`,
+                        `${turn.reply.evidence.payments.toLocaleString("en-US")} payments`,
+                        `$${formatCompactNumber(turn.reply.evidence.valueUsd)} screened`,
+                        `${turn.reply.evidence.flagged} flagged ≥ ${turn.reply.evidence.alertCutoff}`,
+                      ].map((item) => (
+                        <span key={item} className="num rounded-md border border-white/10 bg-white/[0.05] px-1.5 py-0.5">
+                          {item}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 ) : null}
